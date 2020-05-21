@@ -1,0 +1,8 @@
+-create ssh key using CMD Prompt/Powershell
+-copy public ssh key into gitlab in settings "ssh keys"
+-go into terminal, cd to were you want to save, and type "git clone git@git-community.cs.odu.edu:411cry/acubed.git"
+
+pushing
+-create a new file
+-git commit "file"
+-git push
