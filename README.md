@@ -1,10 +1,19 @@
 # A-Cubed 
 
-CS 410 -- Professional Workforce Development
+CS 411 -- Professional Workforce Development
 Team Crystal -- UI Team: 
 * Noah Jennings 
 * Rosalie Oliva 
 * Joshua Harris 
+
+Database Team:
+* Mike Campbell
+* Josh Murphy
+* Aaron Burman
+
+Algorithm Team:
+* Stephen Ayers
+
 
 React Web Application 
 
