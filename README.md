@@ -5,7 +5,6 @@ CS 411 -- Professional Workforce Development -- Team Crystal
 UI Team: 
 * Noah Jennings 
 * Rosalie Oliva 
-* Joshua Harris 
 
 Database Team:
 * Mike Campbell
