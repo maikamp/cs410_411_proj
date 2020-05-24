@@ -28,7 +28,7 @@ This section will cover how to:
 * Clone the repo 
 
 ``` 
-git clone https://gitlab.com/410crystal/acubed.git
+git clone https://git-community.cs.odu.edu/411cry/acubed
 ```
 
 ### Install & Run 
