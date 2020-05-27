@@ -8,4 +8,4 @@ class Member():
         this.last_login = ""; 
 
         # Extra elements to help with OOP 
-        this.credentials_path = "./config/cred.txt"; 
+        this.credentials_path = "./user/config/cred.txt"; 
