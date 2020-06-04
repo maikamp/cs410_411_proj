@@ -1,6 +1,6 @@
 class User(): 
     """ 
-    Used to represent the local machine and it's userl; guests and members alike 
+    A class used to represent the local machine and it's user; guests and members alike 
     
     ...
 
@@ -22,25 +22,28 @@ class User():
     def __init__(self):
         """ Initialize class variables """ 
 
-        # Elements that faculty members have but guests do not
-        this.id = "";
-        this.access_level = ""; 
+        # Elements that all members have
+        self.id = ""
+        self.access_level = 1
 
-        # Extra elements to help with OOP 
-        this.output_path = './user/outs';
+        # Extra elements to help with OOP shared by all members 
+        self.output_path = './user/outs'
+
+
+    #def generateId(self): 
 
 
     # Getters and setter functions 
     def setId(self, id: str): 
-        this.id = id; 
+        self.id = id
 
     def setAccessLevel(self, access_level: str): 
-        this.access_level = access_level; 
+        self.access_level = access_level;
 
     def getId(self): 
-        return (self.id); 
+        return (self.id)
 
     def getAccessLevel(self): 
-        return (self.access_level); 
+        return (self.access_level)
 
     
