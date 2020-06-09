@@ -44,7 +44,7 @@ def processRequest(guest, request):
         return "C"
 
 def gatherRequest(): 
-    return input("Choose the desired action: ")
+    return input("")
 
 def memberMenu(): 
     print("")
@@ -69,11 +69,12 @@ def memberMode():
         memberMenu()
 
         request = gatherRequest()
-        process = processRequest(member, request)
+        p = processRequest(member, request)
+        process = p.replace(" ", "")
 
-        if (process == 'C'): 
+        if (process.replace(" ", "") == 'C'): 
             break 
-        elif (process == 'A'): 
+        elif (process.replace(" ", "") == 'A'): 
             signIn(member)
 
 def guestMode(): 
@@ -110,7 +111,7 @@ def initParser():
     
     # Member Mode
     mode_group.add_argument('--m', action='store_true',
-                            help='Activate Member mode')
+                            help='Activate Member mode.')
 
     return parser 
     

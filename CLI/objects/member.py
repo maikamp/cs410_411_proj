@@ -1,5 +1,5 @@
 
-from objects.user import User
+from .user import User
 
 class Member(): 
     def __init__(self, User):
