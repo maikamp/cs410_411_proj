@@ -1,3 +1,5 @@
+import string 
+
 class User(): 
     """ 
     A class used to represent the local machine and it's user; guests and members alike 
@@ -27,6 +29,7 @@ class User():
 
         # Extra elements to help with OOP shared by all members 
         self.output_path = './user/outs'
+        self.options = ['Sign In', 'Search', 'Quit']
 
     # Getters and setter functions 
     def setId(self, id: str): 
@@ -41,7 +44,21 @@ class User():
     def getAccessLevel(self): 
         return (self.access_level)
 
+    def printUserMenu(self): 
+        LETTERS = {letter: str(index) for index, letter in enumerate(string.ascii_lowercase, start=1)}
 
-    
+        print("")
+        print("-------- A Cubed - Guest Mode --------", end = '\n\n')
+        
+        i = 0
+        for o in self.options: 
+           
+            print (chr(i + 97).upper() + ")", end=" ")
+            print (o)
+            i += 1
 
+        print("\n--------------------------------------")
     
+        
+
+        

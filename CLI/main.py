@@ -10,8 +10,7 @@ def readConfig(user, file):
         user.access_level = f.readlines()[1]
         user.last_access_date = f.readlines()[2]
         user.last_access_time = f.readlines()[3]
-        
-
+      
 def makeConfig(user): 
     try: 
         f = open(user.config_path)
@@ -54,14 +53,6 @@ def memberMenu():
     print("C)   Quit")
     print("---------------------------------------")
 
-def guestMenu(): 
-    print("")
-    print("-------- A Cubed - Guest Mode --------")
-    print("A)   Sign up")
-    print("B)   Search")
-    print("C)   Quit")
-    print("--------------------------------------")
-    
 def memberMode(): 
     member = User() 
 
@@ -84,7 +75,7 @@ def guestMode():
     guest = User() 
 
     while True: 
-        guestMenu() 
+        guest.printUserMenu() 
         request = gatherRequest()
         process = processRequest(request)
 
@@ -94,7 +85,6 @@ def guestMode():
             signUp(guest)
         elif (process == 'B' or process == 'b'): 
             search() 
-
 
 def initParser(): 
     parser = argparse.ArgumentParser(
@@ -120,8 +110,6 @@ def initParser():
 
     return parser 
     
-
-
 def main(): 
 
     parser = initParser()
