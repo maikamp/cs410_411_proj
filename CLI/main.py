@@ -30,18 +30,18 @@ def checkConfig(user, file):
 def quit(): 
     pass
 
+def search(): 
+    print("Searching...")
+
 def signIn(member): 
     print("Sign in")
+
 def signUp(guest): 
     print("sign up")
 
-def processRequest(guest, request): 
-    if (request == "A"): 
-        return "A"
-    elif (request == "B"): 
-        return "B"
-    elif (request == "C"): 
-        return "C"
+def processRequest(request): 
+    r = request.replace(" ", "")
+    return r 
 
 def gatherRequest(): 
     return input("")
@@ -67,15 +67,18 @@ def memberMode():
 
     while True: 
         memberMenu()
+        request = gatherRequest()
+        process = processRequest(request)
 
         request = gatherRequest()
-        p = processRequest(member, request)
-        process = p.replace(" ", "")
+        p = processRequest(request)
 
-        if (process.replace(" ", "") == 'C'): 
-            break 
-        elif (process.replace(" ", "") == 'A'): 
-            signIn(member)
+        if (process == 'C' or process == 'c'): 
+            quit()
+        elif (process == 'A' or process == 'a'): 
+            signUp(member)
+        elif (process == 'B' or process == 'b'): 
+            search() 
 
 def guestMode(): 
     guest = User() 
@@ -83,12 +86,14 @@ def guestMode():
     while True: 
         guestMenu() 
         request = gatherRequest()
-        process = processRequest(guest, request)
+        process = processRequest(request)
 
-        if (process == 'C'): 
-            break 
-        elif (process == 'A'): 
+        if (process == 'C' or process == 'c'): 
+            quit()
+        elif (process == 'A' or process == 'a'): 
             signUp(guest)
+        elif (process == 'B' or process == 'b'): 
+            search() 
 
 
 def initParser(): 

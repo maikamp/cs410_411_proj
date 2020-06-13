@@ -24,14 +24,9 @@ class User():
 
         # Elements that all members have
         self.id = ""
-        self.access_level = 1
 
         # Extra elements to help with OOP shared by all members 
         self.output_path = './user/outs'
-
-
-    #def generateId(self): 
-
 
     # Getters and setter functions 
     def setId(self, id: str): 
@@ -45,5 +40,8 @@ class User():
 
     def getAccessLevel(self): 
         return (self.access_level)
+
+
+    
 
     
