@@ -8,16 +8,18 @@ class User():
 
     Attributes 
     ---------- 
-    id : str
+    id : int
         a procedurally generated identification number 
-    access_level : str 
-        a value signifying users permission levels 
-    
+        
     output_path : str  
         the path to the directory holding exports and reports 
+    options : list 
+        a list of functions any user can user 
 
     Methods 
     ------- 
+    printUserMenu()
+        Prints
     
     """ 
 
@@ -25,10 +27,10 @@ class User():
         """ Initialize class variables """ 
 
         # Elements that all members have
-        self.id = ""
+        self.id = 0
 
         # Extra elements to help with OOP shared by all members 
-        self.output_path = './user/outs'
+        self.output_path = './user/outs/'
         self.options = ['Sign In', 'Search', 'Quit']
 
     # Getters and setter functions 

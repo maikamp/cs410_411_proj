@@ -26,9 +26,6 @@ def checkConfig(user, file):
         print(ex)
         return False
 
-def quit(): 
-    pass
-
 def search(): 
     print("Searching...")
 
@@ -45,27 +42,19 @@ def processRequest(request):
 def gatherRequest(): 
     return input("")
 
-def memberMenu(): 
-    print("")
-    print("-------- A Cubed - Member Mode --------")
-    print("A)   Sign in")
-    print("B)   Search")
-    print("C)   Quit")
-    print("---------------------------------------")
+def infoMode(): 
+    print ("")
 
 def memberMode(): 
-    member = User() 
+    member = Member() 
 
     while True: 
-        memberMenu()
+        member.printMemberMenu()
         request = gatherRequest()
         process = processRequest(request)
 
-        request = gatherRequest()
-        p = processRequest(request)
-
         if (process == 'C' or process == 'c'): 
-            quit()
+            break
         elif (process == 'A' or process == 'a'): 
             signUp(member)
         elif (process == 'B' or process == 'b'): 
@@ -80,7 +69,7 @@ def guestMode():
         process = processRequest(request)
 
         if (process == 'C' or process == 'c'): 
-            quit()
+            break
         elif (process == 'A' or process == 'a'): 
             signUp(guest)
         elif (process == 'B' or process == 'b'): 
