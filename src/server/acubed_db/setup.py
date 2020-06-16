@@ -17,8 +17,18 @@ TABLES['artifact'] = (
     " 'artifact_size' int(),"
     " 'artifact_creation_date' datetime,"
     " 'artifact_last_accessed' datetime,"
-    " 'artifact_access_count' int(),"
-    ") 
+    " 'artifact_access_count' int()"
+    ") ENGINE=InnoDB"
+)
+
+TABLES[] = (
+
+
+
+
+
+
+
 )
 
 def create_database():
