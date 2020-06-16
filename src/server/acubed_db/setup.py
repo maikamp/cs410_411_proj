@@ -6,7 +6,7 @@ DATABASE_NAME = 'A3database'
 TABLES = {}
 
 TABLES['artifact'] = (
-    "CREATE TABLE 'Artifact' ("
+    "CREATE TABLE 'artifact' ("
     " 'artifact_id' int() NOT NULL AUTO_INCREMENT, "
     " 'owner_id' int() NOT NULL,"
     " 'artifact_repo' int() NOT NULL,"
@@ -21,15 +21,57 @@ TABLES['artifact'] = (
     ") ENGINE=InnoDB"
 )
 
-TABLES[] = (
+TABLES['artifact_change_record'] = """                                                                                                
+    CREATE TABLE 'artifact_change_record' (                                                                                                
+    'change_datetime' datetime NOT NULL,                                                                            
+    'changer_id' int() NOT NULL,                                                                                              
+    'artifact_id' int() NOT NULL,                                                                                          
+    'artifact_blob' blob NOT NULL,                                                                                        
+    'version' int() NOT NULL                                                                                           
+    ) ENGINE=InnoDB                                                                                                          
+    """  
 
+TABLES['permission_level'] = """
+    CREATE TABLE 'permission_level' (
+    'level' int() NOT NULL
+    ) ENGINE=InnoDB
+    """
 
+TABLES['repository'] = """
+    CREATE TABLE 'repository' (
+    'repository_id' int() NOT NULL,
+    'repo_creator' int() NOT NULL,
+    'permission_req' int() NOT NULL,
+    'repo_name' varchar(20) NOT NULL
+    )
+    """
 
+TABLES['tag'] = """
+    CREATE TABLE 'tag' (
+    'tag_name' varchar(20) NOT NULL,
+    'repo_id' int(),
+    'artifact_id' int()
+    )
+    """
 
+TABLES['user'] = """
+    CREATE TABLE 'user' (
+    'user_id' int() NOT NULL,
+    'access_level' int() NOT NULL,
+    'username' varchar(20) NOT NULL,
+    'password' varchar(20) NOT NULL,
+    'user_email' varchar(20),
+    'last_login' datetime
+    )
+"""
 
-
-
-)
+TABLES[] = """
+    CREATE TABLE 'user_bookmarks' (
+    'user_id' int() NOT NULL,
+    'artifact_id' int(),
+    'repo_id' int()
+    )
+"""
 
 def create_database():
     cursor.execute("CREATE DATABASE IF NOT EXISTS {} DEFAULT CHARACTER SET 'utf8'".format(DATABASE_NAME))
