@@ -43,7 +43,7 @@ TABLES['repository'] = """
     'repo_creator' int() NOT NULL,
     'permission_req' int() NOT NULL,
     'repo_name' varchar(20) NOT NULL
-    )
+    ) ENGINE=InnoDB 
     """
 
 TABLES['tag'] = """
@@ -51,7 +51,7 @@ TABLES['tag'] = """
     'tag_name' varchar(20) NOT NULL,
     'repo_id' int(),
     'artifact_id' int()
-    )
+    ) ENGINE=InnoDB 
     """
 
 TABLES['user'] = """
@@ -62,16 +62,16 @@ TABLES['user'] = """
     'password' varchar(20) NOT NULL,
     'user_email' varchar(20),
     'last_login' datetime
-    )
-"""
+    ) ENGINE=InnoDB 
+    """
 
-TABLES[] = """
+TABLES['user_bookmarks'] = """
     CREATE TABLE 'user_bookmarks' (
     'user_id' int() NOT NULL,
     'artifact_id' int(),
     'repo_id' int()
-    )
-"""
+    ) ENGINE=InnoDB 
+    """
 
 def create_database():
     cursor.execute("CREATE DATABASE IF NOT EXISTS {} DEFAULT CHARACTER SET 'utf8'".format(DATABASE_NAME))
