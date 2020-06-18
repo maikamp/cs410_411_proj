@@ -12,8 +12,12 @@ import Biography from './components/Biography';
 
 function App() {
   return (
+<<<<<<< HEAD
     <Router>
 		<Biography/>
+=======
+    <Router> 
+      <Biography/>
       <Navbar> 
         <br/> 
           
