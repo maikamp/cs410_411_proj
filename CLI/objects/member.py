@@ -46,6 +46,11 @@ class Member(User):
         # Extra elements to help with OOP 
         self.config_path = "./user/config.txt" 
         self.quit = False 
+
+    def setUsername(self, u): 
+        self.username = u 
+    def getUsername(self): 
+        return self.username
         
     def checkStatus(self): 
         return (self.quit)
