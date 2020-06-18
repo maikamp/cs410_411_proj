@@ -24,7 +24,7 @@ function App() {
     </Router>
 
   function Header() {
-    return <img src={C:\Users\unknown\Desktop\Git\acubed\public\images\A-cubed.png} 
+    return <img src="C:/Users/unknown/Desktop/Git/acubed/public/images/A-cubed.png" 
               alt="A-cubed" />;
 }
 
