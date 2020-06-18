@@ -27,20 +27,17 @@ def checkConfig(user, file):
         return False
 
 def search(): 
-    print("Searching...")
-
-def signIn(member): 
-    print("Sign in")
+    print("Search Coming Soon")
 
 def signUp(guest): 
-    print("sign up")
+    print("sign Up Coming Soon")
 
 def processRequest(request): 
     r = request.replace(" ", "")
     return r 
 
 def gatherRequest(): 
-    return input("")
+    return input("Enter choice: ")
 
 def infoMode(): 
     print ("")
@@ -50,15 +47,8 @@ def memberMode():
 
     while True: 
         member.printMemberMenu()
-        request = gatherRequest()
-        process = processRequest(request)
-
-        if (process == 'C' or process == 'c'): 
+        if (member.checkStatus() is True): 
             break
-        elif (process == 'A' or process == 'a'): 
-            signUp(member)
-        elif (process == 'B' or process == 'b'): 
-            search() 
 
 def guestMode(): 
     guest = User() 
@@ -75,10 +65,29 @@ def guestMode():
         elif (process == 'B' or process == 'b'): 
             search() 
 
+logo = (''' 
+                 _______       ____
+               /         \       __}
+              /           \    ____}
+             /      _      \   
+            /      / \      \ 
+           /      /___\      \ 
+          /       _____       \ 
+         /      /       \      \ 
+        /      /         \      \ 
+       /_____ /           \ _____\ 
+       
+''')
+
+def infoMode(): 
+    print (logo)
+    print ("    A Cubed - A3    ")
+    print (" ------------------ ")
+
 def initParser(): 
     parser = argparse.ArgumentParser(
             formatter_class=argparse.RawDescriptionHelpFormatter,
-            description='A3 Command line interface',
+            description= logo + 'A3 Command line interface',
             epilog='For more help, type main.py -h')
     
     '''
@@ -97,6 +106,10 @@ def initParser():
     mode_group.add_argument('--m', action='store_true',
                             help='Activate Member mode.')
 
+    # Info Mode
+    mode_group.add_argument('--i', action='store_true',
+                            help='Display system information.')
+
     return parser 
     
 def main(): 
@@ -108,6 +121,8 @@ def main():
         guestMode()
     if args.m:
         memberMode()
+    if args.i: 
+        infoMode() 
 
 if __name__ == "__main__":
     main()
