@@ -51,7 +51,7 @@ class Member(User):
         return (self.quit)
 
     def processRequest(self, request): 
-        r = request.replace(" ", "")
+        r = request.replace(" ", "").strip()
         return (r) 
 
     def gatherRequest(self): 

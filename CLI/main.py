@@ -34,6 +34,7 @@ def signUp(guest):
 
 def processRequest(request): 
     r = request.replace(" ", "")
+
     return r 
 
 def gatherRequest(): 
