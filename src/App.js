@@ -29,9 +29,7 @@ function App() {
         </Navbar>
     </Router>
 
-  function Header() {
-    return <img src="C:/Users/unknown/Desktop/Git/acubed/public/images/A-cubed.png" 
-              alt="A-cubed" />;
+  
 }
 
   );
