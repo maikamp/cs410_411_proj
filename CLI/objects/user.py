@@ -19,7 +19,7 @@ class User():
     Methods 
     ------- 
     printUserMenu()
-        Prints
+        Prints a menu with guest level abilities.
     
     """ 
 
@@ -31,14 +31,14 @@ class User():
 
         # Extra elements to help with OOP shared by all members 
         self.output_path = './user/outs/'
-        self.options = ['Sign In', 'Search', 'Quit']
+        self.options = ['Sign Up', 'Search', 'Quit']
 
     # Getters and setter functions 
     def setId(self, id: str): 
         self.id = id
 
     def setAccessLevel(self, access_level: str): 
-        self.access_level = access_level;
+        self.access_level = access_level
 
     def getId(self): 
         return (self.id)

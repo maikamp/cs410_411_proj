@@ -27,12 +27,21 @@ class Member(User):
 
     Methods 
     ------- 
-    printMemberMenu()
-        Prints
+    memberMenu()
+        Prints a menu with member level abilities
+    
+    signIn()
+        Initiates the sign in process
+
+    signInMenu()
+        Prints the available sign in options
+
+     
     
     """ 
 
-    def __init__(self, *args):
+    def __init__(self):
+        """ Initialize Member class variables """
         
         super(Member, self).__init__()
 
@@ -46,6 +55,8 @@ class Member(User):
         # Extra elements to help with OOP 
         self.config_path = "./user/config.txt" 
         self.quit = False 
+        self.options = ['Sign In', 'Search', 'Quit']
+
 
     def setUsername(self, u): 
         self.username = u 
@@ -73,7 +84,7 @@ class Member(User):
         except Exception as ex: 
             print(ex)
         
-    def printSignInMenu(self): 
+    def signInMenu(self): 
         print("-------- A Cubed - Member Sign In ---------", end = '\n\n')
        
         print('A) Config')
@@ -91,12 +102,11 @@ class Member(User):
         
 
     def signIn(self): 
-        self.printSignInMenu() 
+        self.signInMenu() 
 
 
-    def printMemberMenu(self): 
-        LETTERS = {letter: str(index) for index, letter in enumerate(string.ascii_lowercase, start=1)}
-
+    def memberMenu(self): 
+       
         print("")
         print("-------- A Cubed - Member Mode ---------", end = '\n\n')
         

@@ -20,8 +20,21 @@ React Web Application
 
 * Clone the repo
 
+<<<<<<< HEAD
 ```
 git clone https://gitlab.com/410crystal/acubed.git
+=======
+This section will cover how to: 
+* Clone/download this repo
+* Install/run the app 
+
+### Download 
+
+* Clone the repo 
+
+``` 
+git clone https://git-community.cs.odu.edu/411cry/acubed
+>>>>>>> 52d15238619f04239a467987ecc93f0722881e91
 ```
 
 ## GUI Usage

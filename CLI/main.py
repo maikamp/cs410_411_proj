@@ -40,15 +40,13 @@ def processRequest(request):
 def gatherRequest(): 
     return input("Enter choice: ")
 
-def infoMode(): 
-    print ("")
-
 def memberMode(): 
     member = Member() 
 
     while True: 
-        member.printMemberMenu()
+        member.memberMenu()
         if (member.checkStatus() is True): 
+            del member
             break
 
 def guestMode(): 
@@ -80,10 +78,52 @@ logo = ('''
        
 ''')
 
+def infoMenu():
+    print()
+    print("            **********************    ")
+    print("            *  A - Normalization *    ")
+    print("            *  B - Web Scraping  *    ")
+    print("            *  C - Quit          *    ")
+    print("            **********************    ")
+    print("                                     ")
+
+    choice = input("      Choose a topic to learn more on: ")
+
+def printInfo(): 
+
+    print ("                 A Cubed - A3                   ")
+    print ("------------------------------------------------\n")
+
+    print (" *  Use A3 to connect to a centralized database ")
+    print ("    of academic resources or artifacts.\n         ")
+    
+    print (" *  Guests can search through and export any    ")
+    print ("    exisitng public artifacts.\n                  ")
+    
+    print (" *  Members can search existing/owned artifacts,")
+    print ("    upload artifacts, update artifacts they     ")
+    print ("    own or have access to, and export existing  ")
+    print ("    artifacts.\n                                  ")
+    
+    print (" *  Updating artifacts generates a change record")
+    print ("    that describes differences between artifact ") 
+    print ("    versions.\n                                   ")
+
+    print (" *  Users can choose to convert some file types ")
+    print ("    to Markdown (.md) to normalize the upload.")
+
+    print (" *  Normalized artifacts allow for an additional")
+    print ("    line-by-line differenct report.\n             ") 
+
+    print (" *  Users can decide to utilize webscraping to  ")
+    print ("    either upload or update artifacts.\n          ")
+
+    print ("------------------------------------------------")
+
 def infoMode(): 
     print (logo)
-    print ("    A Cubed - A3    ")
-    print (" ------------------ ")
+    printInfo() 
+    infoMenu()     
 
 def initParser(): 
     parser = argparse.ArgumentParser(
