@@ -24,7 +24,7 @@ class User():
     """ 
 
     def __init__(self):
-        """ Initialize class variables """ 
+        """ Initialize User class variables """ 
 
         # Elements that all members have
         self.id = 0
