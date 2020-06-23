@@ -1,7 +1,10 @@
 
 import argparse
+
 from objects.user import User
 from objects.member import Member
+
+from objects.tester import Tester
 
 def readConfig(user, file): 
     print(len(file.readlines()))
@@ -40,12 +43,22 @@ def processRequest(request):
 def gatherRequest(): 
     return input("Enter choice: ")
 
+def testerMode(): 
+    tester = Tester()
+
+    while True: 
+        tester.memberMenu(logo)
+        if (tester.getQuit() is True): 
+            del tester 
+            break
+
 def memberMode(): 
     member = Member() 
 
     while True: 
-        member.memberMenu()
-        if (member.checkStatus() is True): 
+        member.memberMenu(logo)
+        if (member.getQuit() is True): 
+            member.clearScreen()
             del member
             break
 
@@ -53,16 +66,12 @@ def guestMode():
     guest = User() 
 
     while True: 
-        guest.printUserMenu() 
-        request = gatherRequest()
-        process = processRequest(request)
-
-        if (process == 'C' or process == 'c'): 
+        guest.userMenu(logo) 
+        if (guest.getQuit() is True): 
+            guest.clearScreen()
+            del guest
             break
-        elif (process == 'A' or process == 'a'): 
-            signUp(guest)
-        elif (process == 'B' or process == 'b'): 
-            search() 
+ 
 
 logo = (''' 
                  _______       ____
@@ -140,12 +149,16 @@ def initParser():
     mode_group = parser.add_mutually_exclusive_group(required=True)
     
     # Guest Mode 
-    mode_group.add_argument('--g', help='Activate guest mode.',
+    mode_group.add_argument('--g', help='Activate Guest mode.',
                             action='store_true')
     
     # Member Mode
     mode_group.add_argument('--m', action='store_true',
                             help='Activate Member mode.')
+
+    # Tester Mode
+    mode_group.add_argument('--t', action='store_true',
+                            help='Activate Tester mode.')
 
     # Info Mode
     mode_group.add_argument('--i', action='store_true',
@@ -162,6 +175,8 @@ def main():
         guestMode()
     if args.m:
         memberMode()
+    if args.t: 
+        testerMode()
     if args.i: 
         infoMode() 
 

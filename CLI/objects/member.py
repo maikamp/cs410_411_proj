@@ -54,25 +54,14 @@ class Member(User):
 
         # Extra elements to help with OOP 
         self.config_path = "./user/config.txt" 
-        self.quit = False 
-        self.options = ['Sign In', 'Search', 'Quit']
+        self.options = ['Sign In', 'Search', 'Help', 'Quit']
 
 
     def setUsername(self, u): 
         self.username = u 
+
     def getUsername(self): 
         return self.username
-        
-    def checkStatus(self): 
-        return (self.quit)
-
-    def processRequest(self, request): 
-        r = request.replace(" ", "").strip()
-        return (r) 
-
-    def gatherRequest(self): 
-        return (input("Enter choice: "))
-        print ("")
 
     def configSignIn(self): 
         print()
@@ -85,6 +74,9 @@ class Member(User):
             print(ex)
         
     def signInMenu(self): 
+
+        self.clearScreen()
+
         print("-------- A Cubed - Member Sign In ---------", end = '\n\n')
        
         print('A) Config')
@@ -104,18 +96,40 @@ class Member(User):
     def signIn(self): 
         self.signInMenu() 
 
+        
+    def helpScreen(self):
 
-    def memberMenu(self): 
+        self.clearScreen()
+
+        print("\n          ***************************    ")
+        print(  "          *  Members can sign in,   *    ")
+        print(  "          *  search public or       *    ")
+        print(  "          *  permissed artifacts,   *    ")
+        print(  "          *  upload artifacts, or   *    ")
+        print(  "          *  update owned or allowed*    ")
+        print(  "          *  artifacts.             *    ")
+        print(  "          ***************************    ")
+
+        input(  "                   Continue...         ")
+
+
+    def memberMenu(self, logo): 
+
+        self.clearScreen()
+
+        print(logo)
        
         print("")
         print("-------- A Cubed - Member Mode ---------", end = '\n\n')
-        
+        print("\n        |*********************|    ")
+
         i = 0
         for o in self.options: 
-           
-            print (chr(i + 97).upper() + ")", end=" ")
-            print (o)
+            print("              " + chr(i + 97).upper() + " - " + str(o) )
+
             i += 1
+        print("        |*********************|    ")
+
 
         print("\n----------------------------------------")
 
