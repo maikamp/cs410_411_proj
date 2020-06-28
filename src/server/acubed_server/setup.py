@@ -1,5 +1,5 @@
 import mysql.connector
-from database import cursor
+from databaseConfig import cursor
 
 DATABASE_NAME = 'A3database'
 
