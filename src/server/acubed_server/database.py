@@ -10,7 +10,7 @@ class Database():
     # we are working from the correct database. Defines self.
     def __init__(self):
         self.connector = mysql.connector.connect(
-            host = "localhost",
+            host = "localhost:3306",
             user = "",
             passwd = "",
             database = os.environ['DATABASE_NAME']
@@ -22,7 +22,7 @@ class Database():
     def ensureConnected(self):
         if not self.connector.is_connected():
             self.connector = mysql.connector.connect(
-                host = "localhost",
+                host = "localhost:3306",
                 user = "",
                 passwd ="",
                 database = "os.environ['DATABASE_NAME']"
