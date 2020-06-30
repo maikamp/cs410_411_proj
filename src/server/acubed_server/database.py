@@ -11,8 +11,8 @@ class Database():
     def __init__(self):
         self.connector = mysql.connector.connect(
             host = "localhost:3306",
-            user = "",
-            passwd = "",
+            user = "root",
+            passwd = "rT1@4PlgTd",
             database = os.environ['DATABASE_NAME']
         )
         self.cursor = self.connector.cursor()
@@ -23,8 +23,8 @@ class Database():
         if not self.connector.is_connected():
             self.connector = mysql.connector.connect(
                 host = "localhost:3306",
-                user = "",
-                passwd ="",
+                user = "root",
+                passwd ="rT1@4PlgTd",
                 database = "os.environ['DATABASE_NAME']"
             )
             self.cursor = self.connector.cursor()
