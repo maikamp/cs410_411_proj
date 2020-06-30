@@ -3,7 +3,7 @@ import mysql.connector
 config = {
     'user': 'root',
     'password': 'rT1@4PlgTd',
-    'host': 'localhost:3306'
+    'host': '127.0.0.1'
 }
 
 db = mysql.connector.connect(**config)
