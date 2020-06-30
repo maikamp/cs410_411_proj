@@ -9,6 +9,6 @@ config = {
 db = mysql.connector.connect( 
     user= 'root',
     password= 'rT1@4PlgTd',
-    host= 'acubed_db',
+    host= 'A3database',
     database= 'Acubed')
 cursor = db.cursor
