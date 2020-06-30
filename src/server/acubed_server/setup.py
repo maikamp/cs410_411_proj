@@ -119,3 +119,6 @@ def create_database():
     cursor.execute("CREATE DATABASE IF NOT EXISTS {} DEFAULT CHARACTER SET `utf8`".format(DATABASE_NAME))
     #convert to python f string or prepared query
     #docker volumes persistant 
+    for table, query in TABLES:
+        cursor.execute(query)
+
