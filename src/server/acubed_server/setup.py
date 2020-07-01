@@ -5,10 +5,9 @@ from mysql.connector import errorcode
 #from acubed_server.databaseConfig import db
 
 config = {
-    'user': 'root',
-    'password': 'rT1@4PlgTd',
-    'host': 'a3database',
-    'port': '3306'
+    'user': 'test',
+    'password': 'testpw',
+    'host': 'acubed_db'
 }
 
 db = mysql.connector.connect(**config) 
