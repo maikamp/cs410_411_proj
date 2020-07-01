@@ -13,7 +13,9 @@ config = {
 }
 
 db = mysql.connector.connect(**config) 
-cursor = db.cursor
+cursor = db.cursor()
+
+
 
 DATABASE_NAME = 'A3database'
 
