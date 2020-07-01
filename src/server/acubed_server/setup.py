@@ -7,7 +7,7 @@ from mysql.connector import errorcode
 config = {
     'user': 'root',
     'password': 'rT1@4PlgTd',
-    'host': 'A3database',
+    'host': 'a3database',
     'port': '3306',
     'database': 'Acubed'
 }
@@ -17,7 +17,7 @@ cursor = db.cursor()
 
 
 
-DATABASE_NAME = 'A3database'
+DATABASE_NAME = 'Acubed'
 
 TABLES = {}
 
@@ -56,25 +56,9 @@ TABLES['repository'] = """
     INDEX `permission_level_fk` (`permission_req`),
     FOREIGN KEY (`permission_req`) REFERENCES `permission_level` (`level`),
     INDEX `user_id_fk` (`repo_creator`),
-    FOREIGN KEY (`repo_creator`) REFERENCES `user` (`user_id`),
+    FOREIGN KEY (`repo_creator`) REFERENCES `user` (`user_id`)
     ) ENGINE=InnoDB 
     """
-
-TABLES['artifact_change_record'] = """                                                                                                
-    CREATE TABLE `artifact_change_record` (                                                                                                
-    `change_datetime` datetime NOT NULL,                                                                            
-    `changer_id` INT NOT NULL,                                                                                              
-    `artifact_id` INT NOT NULL,                                                                                          
-    `artifact_blob` blob NOT NULL,                                                                                        
-    `version` INT NOT NULL,  
-
-    PRIMARY KEY (`change_datetime`),
-    INDEX `user_id_fk` (`changer_id`),
-    FOREIGN KEY (`changer_id`) REFERENCES `user` (`user_id`),           
-    INDEX `artifact_id_fk` (`artifact_id`),
-    FOREIGN KEY (`artifact_id`) REFERENCES `artifact` (`artifact_id`)                                                                                
-    ) ENGINE=InnoDB                                                                                                          
-    """  
 
 TABLES['artifact'] = """
     CREATE TABLE `artifact` (
@@ -101,6 +85,22 @@ TABLES['artifact'] = """
     FOREIGN KEY (`artifact_last_changed`) REFERENCES `artifact_change_record` (`change_datetime`)
     ) ENGINE=InnoDB
     """
+
+TABLES['artifact_change_record'] = """                                                                                                
+    CREATE TABLE `artifact_change_record` (                                                                                                
+    `change_datetime` datetime NOT NULL,                                                                            
+    `changer_id` INT NOT NULL,                                                                                              
+    `artifact_id` INT NOT NULL,                                                                                          
+    `artifact_blob` blob NOT NULL,                                                                                        
+    `version` INT NOT NULL,  
+
+    PRIMARY KEY (`change_datetime`),
+    INDEX `user_id_fk` (`changer_id`),
+    FOREIGN KEY (`changer_id`) REFERENCES `user` (`user_id`),           
+    INDEX `artifact_id_fk` (`artifact_id`),
+    FOREIGN KEY (`artifact_id`) REFERENCES `artifact` (`artifact_id`)                                                                                
+    ) ENGINE=InnoDB                                                                                                          
+    """  
 
 TABLES['tag'] = """
     CREATE TABLE `tag` (
