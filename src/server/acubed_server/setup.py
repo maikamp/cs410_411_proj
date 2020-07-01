@@ -15,8 +15,6 @@ config = {
 db = mysql.connector.connect(**config) 
 cursor = db.cursor()
 
-
-
 DATABASE_NAME = 'Acubed'
 
 TABLES = {}
