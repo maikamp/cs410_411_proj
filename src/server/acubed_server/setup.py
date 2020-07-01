@@ -7,7 +7,7 @@ from mysql.connector import errorcode
 config = {
     'user': 'root',
     'password': 'rT1@4PlgTd',
-    'host': 'acubed_db'
+    'host': 'a3database'
 }
 
 db = mysql.connector.connect(**config) 
