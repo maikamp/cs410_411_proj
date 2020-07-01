@@ -11,6 +11,7 @@ services:
   
   acubed_db:
     build: ./acubed_db/
+    network_mode: bridge
     ports:
       - "3306:3306"
     environment:
