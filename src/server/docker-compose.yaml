@@ -7,7 +7,7 @@ services:
     network_mode: bridge
     ports:
       - "5000:5000"
-    container_name: A3server
+    container_name: a3server
   
   acubed_db:
     build: ./acubed_db/
@@ -21,6 +21,6 @@ services:
       MYSQL_PASSWORD: testpw
     volumes:
       - ./acubed_db:/docker-entrypoint-initdb.d/:ro
-    container_name: A3database
+    container_name: a3database
   
     
