@@ -4,12 +4,15 @@ services:
     build: ./acubed_server/
     links:
       - "acubed_db:A3database"
+      - "acubed_db"
+    network_mode: bridge
     ports:
       - "5000:5000"
     container_name: A3server
   
   acubed_db:
     build: ./acubed_db/
+    network_mode: bridge
     ports:
       - "3308:3306"
     environment:
