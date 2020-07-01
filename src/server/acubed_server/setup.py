@@ -1,8 +1,19 @@
 from __future__ import print_function
 import mysql.connector
 from mysql.connector import errorcode
-from acubed_server.databaseConfig import cursor
-from acubed_server.databaseConfig import db
+#from acubed_server.databaseConfig import cursor
+#from acubed_server.databaseConfig import db
+
+config = {
+    'user': 'test',
+    'password': 'testpw',
+    'host': 'A3database',
+    'port': '3306',
+    'database': 'Acubed'
+}
+
+db = mysql.connector.connect(**config) 
+cursor = db.cursor
 
 DATABASE_NAME = 'A3database'
 
