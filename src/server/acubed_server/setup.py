@@ -8,8 +8,7 @@ config = {
     'user': 'root',
     'password': 'rT1@4PlgTd',
     'host': 'a3database',
-    'port': '3306',
-    'database': 'Acubed'
+    'port': '3306'
 }
 
 db = mysql.connector.connect(**config) 

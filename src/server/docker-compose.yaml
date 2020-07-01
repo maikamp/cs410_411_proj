@@ -1,14 +1,5 @@
 version: '3'
 services:
-  acubed_svr:
-    build: ./acubed_server/
-    links:
-      - "acubed_db:a3database"
-    network_mode: bridge
-    ports:
-      - "5000:5000"
-    container_name: a3server
-  
   acubed_db:
     build: ./acubed_db/
     network_mode: bridge
@@ -23,4 +14,12 @@ services:
       - ./acubed_db:/docker-entrypoint-initdb.d/:ro
     container_name: a3database
   
+  acubed_svr:
+    build: ./acubed_server/
+    links:
+      - "acubed_db:a3database"
+    network_mode: bridge
+    ports:
+      - "5000:5000"
+    container_name: a3server
     
