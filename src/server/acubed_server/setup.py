@@ -1,8 +1,8 @@
 from __future__ import print_function
 import mysql.connector
 from mysql.connector import errorcode
-from .databaseConfig import cursor
-from .databaseConfig import db
+from databaseConfig import cursor
+from databaseConfig import db
 
 DATABASE_NAME = 'A3database'
 
