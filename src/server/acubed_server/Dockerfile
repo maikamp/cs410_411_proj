@@ -1,7 +1,7 @@
 # Use official Python version 3.8 ans the runtime image
 FROM python:3.8
 
-# EXPOSE inidcates the port number the container will listen for connections
+# EXPOSE indicates the port number the container will listen for connections
 # 5000 is the FLASK default
 EXPOSE 5000
 

@@ -1,14 +1,18 @@
 import mysql.connector
 
-config = {
+configOld = {
     'user': 'root',
     'password': 'rT1@4PlgTd',
     'host': '127.0.0.1'
 }
 
-db = mysql.connector.connect( 
-    user= 'root',
-    password= 'rT1@4PlgTd',
-    host= 'A3database',
-    database= 'Acubed')
+config = {
+    'user': 'test',
+    'password': 'testpw',
+    'host': 'A3database',
+    'port': '3306',
+    'database': 'Acubed'
+}
+
+db = mysql.connector.connect(**config) 
 cursor = db.cursor
