@@ -4,7 +4,6 @@ services:
     build: ./acubed_server/
     links:
       - "acubed_db:A3database"
-      - "acubed_db"
     network_mode: bridge
     ports:
       - "5000:5000"
