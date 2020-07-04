@@ -1,5 +1,5 @@
 #!/bin/sh
-while true: do
+while true; do
     python3 setup.py
     if [[ "$?" == "0"]]; then
         break
