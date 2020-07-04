@@ -10,10 +10,10 @@ class Database():
     # we are working from the correct database. Defines self.
     def __init__(self):
         self.connector = mysql.connector.connect(
-            host = "localhost:3306",
-            user = "root",
-            passwd = "rT1@4PlgTd",
-            database = os.environ['DATABASE_NAME']
+            user = 'root',
+            password = 'rT1@4PlgTd',
+            database = os.environ['DATABASE_NAME'],
+            host = 'crystal.cpi.cs.odu.edu:5000'
         )
         self.cursor = self.connector.cursor()
 
@@ -22,10 +22,10 @@ class Database():
     def ensureConnected(self):
         if not self.connector.is_connected():
             self.connector = mysql.connector.connect(
-                host = "localhost:3306",
-                user = "root",
-                passwd ="rT1@4PlgTd",
-                database = "os.environ['DATABASE_NAME']"
+                user = 'root',
+                password = 'rT1@4PlgTd',
+                database = os.environ['DATABASE_NAME'],
+                host = 'crystal.cpi.cs.odu.edu:5000'
             )
             self.cursor = self.connector.cursor()
     

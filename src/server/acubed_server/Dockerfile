@@ -1,6 +1,9 @@
 # Use official Python version 3.8 ans the runtime image
 FROM python:3.8
 
+#Add a user so we are not using root
+RUN adduser -D acubed
+
 # EXPOSE indicates the port number the container will listen for connections
 # 5000 is the FLASK default
 EXPOSE 5000
@@ -12,4 +15,7 @@ WORKDIR /acubed_server
 COPY ./ /acubed_server
 RUN pip3 install -r requirementsSV.txt
 
-CMD python3 setup.py
+RUN python3 setup.py
+
+RUN flask run
+
