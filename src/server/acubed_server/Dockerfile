@@ -12,4 +12,4 @@ WORKDIR /server
 COPY ./ /server
 RUN pip3 install -r requirementsSV.txt
 
-CMD python3 setup.py
+CMD python3 -m setup.py
