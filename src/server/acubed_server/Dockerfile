@@ -9,7 +9,7 @@ EXPOSE 5000
 WORKDIR /server
 
 # Install all the needed packages specified in the requirements.txt
-COPY ./ ./
+COPY ./ /server
 RUN pip3 install -r requirementsSV.txt
 
 CMD python3 setup.py

@@ -1,18 +1,8 @@
 from __future__ import print_function
 import mysql.connector
 from mysql.connector import errorcode
-#from acubed_server.databaseConfig import cursor
-#from acubed_server.databaseConfig import db
-
-config = {
-    'user': 'root',
-    'password': 'rT1@4PlgTd',
-    'host': 'a3database'
-}
-
-db = mysql.connector.connect(**config) 
-cursor = db.cursor()
-
+from .databaseConfig import cursor
+from .databaseConfig import connection
 DATABASE_NAME = 'Acubed'
 
 TABLES = {}
@@ -140,7 +130,7 @@ except mysql.connector.Error as err:
     if err.errno == errorcode.ER_BAD_DB_ERROR:
         create_database(cursor)
         print("Database {} created successfully.".format(DATABASE_NAME))
-        db.database = DATABASE_NAME
+        connection.database = DATABASE_NAME
     else:
         print(err)
         exit(1)   
@@ -159,6 +149,6 @@ except mysql.connector.Error as err:
         else:
             print("OK")
 cursor.close()
-db.close()
+connection.close()
         
 

@@ -4,22 +4,22 @@ services:
     build: ./acubed_db/
     network_mode: bridge
     ports:
-      - "3308:3306"
+      - '3308:3306'
     environment:
-      MYSQL_ROOT_PASSWORD: rT1@4PlgTd
-      MYSQL_DATABASE: Acubed
-      MYSQL_USER: test
-      MYSQL_PASSWORD: testpw
+      MYSQL_ROOT_PASSWORD: 'rT1@4PlgTd'
+      MYSQL_DATABASE: 'Acubed'
+      MYSQL_USER: 'test'
+      MYSQL_PASSWORD: 'testpw'
     volumes:
       - ./acubed_db:/docker-entrypoint-initdb.d/:ro
-    container_name: a3database
+    container_name: 'a3database'
   
   acubed_svr:
     build: ./acubed_server/
     links:
-      - "acubed_db:a3database"
+      - 'acubed_db:a3database'
     network_mode: bridge
     ports:
-      - "5000:5000"
+      - '5000:5000'
     container_name: a3server
     

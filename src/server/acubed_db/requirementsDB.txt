@@ -1,5 +1,0 @@
-MySQL-python
-flask
-mysql-connector-python
-requests
-beautifulsoup4
