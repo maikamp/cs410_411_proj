@@ -64,11 +64,11 @@ TABLES['artifact_change_record'] = """
 
     PRIMARY KEY (`change_datetime`),
     INDEX `user_id_fk` (`changer_id`),
-    FOREIGN KEY (`changer_id`) REFERENCES `user` (`user_id`),
+    FOREIGN KEY (`changer_id`) REFERENCES `user` (`user_id`)
     ) ENGINE=InnoDB
     """
 #this is the I removed from artifact change record to get it to work
-#INDEX `artifact_id_fk` (`artifact_id`),
+#, INDEX `artifact_id_fk` (`artifact_id`),
 #FOREIGN KEY (`artifact_id`) REFERENCES `artifact` (`artifact_id`)
 
 TABLES['artifact'] = """
