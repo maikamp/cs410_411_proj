@@ -123,32 +123,34 @@ def create_database(cursor):
     except mysql.connector.Error as err:
         print("Failed to create database: {}".format(err))
         exit(1)
-try:
-    cursor.execute("USE {}".format(DATABASE_NAME))
-except mysql.connector.Error as err:
-    print("Database {} does not exist.".format(DATABASE_NAME))
-    if err.errno == errorcode.ER_BAD_DB_ERROR:
-        create_database(cursor)
-        print("Database {} created successfully.".format(DATABASE_NAME))
-        connection.database = DATABASE_NAME
-    else:
-        print(err)
-        exit(1)   
-    #convert to python f string or prepared query
-    #docker volumes persistant 
-    for table_name in TABLES:
-        table_description = TABLES[table_name]
-        try:
-            print("Creating table {}: ".format(table_name), end='')
-            cursor.execute(table_description)
-        except mysql.connector.Error as err:
-            if err.errno == errorcode.ER_TABLE_EXISTS_ERROR:
-                print("already exists.")
-            else:
-                print(err.msg)
+
+if __name__ == '__main__':
+    try:
+        cursor.execute("USE {}".format(DATABASE_NAME))
+    except mysql.connector.Error as err:
+        print("Database {} does not exist.".format(DATABASE_NAME))
+        if err.errno == errorcode.ER_BAD_DB_ERROR:
+            create_database(cursor)
+            print("Database {} created successfully.".format(DATABASE_NAME))
+            connection.database = DATABASE_NAME
         else:
-            print("OK")
-cursor.close()
-connection.close()
+            print(err)
+            exit(1)   
+        #convert to python f string or prepared query
+        #docker volumes persistant 
+        for table_name in TABLES:
+            table_description = TABLES[table_name]
+            try:
+                print("Creating table {}: ".format(table_name), end='')
+                cursor.execute(table_description)
+            except mysql.connector.Error as err:
+                if err.errno == errorcode.ER_TABLE_EXISTS_ERROR:
+                    print("already exists.")
+                else:
+                    print(err.msg)
+            else:
+                print("OK")
+    cursor.close()
+    connection.close()
         
 
