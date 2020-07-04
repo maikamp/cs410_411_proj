@@ -10,7 +10,6 @@ WORKDIR /acubed_server
 
 ENV FLASK_APP acubed_server.py
 ENV FLASK_RUN_HOST 0.0.0.0
-RUN apk add --no-cache gcc musl-dev linux-headers
 
 # Install all the needed packages specified in the requirements.txt
 COPY ./ /acubed_server
