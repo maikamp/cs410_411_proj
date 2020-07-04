@@ -1,8 +1,16 @@
 from __future__ import print_function
 import mysql.connector
 from mysql.connector import errorcode
-from .databaseConfig import cursor
-from .databaseConfig import connection
+
+config = {
+    'user': 'root',
+    'password': 'rT1@4PlgTd',
+    'host': 'acubed_db',
+    'port': '3306'
+}
+
+connection = mysql.connector.connect(**config)
+cursor = connection.cursor()
 DATABASE_NAME = 'Acubed'
 
 TABLES = {}
@@ -46,6 +54,23 @@ TABLES['repository'] = """
     ) ENGINE=InnoDB 
     """
 
+TABLES['artifact_change_record'] = """
+    CREATE TABLE `artifact_change_record` (
+    `change_datetime` datetime NOT NULL,
+    `changer_id` INT NOT NULL,
+    `artifact_id` INT NOT NULL,
+    `artifact_blob` blob NOT NULL,
+    `version` INT NOT NULL,
+
+    PRIMARY KEY (`change_datetime`),
+    INDEX `user_id_fk` (`changer_id`),
+    FOREIGN KEY (`changer_id`) REFERENCES `user` (`user_id`),
+    ) ENGINE=InnoDB
+    """
+#this is the I removed from artifact change record to get it to work
+#INDEX `artifact_id_fk` (`artifact_id`),
+#FOREIGN KEY (`artifact_id`) REFERENCES `artifact` (`artifact_id`)
+
 TABLES['artifact'] = """
     CREATE TABLE `artifact` (
     `artifact_id` INT NOT NULL AUTO_INCREMENT, 
@@ -71,22 +96,6 @@ TABLES['artifact'] = """
     FOREIGN KEY (`artifact_last_changed`) REFERENCES `artifact_change_record` (`change_datetime`)
     ) ENGINE=InnoDB
     """
-
-TABLES['artifact_change_record'] = """                                                                                                
-    CREATE TABLE `artifact_change_record` (                                                                                                
-    `change_datetime` datetime NOT NULL,                                                                            
-    `changer_id` INT NOT NULL,                                                                                              
-    `artifact_id` INT NOT NULL,                                                                                          
-    `artifact_blob` blob NOT NULL,                                                                                        
-    `version` INT NOT NULL,  
-
-    PRIMARY KEY (`change_datetime`),
-    INDEX `user_id_fk` (`changer_id`),
-    FOREIGN KEY (`changer_id`) REFERENCES `user` (`user_id`),           
-    INDEX `artifact_id_fk` (`artifact_id`),
-    FOREIGN KEY (`artifact_id`) REFERENCES `artifact` (`artifact_id`)                                                                                
-    ) ENGINE=InnoDB                                                                                                          
-    """  
 
 TABLES['tag'] = """
     CREATE TABLE `tag` (
@@ -136,8 +145,9 @@ if __name__ == '__main__':
         else:
             print(err)
             exit(1)   
-        #convert to python f string or prepared query
-        #docker volumes persistant 
+    #convert to python f string or prepared query
+    #docker volumes persistant 
+    finally:
         for table_name in TABLES:
             table_description = TABLES[table_name]
             try:
@@ -150,7 +160,7 @@ if __name__ == '__main__':
                     print(err.msg)
             else:
                 print("OK")
-    cursor.close()
-    connection.close()
+        cursor.close()
+        connection.close()
         
 

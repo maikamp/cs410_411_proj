@@ -6,10 +6,10 @@ FROM python:3.8
 EXPOSE 5000
 
 # Sets the working directory for the COPY and CMD instructions
-WORKDIR /server
+WORKDIR /acubed_server
 
 # Install all the needed packages specified in the requirements.txt
-COPY ./ /server
+COPY ./ /acubed_server
 RUN pip3 install -r requirementsSV.txt
 
-CMD python3 -m setup.py
+CMD python3 setup.py
