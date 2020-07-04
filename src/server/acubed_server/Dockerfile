@@ -11,6 +11,7 @@ WORKDIR /acubed_server
 # Install all the needed packages specified in the requirements.txt
 COPY ./ /acubed_server
 RUN pip3 install -r requirementsSV.txt
+RUN chmod +x boot.sh
 CMD ./boot.sh
 
 
