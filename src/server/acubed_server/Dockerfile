@@ -11,8 +11,8 @@ WORKDIR /acubed_server
 # Install all the needed packages specified in the requirements.txt
 COPY ./ /acubed_server
 RUN pip3 install -r requirementsSV.txt
-
-RUN python3 setup.py
-
 RUN flask run
+CMD python3 setup.py
+
+
 
