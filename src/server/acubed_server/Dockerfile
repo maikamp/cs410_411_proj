@@ -12,7 +12,5 @@ WORKDIR /acubed_server
 COPY ./ /acubed_server
 RUN pip3 install -r requirementsSV.txt
 RUN chmod +x boot.sh
-CMD ./boot.sh
-
-
+ENTRYPOINT ["./boot.sh"]
 
