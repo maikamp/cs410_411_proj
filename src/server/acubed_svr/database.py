@@ -15,7 +15,7 @@ class Database():
             user = 'root',
             password = 'rT1@4PlgTd',
             database = 'Acubed',
-            host = 'crystal.cpi.cs.odu.edu:5000'
+            host = 'acubed_db:3306'
         )
         self.cursor = self.connector.cursor()
 
@@ -28,7 +28,7 @@ class Database():
                 password = 'rT1@4PlgTd',
                 database = 'Acubed',
                 #database = os.environ['DATABASE_NAME'],
-                host = 'crystal.cpi.cs.odu.edu:5000'
+                host = 'acubed_db:3306'
             )
             self.cursor = self.connector.cursor()
     
