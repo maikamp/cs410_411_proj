@@ -64,5 +64,8 @@ class Database():
         sql = "SHOW TABLES"
         self.cursor.execute(sql)
         answer = self.cursor.fetchall()
-        return (answer, 200)
+        temp = {
+            'test1': answer
+        }
+        return (temp, 200)
         
