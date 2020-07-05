@@ -5,6 +5,8 @@ import math
 import json
 import os
 
+DATABASE_NAME = 'Acubed'
+
 class Database():
     # Initialize the MySQL-connector connection at the begining of of the script to ensure 
     # we are working from the correct database. Defines self.
@@ -12,7 +14,7 @@ class Database():
         self.connector = mysql.connector.connect(
             user = 'root',
             password = 'rT1@4PlgTd',
-            database = os.environ['DATABASE_NAME'],
+            database = 'Acubed',
             host = 'crystal.cpi.cs.odu.edu:5000'
         )
         self.cursor = self.connector.cursor()
@@ -24,7 +26,8 @@ class Database():
             self.connector = mysql.connector.connect(
                 user = 'root',
                 password = 'rT1@4PlgTd',
-                database = os.environ['DATABASE_NAME'],
+                database = 'Acubed',
+                #database = os.environ['DATABASE_NAME'],
                 host = 'crystal.cpi.cs.odu.edu:5000'
             )
             self.cursor = self.connector.cursor()
