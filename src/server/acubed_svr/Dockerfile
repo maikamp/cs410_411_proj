@@ -6,13 +6,13 @@ FROM python:3.8
 EXPOSE 5000
 
 # Sets the working directory for the COPY and CMD instructions
-WORKDIR /acubed_server
+WORKDIR /acubed_svr
 
 ENV FLASK_APP acubed_server.py
 ENV FLASK_RUN_HOST 0.0.0.0
 
 # Install all the needed packages specified in the requirements.txt
-COPY ./ /acubed_server
+COPY ./ /acubed_svr
 RUN pip3 install -r requirementsSV.txt
 RUN chmod +x boot.sh
 ENTRYPOINT ["./boot.sh"]

@@ -1,5 +1,5 @@
 # this allows for the rest api to be built for the database
-from acubed_server import app
+from acubed_svr import app
 from .database import Database
 from flask import request
 
