@@ -12,7 +12,7 @@ services:
       - ./acubed_db:/docker-entrypoint-initdb.d/:ro
     container_name: 'a3database'
   acubed_svr:
-    build: ./acubed_server/
+    build: ./acubed_svr/
     links:
       - "acubed_db"
     ports:
