@@ -63,5 +63,6 @@ class Database():
         self.ensureConnected()
         sql = "SHOW TABLES"
         self.cursor.execute(sql)
-        return (self.cursor.fetchall(), 200)
+        answer = self.cursor.fetchall()
+        return (answer, 200)
         
