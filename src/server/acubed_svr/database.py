@@ -58,3 +58,10 @@ class Database():
                     'data' : 'Incorrect password.'
                 }
                 return (json.dumps(payload), 401)
+
+    def testmysql(self, ):
+        self.ensureConnected()
+        sql = "SHOW TABLES"
+        self.cursor.execute(sql, )
+        return self.cursor.fetchall()
+        
