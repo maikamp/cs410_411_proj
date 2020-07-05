@@ -1,0 +1,23 @@
+version: "3"
+services:
+  acubed_db:
+    image: mysql:8.0
+    ports:
+      - '3306:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: 'rT1@4PlgTd'
+      MYSQL_USER: 'test'
+      MYSQL_PASSWORD: 'testpw'
+    volumes:
+      - ./acubed_db:/docker-entrypoint-initdb.d/:ro
+    container_name: 'a3database'
+  acubed_svr:
+    build: ./acubed_svr/
+    links:
+      - "acubed_db"
+    ports:
+      - '5000:5000'
+    depends_on:
+      - "acubed_db"
+    container_name: 'a3server'
+    
