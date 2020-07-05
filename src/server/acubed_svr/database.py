@@ -15,7 +15,8 @@ class Database():
             user = 'root',
             password = 'rT1@4PlgTd',
             database = 'Acubed',
-            host = 'acubed_db:3306'
+            host = 'acubed_db',
+            port = '3306'
         )
         self.cursor = self.connector.cursor()
 
@@ -28,7 +29,8 @@ class Database():
                 password = 'rT1@4PlgTd',
                 database = 'Acubed',
                 #database = os.environ['DATABASE_NAME'],
-                host = 'acubed_db:3306'
+                host = 'acubed_db',
+                port = '3306'
             )
             self.cursor = self.connector.cursor()
     
