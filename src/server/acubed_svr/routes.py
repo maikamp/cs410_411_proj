@@ -20,6 +20,6 @@ def test():
 def login():
     return db.login(request.get_json)
 
-@app.route('testmysql')
+@app.route('/testmysql')
 def testmysql():
     return 'This is a test route.'
