@@ -8,7 +8,7 @@ function HomePage() {
 
       <div class="sidenav">
         <div class="container-small">
-          <a href="https://www.cs.odu.edu/~410crystal/">Home</a>
+          <a href="https://www.cs.odu.edu/~411crystal/">Home</a>
         </div>
         
         <a href="#news">Log In</a>
@@ -25,7 +25,7 @@ function HomePage() {
         </p>
         <a
           className="App-link"
-          href="https://www.cs.odu.edu/~410crystal/"
+          href="https://www.cs.odu.edu/~411crystal/"
           target="_blank"
           rel="noopener noreferrer"
         >

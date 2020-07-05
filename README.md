@@ -1,10 +1,10 @@
-# A-Cubed 
+# A-Cubed
 
-CS 411 -- Professional Workforce Development -- Team Crystal 
+CS 411 -- Professional Workforce Development -- Team Crystal
 
-UI Team: 
-* Noah Jennings 
-* Rosalie Oliva 
+UI Team:
+* Noah Jennings
+* Rosalie Oliva
 
 Database Team:
 * Mike Campbell
@@ -14,22 +14,20 @@ Database Team:
 Algorithm Team:
 * Stephen Ayers
 
+React Web Application
 
-React Web Application 
+## Download
 
-## Usage 
+* Clone the repo
 
-This section will cover how to: 
-* Clone/download this repo
-* Install/run the app 
-
-### Download 
-
-* Clone the repo 
-
-``` 
+```
 git clone https://gitlab.com/410crystal/acubed.git
 ```
+
+## GUI Usage
+
+This section will cover how to: 
+* Install/Run GUI framework 
 
 ### Install & Run 
 
@@ -43,6 +41,21 @@ npm install
 
 ```
 npm start
+``` 
+
+## CLI Usage 
+
+This section will cover how to: 
+* Use the command line interface 
+
+### Run 
+
+* Initialize interface in guest mode, member mode, or info mode 
+
+``` 
+python main.py --g 
+python main.py --m 
+python main.py --i
 ``` 
 
 ## Acknowledgements 

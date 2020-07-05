@@ -8,10 +8,16 @@ import ExercisesList from "./components/exercises-list.component";
 import EditExercise from "./components/edit-exercise.component";
 import CreateExercise from "./components/create-exercise.component";
 import CreateUser from "./components/create-user.component";
+import Biography from './components/Biography';
 
 function App() {
   return (
+<<<<<<< HEAD
+    <Router>
+		<Biography/>
+=======
     <Router> 
+      <Biography/>
       <Navbar> 
         <br/> 
           
@@ -22,6 +28,9 @@ function App() {
       
         </Navbar>
     </Router>
+
+  
+}
 
   );
 }
