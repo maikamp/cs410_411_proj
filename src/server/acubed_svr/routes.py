@@ -18,7 +18,7 @@ def test():
 
 @app.route('/login', methods = ['POST'])
 def login():
-    return db.login(request.get_json)
+    return db.login(request.get_json(force=True))
 
 @app.route('/testmysql', methods = ['GET'])
 def testmysql():
