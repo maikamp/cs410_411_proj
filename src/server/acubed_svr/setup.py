@@ -162,7 +162,7 @@ if __name__ == '__main__':
                 print("OK")
         try:
             permission_levels = "INSERT INTO permission_level (level) VALUES (%s)"
-            levels = [1 3 5]
+            levels = [1, 3, 5]
             print("Setting permission_level {}: ".format(levels), end='')
             cursor.executemany(permission_levels, levels)
             connection.commit()
