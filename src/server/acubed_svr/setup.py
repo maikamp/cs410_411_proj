@@ -163,8 +163,9 @@ if __name__ == '__main__':
         try:
             permission_levels = "INSERT INTO `permission_level` (`level`) VALUES (%d)"
             levels = [1, 3, 5]
-            print("Setting permission_levels {}: ".format(levels), end='')
+            print("Setting permission_level {}: ".format(levels), end='')
             cursor.executemany(permission_levels, levels)
+            connection.commit()
         except mysql.connector.Error as err:
             if err.errno == errorcode.ER_NON_INSERTABLE_TABLE:
                 print("I messed up.")
