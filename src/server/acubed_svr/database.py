@@ -68,4 +68,13 @@ class Database():
             'test1': answer
         }
         return (temp, 200)
-        
+
+    def testlevels(self):
+        self.ensureConnected()
+        sql = "SELECT * FROM permission_level"
+        self.cursor.execute(sql)
+        answer = self.cursor.fetchall()
+        temp = {
+            'levels': answer
+        }
+        return (temp, 200)
