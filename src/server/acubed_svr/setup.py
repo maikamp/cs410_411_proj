@@ -161,7 +161,7 @@ if __name__ == '__main__':
             else:
                 print("OK")
         try:
-            permission_levels = "INSERT INTO permission_level (level) VALUES (%d)"
+            permission_levels = "INSERT INTO `permission_level` (`level`) VALUES (%d)"
             levels = [1, 3, 5]
             print("Setting permission_levels {}: ".format(levels), end='')
             cursor.executemany(permission_levels, levels)
