@@ -90,7 +90,7 @@ class Database():
 
     def testlevels(self):
         self.ensureConnected()
-        sql = "SELECT * FROM permission_level"
+        sql = "SELECT level FROM permission_level WHERE level > 0"
         self.cursor.execute(sql)
         answer = self.cursor.fetchall()
         temp = {
