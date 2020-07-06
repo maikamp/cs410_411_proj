@@ -176,9 +176,19 @@ if __name__ == '__main__':
     try:        
         #cursor.execute("USE {}".format(DATABASE_NAME))
         #print("Using Acubed.")
-        sqlinsert = "INSERT INTO permission_level (level) VALUES %s"
-        val = [(1), (3), (5)]
-        cursor2.executemany(sqlinsert, val)
+        sqlinsert = ("INSERT INTO permission_level (level) VALUES (%s)")
+        val = 1
+        cursor2.execute(sqlinsert, val)
+        print("Setting permission_level {}: ".format(str(val)), end='')
+        connection2.commit()
+        sqlinsert = ("INSERT INTO permission_level (level) VALUES (%s)")
+        val = 3
+        cursor2.execute(sqlinsert, val)
+        print("Setting permission_level {}: ".format(str(val)), end='')
+        connection2.commit()
+        sqlinsert = ("INSERT INTO permission_level (level) VALUES (%s)")
+        val = 5
+        cursor2.execute(sqlinsert, val)
         print("Setting permission_level {}: ".format(str(val)), end='')
         connection2.commit()
     except mysql.connector.Error as err:
