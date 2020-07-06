@@ -170,7 +170,7 @@ if __name__ == '__main__':
                 'database': 'Acubed'
             }
 
-            connection2 = mysql.connector.connect(**config)
+            connection2 = mysql.connector.connect(**config2)
             cursor2 = connection2.cursor()
             
             #cursor.execute("USE {}".format(DATABASE_NAME))
