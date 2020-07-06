@@ -24,6 +24,6 @@ def login():
 def testmysql():
     return db.testmysql()
 
-@app.route('/testLevels', methods = ['GET'])
+@app.route('/testlevels', methods = ['GET'])
 def testlevels():
     return db.testlevels()
