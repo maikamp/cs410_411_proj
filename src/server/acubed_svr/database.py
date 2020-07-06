@@ -59,6 +59,25 @@ class Database():
                 }
                 return (json.dumps(payload), 401)
 
+    def register(self, content)
+        self.ensureConnected()
+        sql_unique_user = "SELECT * FROM user WHERE username = %s OR user_email = %s"
+        self.cursor.execute(sql_unique_user, (content.username, content.user_email))
+
+        result = self.cursor.fetchall()
+
+        if len(result) == 0:
+            payload = {
+                'data' : 'Account created.'
+            }
+            return (json.dumps(payload), 200)
+        else:
+            payload = {
+                'data' : 'Username or email already in use.'
+            }
+            return(json.dumps(payload), 401)
+
+
     def testmysql(self):
         self.ensureConnected()
         sql = "SHOW TABLES"
