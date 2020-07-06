@@ -12,17 +12,6 @@ config = {
 connection = mysql.connector.connect(**config)
 cursor = connection.cursor()
 
-config2 = {
-    'user': 'root',
-    'password': 'rT1@4PlgTd',
-    'host': 'acubed_db',
-    'port': '3306',
-    'database': 'Acubed'
-}
-
-connection2 = mysql.connector.connect(**config2)
-cursor2 = connection2.cursor()
-
 DATABASE_NAME = 'Acubed'
 
 TABLES = {}
@@ -174,7 +163,16 @@ if __name__ == '__main__':
 
     cursor.close()
     connection.close()
-    
+    config2 = {
+        'user': 'root',
+        'password': 'rT1@4PlgTd',
+        'host': 'acubed_db',
+        'port': '3306',
+        'database': 'Acubed'
+    }
+
+    connection2 = mysql.connector.connect(**config2)
+    cursor2 = connection2.cursor()
     try:        
         #cursor.execute("USE {}".format(DATABASE_NAME))
         #print("Using Acubed.")
