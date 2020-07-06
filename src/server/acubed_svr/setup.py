@@ -11,6 +11,18 @@ config = {
 
 connection = mysql.connector.connect(**config)
 cursor = connection.cursor()
+
+config2 = {
+    'user': 'root',
+    'password': 'rT1@4PlgTd',
+    'host': 'acubed_db',
+    'port': '3306',
+    'database': 'Acubed'
+}
+
+connection2 = mysql.connector.connect(**config2)
+cursor2 = connection2.cursor()
+
 DATABASE_NAME = 'Acubed'
 
 TABLES = {}
@@ -147,47 +159,37 @@ if __name__ == '__main__':
             exit(1)   
     #convert to python f string or prepared query
     #docker volumes persistant 
-    finally:
-        for table_name in TABLES:
-            table_description = TABLES[table_name]
-            try:
-                print("Creating table {}: ".format(table_name), end='')
-                cursor.execute(table_description)
-            except mysql.connector.Error as err:
-                if err.errno == errorcode.ER_TABLE_EXISTS_ERROR:
-                    print("already exists.")
-                else:
-                    print(err.msg)
-            else:
-                print("OK")
-
+    for table_name in TABLES:
+        table_description = TABLES[table_name]
         try:
-            config2 = {
-                'user': 'root',
-                'password': 'rT1@4PlgTd',
-                'host': 'acubed_db',
-                'port': '3306',
-                'database': 'Acubed'
-            }
-
-            connection2 = mysql.connector.connect(**config2)
-            cursor2 = connection2.cursor()
-            
-            #cursor.execute("USE {}".format(DATABASE_NAME))
-            #print("Using Acubed.")
-            sqlinsert = "INSERT INTO permission_level (level) VALUES (%s)"
-            val = [(1), (3), (5)]
-            cursor2.executemany(sqlinsert, val)
-            print("Setting permission_level {}: ".format(str(val)), end='')
-            connection2.commit()
+            print("Creating table {}: ".format(table_name), end='')
+            cursor.execute(table_description)
         except mysql.connector.Error as err:
-            if err.errno == errorcode.ER_NON_INSERTABLE_TABLE:
-                print("I messed up.")
+            if err.errno == errorcode.ER_TABLE_EXISTS_ERROR:
+                print("already exists.")
             else:
-                print("OK")
-        cursor.close()
-        connection.close()
-        cursor2.close()
-        connection2.close()
+                print(err.msg)
+        else:
+            print("OK")
+
+    cursor.close()
+    connection.close()
+    
+    try:        
+        #cursor.execute("USE {}".format(DATABASE_NAME))
+        #print("Using Acubed.")
+        sqlinsert = "INSERT INTO permission_level (level) VALUES (%s)"
+        val = [1, 3, 5]
+        cursor2.executemany(sqlinsert, val)
+        print("Setting permission_level {}: ".format(str(val)), end='')
+        connection2.commit()
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_NON_INSERTABLE_TABLE:
+            print("I messed up.")
+        else:
+            print("OK")
+   
+    cursor2.close()
+    connection2.close()
         
 
