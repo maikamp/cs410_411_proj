@@ -163,11 +163,12 @@ if __name__ == '__main__':
 
         try:
             cursor.execute("USE {}".format(DATABASE_NAME))
-            permission_levels = "INSERT INTO permission_level (level) VALUES (%s)"
-            levels = {1, 3, 5}
-            cursor.executemany(permission_levels, levels)
+            print("Using Acubed.")
+            sqlinsert = "INSERT INTO permission_level (level) VALUES (%s)"
+            val = (1, 3, 5)
+            cursor.executemany(permission, levels)
             print("Setting permission_level {}: ".format(str(levels)), end='')
-            connection.commit()
+            self.connector.commit()
             
         except mysql.connector.Error as err:
             if err.errno == errorcode.ER_NON_INSERTABLE_TABLE:
