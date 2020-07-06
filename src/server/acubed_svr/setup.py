@@ -165,7 +165,7 @@ if __name__ == '__main__':
             cursor.execute("USE {}".format(DATABASE_NAME))
             print("Using Acubed.")
             sqlinsert = "INSERT INTO permission_level (level) VALUES (%s)"
-            val = (1, 3, 5)
+            val = [(1), (3), (5)]
             cursor.executemany(sqlinsert, val)
             print("Setting permission_level {}: ".format(str(val)), end='')
             connection.connector.commit()
