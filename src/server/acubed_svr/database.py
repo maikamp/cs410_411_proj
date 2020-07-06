@@ -59,7 +59,7 @@ class Database():
                 }
                 return (json.dumps(payload), 401)
 
-    def register(self, content)
+    def register(self, content):
         self.ensureConnected()
         sql_unique_user = "SELECT * FROM user WHERE username = %s OR user_email = %s"
         self.cursor.execute(sql_unique_user, (content.username, content.user_email))
