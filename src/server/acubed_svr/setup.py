@@ -180,7 +180,7 @@ if __name__ == '__main__':
             cursor2.executemany(sqlinsert, val)
             print("Setting permission_level {}: ".format(str(val)), end='')
             connection2.commit()
-        except mysql.connector2.Error as err:
+        except mysql.connector.Error as err:
             if err.errno == errorcode.ER_NON_INSERTABLE_TABLE:
                 print("I messed up.")
             else:
