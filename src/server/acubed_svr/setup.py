@@ -162,19 +162,32 @@ if __name__ == '__main__':
                 print("OK")
 
         try:
-            cursor.execute("USE {}".format(DATABASE_NAME))
-            print("Using Acubed.")
+            config2 = {
+                'user': 'root',
+                'password': 'rT1@4PlgTd',
+                'host': 'acubed_db',
+                'port': '3306',
+                'database': 'Acubed'
+            }
+
+            connection2 = mysql.connector.connect(**config)
+            cursor2 = connection2.cursor()
+            
+            #cursor.execute("USE {}".format(DATABASE_NAME))
+            #print("Using Acubed.")
             sqlinsert = "INSERT INTO permission_level (level) VALUES (%s)"
             val = [(1), (3), (5)]
-            cursor.executemany(sqlinsert, val)
+            cursor2.executemany(sqlinsert, val)
             print("Setting permission_level {}: ".format(str(val)), end='')
-            connection.commit()
-        except mysql.connector.Error as err:
+            connection2.commit()
+        except mysql.connector2.Error as err:
             if err.errno == errorcode.ER_NON_INSERTABLE_TABLE:
                 print("I messed up.")
             else:
                 print("OK")
         cursor.close()
         connection.close()
+        cursor2.close()
+        connection2.close()
         
 
