@@ -159,18 +159,18 @@ if __name__ == '__main__':
                 else:
                     print(err.msg)
             else:
-                print("OK")
-        try:
-            permission_levels = "INSERT INTO permission_level (level) VALUES (%s)"
-            levels = [1, 3, 5]
-            print("Setting permission_level {}: ".format(levels), end='')
-            cursor.executemany(permission_levels, levels)
-            connection.commit()
-        except mysql.connector.Error as err:
-            if err.errno == errorcode.ER_NON_INSERTABLE_TABLE:
-                print("I messed up.")
-            else:
-                print("OK")
+                print("OK")   
+                try:
+                    permission_levels = "INSERT INTO permission_level (level) VALUES (%s)"
+                    levels = [1, 3, 5]
+                    print("Setting permission_level {}: ".format(levels), end='')
+                    cursor.executemany(permission_levels, levels)
+                    connection.commit()
+                except mysql.connector.Error as err:
+                    if err.errno == errorcode.ER_NON_INSERTABLE_TABLE:
+                        print("I messed up.")
+                    else:
+                        print("OK")
         cursor.close()
         connection.close()
         
