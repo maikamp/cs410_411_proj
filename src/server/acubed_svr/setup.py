@@ -164,7 +164,7 @@ if __name__ == '__main__':
         try:
             cursor.execute("USE {}".format(DATABASE_NAME))
             permission_levels = "INSERT INTO permission_level (level) VALUES (%s)"
-            levels = [1, 3, 5]
+            levels = {1, 3, 5}
             cursor.executemany(permission_levels, levels)
             print("Setting permission_level {}: ".format(levels), end='')
             connection.commit()
