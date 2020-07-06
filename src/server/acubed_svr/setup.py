@@ -166,8 +166,8 @@ if __name__ == '__main__':
             print("Using Acubed.")
             sqlinsert = "INSERT INTO permission_level (level) VALUES (%s)"
             val = (1, 3, 5)
-            cursor.executemany(permission, levels)
-            print("Setting permission_level {}: ".format(str(levels)), end='')
+            cursor.executemany(sqlinsert, val)
+            print("Setting permission_level {}: ".format(str(val)), end='')
             self.connector.commit()
             
         except mysql.connector.Error as err:
