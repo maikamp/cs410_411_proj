@@ -4,8 +4,17 @@ import requests
 import math
 import json
 import os
+from werkzeug.security import check_password_hash
+from flask import Flask, flash, request, redirect, url_for
+from werkzeug.utils import secure_filename
 
 DATABASE_NAME = 'Acubed'
+
+UPLOAD_FOLDER = '/path/to/the/uploads'
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg'}
+
+app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 class Database():
     # Initialize the MySQL-connector connection at the begining of of the script to ensure 
@@ -65,8 +74,12 @@ class Database():
         self.cursor.execute(sql_unique_user, (content.username, content.user_email))
 
         result = self.cursor.fetchall()
-
+        #checking to see if account/email exists within the database, if it does, throw an error, if not, create account.
         if len(result) == 0:
+            sqlUserInsert = "INSERT INTO user (user_id, access_level, username, password, user_email, last_login) VALUES (%s, %s, %s, %s, %s, %s)"
+                
+            val = (content['user_id'], content['access_level'], content['username'], content['password'], content['user_email'], content['last_login'])
+            self.cursor.execute(sqlUserInsert, val)
             payload = {
                 'data' : 'Account created.'
             }
@@ -76,6 +89,31 @@ class Database():
                 'data' : 'Username or email already in use.'
             }
             return(json.dumps(payload), 401)
+
+    def allowed_file(self, filename):
+        return '.' in filename and \
+            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+    #Uploads original file
+    def artifactUpload(self, content):
+        self.ensureConnected()
+        if request.method == 'POST':
+            #check if the post request has the file part
+            if 'file' not in request.files:
+                flash('No file part')
+                return redirect(request.url)
+            file = request.files[request.url]
+            # if user does not select file, browser also
+            # submit an empty part without filename
+            if file.filename == '':
+                flash('No selected file')
+                return redirect(request.url)
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                return redirect(url_for('uploaded_file',
+                                        filename=filename))
+    
 
 
     def testmysql(self):
