@@ -87,6 +87,16 @@ class Database():
             'tables': answer
         }
         return (temp, 200)
+    
+    def testmysqlArtifact(self):
+        self.ensureConnected()
+        sql = "DESCRIBE artifact"
+        self.cursor.execute(sql)
+        answer = self.cursor.fetchall()
+        temp = {
+            'artifact': answer
+        }
+        return (temp, 200)
 
     def testlevels(self):
         self.ensureConnected()

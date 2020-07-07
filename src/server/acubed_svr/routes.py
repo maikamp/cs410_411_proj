@@ -24,6 +24,10 @@ def login():
 def testmysql():
     return db.testmysql()
 
+@app.route('/testmysql/artifact', methods = ['GET'])
+def testmysqlArtifact():
+    return db.testmysqlArtifact()
+
 @app.route('/testlevels', methods = ['GET'])
 def testlevels():
     return db.testlevels()
