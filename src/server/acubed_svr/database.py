@@ -43,14 +43,14 @@ class Database():
 
         if len(result) == 0:
             payload = {
-                'data' : 'Invalid username.'
+                'data' : 'Invalid username or password.'
             }
             return (json.dumps(payload), 401)
         else:
-            if content["password"] == result[1]:
+            if len(result) == 1:
                 payload = {
                     'data' : 'Successful login.',
-                    'user_id' : result[1],
+                    'user_id' : result,
                 }
                 return (json.dumps(payload), 200)
             else:
