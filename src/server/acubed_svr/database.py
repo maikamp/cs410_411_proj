@@ -136,7 +136,7 @@ class Database():
         }
         return (temp, 200)
     
-    def testmysqlArtfactChangeRecord(self):
+    def testmysqlArtifactChangeRecord(self):
         self.ensureConnected()
         sql = "DESCRIBE artifact_change_record"
         self.cursor.execute(sql)
