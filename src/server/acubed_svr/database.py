@@ -97,6 +97,66 @@ class Database():
             'artifact': answer
         }
         return (temp, 200)
+    
+    def testmysqlArtfactChangeRecord(self):
+        self.ensureConnected()
+        sql = "DESCRIBE artifact_change_record"
+        self.cursor.execute(sql)
+        answer = self.cursor.fetchall()
+        temp = {
+            'artifact_change_record': answer
+        }
+        return (temp, 200)
+
+    def testmysqlPermissionLevel(self):
+        self.ensureConnected()
+        sql = "DESCRIBE permission_level"
+        self.cursor.execute(sql)
+        answer = self.cursor.fetchall()
+        temp = {
+            'permission_level': answer
+        }
+        return (temp, 200)
+    
+    def testmysqlRepository(self):
+        self.ensureConnected()
+        sql = "DESCRIBE repository"
+        self.cursor.execute(sql)
+        answer = self.cursor.fetchall()
+        temp = {
+            'repository': answer
+        }
+        return (temp, 200)
+    
+    def testmysqlTag(self):
+        self.ensureConnected()
+        sql = "DESCRIBE tag"
+        self.cursor.execute(sql)
+        answer = self.cursor.fetchall()
+        temp = {
+            'tag': answer
+        }
+        return (temp, 200)
+
+    def testmysqlUser(self):
+        self.ensureConnected()
+        sql = "DESCRIBE user"
+        self.cursor.execute(sql)
+        answer = self.cursor.fetchall()
+        temp = {
+            'user': answer
+        }
+        return (temp, 200)
+    
+    def testmysqlUserBookmarks(self):
+        self.ensureConnected()
+        sql = "DESCRIBE user_bookmarks"
+        self.cursor.execute(sql)
+        answer = self.cursor.fetchall()
+        temp = {
+            'user_bookmarks': answer
+        }
+        return (temp, 200)
 
     def testlevels(self):
         self.ensureConnected()
