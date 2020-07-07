@@ -32,7 +32,7 @@ def testmysql():
 def testmysqlArtifact():
     return db.testmysqlArtifact()
 
-@app.route('/testmysql/artifactchangerecord', methods = ['GET'])
+@app.route('/testmysql/changerecord', methods = ['GET'])
 def testmysqlArtifactChangeRecord():
     return db.testmysqlArtifactChangeRecord()
 
@@ -52,7 +52,7 @@ def testmysqlTag():
 def testmysqlUser():
     return db.testmysqlUser()
 
-@app.route('/testmysql/userbookmarks', methods = ['GET'])
+@app.route('/testmysql/bookmarks', methods = ['GET'])
 def testmysqlUserBookmarks():
     return db.testmysqlUserBookmarks()
 
