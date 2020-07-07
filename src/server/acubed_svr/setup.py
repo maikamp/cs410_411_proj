@@ -55,23 +55,6 @@ TABLES['repository'] = """
     ) ENGINE=InnoDB 
     """
 
-TABLES['artifact_change_record'] = """
-    CREATE TABLE `artifact_change_record` (
-    `change_datetime` datetime NOT NULL,
-    `changer_id` INT NOT NULL,
-    `artifact_id` INT NOT NULL,
-    `artifact_blob` blob NOT NULL,
-    `version` INT NOT NULL,
-
-    PRIMARY KEY (`change_datetime`),
-    INDEX `user_id_fk` (`changer_id`),
-    FOREIGN KEY (`changer_id`) REFERENCES `user` (`user_id`)
-    ) ENGINE=InnoDB
-    """
-#this is the I removed from artifact change record to get it to work
-#, INDEX `artifact_id_fk` (`artifact_id`),
-#FOREIGN KEY (`artifact_id`) REFERENCES `artifact` (`artifact_id`)
-
 TABLES['artifact'] = """
     CREATE TABLE `artifact` (
     `artifact_id` INT NOT NULL AUTO_INCREMENT, 
@@ -92,11 +75,29 @@ TABLES['artifact'] = """
     INDEX `user_id_fk` (`owner_id`),
     FOREIGN KEY (`owner_id`) REFERENCES `user` (`user_id`),
     INDEX `repository_id_fk` (`artifact_repo`),
-    FOREIGN KEY (`artifact_repo`) REFERENCES `repository` (`repository_id`),
-    INDEX `artifact_change_fk` (`artifact_last_changed`),
-    FOREIGN KEY (`artifact_last_changed`) REFERENCES `artifact_change_record` (`change_datetime`)
+    FOREIGN KEY (`artifact_repo`) REFERENCES `repository` (`repository_id`)
     ) ENGINE=InnoDB
     """
+#this is a redundant relationship, preserved for posterity
+#, INDEX `artifact_change_fk` (`artifact_last_changed`),
+#FOREIGN KEY (`artifact_last_changed`) REFERENCES `artifact_change_record` (`change_datetime`)
+
+TABLES['artifact_change_record'] = """
+    CREATE TABLE `artifact_change_record` (
+    `change_datetime` datetime NOT NULL,
+    `changer_id` INT NOT NULL,
+    `artifact_id` INT NOT NULL,
+    `artifact_blob` blob NOT NULL,
+    `version` INT NOT NULL,
+
+    PRIMARY KEY (`change_datetime`),
+    INDEX `user_id_fk` (`changer_id`),
+    FOREIGN KEY (`changer_id`) REFERENCES `user` (`user_id`),
+    INDEX `artifact_id_fk` (`artifact_id`),
+    FOREIGN KEY (`artifact_id`) REFERENCES `artifact` (`artifact_id`)
+    ) ENGINE=InnoDB
+    """
+
 
 TABLES['tag'] = """
     CREATE TABLE `tag` (
