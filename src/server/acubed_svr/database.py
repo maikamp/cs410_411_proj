@@ -47,10 +47,10 @@ class Database():
             }
             return (json.dumps(payload), 401)
         else:
-            if content["password"] == result[0][1]:
+            if content["password"] == result[1][0]:
                 payload = {
                     'data' : 'Successful login.',
-                    'user_id' : result[0][1],
+                    'user_id' : result[1][0],
                 }
                 return (json.dumps(payload), 200)
             else:
