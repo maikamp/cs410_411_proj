@@ -192,7 +192,7 @@ if __name__ == '__main__':
         print("Setting permission_level {}: ".format(str(val)), end='')
         connection2.commit()
         sqlinsert = ("INSERT INTO user (access_level, username, password, user_email) VALUES (%s, %s, %s, %s)")
-        val = (5, "njenn001", "password", "njenn001@odu.edu")
+        val = ((5, "njenn001", "password", "njenn001@odu.edu"), )
         cursor2.execute(sqlinsert, val)
         print("Setting test user {}: ".format(str(val)), end='')
         connection2.commit()
