@@ -97,6 +97,11 @@ class Database():
     #Uploads original file
     def artifactUpload(self, content):
         self.ensureConnected()
+
+        #check if artifact exists in db, by artifact_name
+        #if exists, prompt "would you like to update?"
+        #if not exists, original upload
+
         if request.method == 'POST':
             #check if the post request has the file part
             if 'file' not in request.files:
@@ -108,7 +113,7 @@ class Database():
             if file.filename == '':
                 flash('No selected file')
                 return redirect(request.url)
-            if file and allowed_file(file.filename):
+            if file and self.allowed_file(file.filename):
                 filename = secure_filename(file.filename)
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 return redirect(url_for('uploaded_file',
@@ -206,17 +211,71 @@ class Database():
         }
         return (temp, 200)
 
-    def adduser(self,content):
+    def addUser(self,content):
         self.ensureConnected()
         sql = "INSERT INTO user (access_level, username, password) VALUES (%s, %s, %s)"
-        data = (str(content[""]),str(content[""]), str(content[""]))
+        data = (str(content["access_level"]),str(content["username"]), str(content["password"]))
         self.cursor.execute(sql, data)
         self.connector.commit()
 
-    def createrepo(self,content):
+    def createRepo(self,content):
         self.ensureConnected()
+        #authenticate
+        userID = "SELECT user_id FROM user WHERE username = %s"
+        data2 = (str(content["username"]))
+        self.cursor.execute(userID, data2)
+
         sql = "INSERT INTO repository (repo_creator, permission_req, repo_name) VALUES (%s, %s, %s)"
-        data = (str(content[""]), str(content[""]), str(content[""]))
+        
+        data = (userID, str(content["permission_req"]), str(content["repo_name"]))
         #repo_creator pulled from user_id from current user, the user creating the repo
         self.cursor.execute(sql, data)
         self.connector.commit()
+
+    #def changePw(self,content):
+
+    #def changeUsername(self,content):
+
+    #def updateRepoAttrib(self,content):
+    
+    #def updateArtifactAttrib(self,content):
+
+    #def updateArtifact(self,content): ?
+
+    #def returnArtifactInfo(self,content):
+
+    #def returnRepoInfo(self,content):
+
+    #def authenticate(self, content):
+
+    #def diff(self, content):
+        #check file type, can be diff'd, full diff
+        #can't be diff'd, simple compare
+
+    #def simpleCompare (self, content):
+
+    #def removeRepo(self,content):
+
+    #def removeArtifact(self, content):
+
+    #def removeUser(self, content): 
+
+    #def convertToMD(self, content):
+
+    #def convertFromMD(self, content):
+
+    #def exportArtifact(self, content):
+
+    #def addTag(self, content):
+
+    #def addBookmark(self,content):
+
+    #def changeTag(self, content):
+
+    #def removeBookmark(self, content):
+
+    #def makeBlob?
+
+    #def addArtifactChangeRecord(self, content):
+
+    #def returnArtifactChangeRecord(self, content):
