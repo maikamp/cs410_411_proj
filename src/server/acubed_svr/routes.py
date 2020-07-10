@@ -67,3 +67,11 @@ def register():
 @app.route('/artifactUpload', methods = ['GET', 'POST'])
 def artifactUpload(filename):
     return db.artifactUpload(request.get_json())
+
+@app.route('/adduser', methods = ['GET', 'POST'])
+def adduser():
+    return db.adduser(request.get_json())
+
+@app.route('/adduser', methods = ['GET', 'POST'])
+def createrepo():
+    return db.createrepo(request.get_json())

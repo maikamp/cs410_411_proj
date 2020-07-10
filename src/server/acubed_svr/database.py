@@ -205,3 +205,18 @@ class Database():
             'levels': answer
         }
         return (temp, 200)
+
+    def adduser(self,content):
+        self.ensureConnected()
+        sql = "INSERT INTO user (access_level, username, password) VALUES (%s, %s, %s)"
+        potato = (str(content[""]),str(content[""]), str(content[""]))
+        self.cursor.execute(sql, potato)
+        self.connector.commit()
+
+    def createrepo(self,content):
+        self.ensureConnected()
+        sql = "INSERT INTO repository (repo_creator, permission_req, repo_name) VALUES (%s, %s, %s)"
+        potato = (str(content[""]), str(content[""]), str(content[""]))
+        #repo_creator pulled from user_id from current user, the user creating the repo
+        self.cursor.execute(sql, potato)
+        self.connector.commit()
