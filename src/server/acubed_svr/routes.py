@@ -1,11 +1,13 @@
 # this allows for the rest api to be built for the database
 from acubed_svr import app
 from .database import Database
+from .testDatabase import TestDatabase
 from flask import request
 
 import json
 
 db = Database()
+testdb = TestDatabase()
 
 @app.route('/')
 @app.route('/index')
@@ -26,39 +28,39 @@ def login():
 
 @app.route('/testmysql', methods = ['GET'])
 def testmysql():
-    return db.testmysql()
+    return testdb.testmysql()
 
 @app.route('/testmysql/artifact', methods = ['GET'])
 def testmysqlArtifact():
-    return db.testmysqlArtifact()
+    return testdb.testmysqlArtifact()
 
 @app.route('/testmysql/changerecord', methods = ['GET'])
 def testmysqlArtifactChangeRecord():
-    return db.testmysqlArtifactChangeRecord()
+    return testdb.testmysqlArtifactChangeRecord()
 
 @app.route('/testmysql/permissionlevel', methods = ['GET'])
 def testmysqlPermissionLevel():
-    return db.testmysqlPermissionLevel()
+    return testdb.testmysqlPermissionLevel()
 
 @app.route('/testmysql/repository', methods = ['GET'])
 def testmysqlRepository():
-    return db.testmysqlRepository()
+    return testdb.testmysqlRepository()
 
 @app.route('/testmysql/tag', methods = ['GET'])
 def testmysqlTag():
-    return db.testmysqlTag()
+    return testdb.testmysqlTag()
 
 @app.route('/testmysql/user', methods = ['GET'])
 def testmysqlUser():
-    return db.testmysqlUser()
+    return testdb.testmysqlUser()
 
 @app.route('/testmysql/bookmarks', methods = ['GET'])
 def testmysqlUserBookmarks():
-    return db.testmysqlUserBookmarks()
+    return testdb.testmysqlUserBookmarks()
 
 @app.route('/testlevels', methods = ['GET'])
 def testlevels():
-    return db.testlevels()
+    return testdb.testlevels()
 
 @app.route('/register', methods = ['POST'])
 def register():
