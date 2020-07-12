@@ -7,6 +7,7 @@ import os
 from werkzeug.security import check_password_hash
 from flask import Flask, flash, request, redirect, url_for
 from werkzeug.utils import secure_filename
+from wtforms import validators
 
 DATABASE_NAME = 'Acubed'
 
@@ -89,6 +90,19 @@ class Database():
                 'data' : 'Username or email already in use.'
             }
             return(json.dumps(payload), 401)
+
+    #Update a user's password
+    def changePw(self, content):
+        self.ensureConnected()
+
+        sqlpw = "SELECT password FROM user WHERE username = %s && password = %s"
+        val = "Update user SET password = %s WHERE username = %s"
+        self.cursor.execute(sqlpw, val)
+
+        #sqlpw = "INSERT INTO user (password) VALUES (%s)"
+        #data = (str(content["password"]))
+        #self.cursor.execute(sqlpw, data)
+        #self.connector.commit()
 
     def allowed_file(self, filename):
         return '.' in filename and \
