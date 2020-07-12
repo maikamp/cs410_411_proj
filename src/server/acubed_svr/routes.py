@@ -75,3 +75,7 @@ def addUser():
 @app.route('/createRepo', methods = ['GET', 'POST'])
 def createRepo():
     return db.createRepo(request.get_json())
+
+@app.route('/changePw', methods = ['GET', 'POST'])
+def changePw():
+    return db.changePw(request.get_json())
