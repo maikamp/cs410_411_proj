@@ -5,3 +5,5 @@ import os
 
 class Config(object):
     TESTING = False
+    UPLOAD_FOLDER = '/path/to/the/uploads'
+    ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'docx', 'doc', 'ppt', 'pptx', 'odt', 'htm', 'html'}
