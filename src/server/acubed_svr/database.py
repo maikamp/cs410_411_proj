@@ -4,7 +4,6 @@ import requests
 import math
 import json
 import os
-
 #from werkzeug.security import check_password_hash
 #from flask import Flask, flash, request, redirect, url_for
 #from werkzeug.utils import secure_filename
@@ -135,7 +134,7 @@ class Database():
         fileUpload = request.files['inputFile']
         sqlUp = "INSERT INTO artifact (owner_id, artifact_repo, artifact_access_level, artifact_name, artifact_orginal_source, artifact_creation_date) VALUES (%s, %s, %s, %s, %s, %s)" 
         sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_size, artifact_blob) VALUES (%s, %s, %s, %s)" 
-        dataUp = (int(content["owner_id"]), int(content["artifact_repo"]), int(content["artifact_access_level"]), str(content["artifact_name"]), str(content["artifact_original_source"]), (content["artifact_creation_date"])) 
+        dataUp = (int(content["owner_id"]), int(content["artifact_repo"]), int(content["artifact_access_level"]), str(content["artifact_name"]), str(content["artifact_original_source"]), content["artifact_creation_date"]) 
         dataTwo = (content["change_datetime"], int(content["changer_id"]), int(content["artifact_size"]), content["artifact_blob"]) 
 
         self.cursor.execute(sqlUp, dataUp)
@@ -168,9 +167,9 @@ class Database():
     
     def addUser(self,content):
         self.ensureConnected()
-        if  (str(content["accessLevel"]) == ""):
+        if  (str(content["access_level"]) == ""):
             sql = "INSERT INTO user (access_level, username, password, user_email) VALUES (3, %s, %s, %s)"
-            data = (str(content["username"]), str(content["password"]), str(content["email"]))
+            data = (str(content["username"]), str(content["password"]), str(content["user_email"]))
             self.cursor.execute(sql, data)
             self.connector.commit()
             payload = {
@@ -179,7 +178,7 @@ class Database():
             return (json.dumps(payload), 200)
         else:    
             sql = "INSERT INTO user (access_level, username, password, user_email) VALUES (%s, %s, %s, %s)"
-            data = (int(content["accessLevel"]),str(content["username"]), str(content["password"]), str(content["email"]))
+            data = (content["access_level"],str(content["username"]), str(content["password"]), str(content["user_email"]))
             self.cursor.execute(sql, data)
             self.connector.commit()
             self.cursor.execute(sql, data)
