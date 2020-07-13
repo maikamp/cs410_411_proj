@@ -141,7 +141,7 @@ class Database():
     
     def addUser(self,content):
         self.ensureConnected()
-        print (str(content["accessLevel"]))
+        print (type(content))
         if  (str(content["accessLevel"]) == 0):
             sql = "INSERT INTO user (access_level, username, password, user_email) VALUES (3, %s, %s, %s)"
             data = (str(content["username"]), str(content["password"]), str(content["email"]))
