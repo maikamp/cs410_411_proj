@@ -64,20 +64,20 @@ def testlevels():
 
 @app.route('/register', methods = ['POST'])
 def register():
-    return db.register(request.get_json())
+    return db.register(request.get_json(force=True))
 
 @app.route('/artifactUpload', methods = ['GET', 'POST'])
 def artifactUpload(filename):
-    return db.artifactUpload(request.get_json())
+    return db.artifactUpload(request.get_json(force=True))
 
 @app.route('/addUser', methods = ['GET', 'POST'])
 def addUser():
-    return db.addUser(request.get_json())
+    return db.addUser(request.get_json(force=True))
 
 @app.route('/createRepo', methods = ['GET', 'POST'])
 def createRepo():
-    return db.createRepo(request.get_json())
+    return db.createRepo(request.get_json(force=True))
 
 @app.route('/changePw', methods = ['GET', 'POST'])
 def changePw():
-    return db.changePw(request.get_json())
+    return db.changePw(request.get_json(force=True))
