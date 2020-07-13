@@ -4,10 +4,9 @@ import requests
 import math
 import json
 import os
-from werkzeug.security import check_password_hash
-from flask import Flask, flash, request, redirect, url_for
-from werkzeug.utils import secure_filename
-from wtforms import validators
+#from werkzeug.security import check_password_hash
+#from flask import Flask, flash, request, redirect, url_for
+#from werkzeug.utils import secure_filename
 
 DATABASE_NAME = 'Acubed'
 
