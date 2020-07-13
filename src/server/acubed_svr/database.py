@@ -4,7 +4,7 @@ import requests
 import math
 import json
 import os
-import sys
+
 #from werkzeug.security import check_password_hash
 #from flask import Flask, flash, request, redirect, url_for
 #from werkzeug.utils import secure_filename
@@ -142,8 +142,7 @@ class Database():
     
     def addUser(self,content):
         self.ensureConnected()
-        print (type(content), file = sys.stderr)
-        if  (str(content["accessLevel"]) == None):
+        if  (str(content["accessLevel"]) == ""):
             sql = "INSERT INTO user (access_level, username, password, user_email) VALUES (3, %s, %s, %s)"
             data = (str(content["username"]), str(content["password"]), str(content["email"]))
             self.cursor.execute(sql, data)
@@ -154,7 +153,7 @@ class Database():
             return (json.dumps(payload), 200)
         else:    
             sql = "INSERT INTO user (access_level, username, password, user_email) VALUES (%s, %s, %s, %s)"
-            data = (content["accessLevel"],str(content["username"]), str(content["password"]), str(content["email"]))
+            data = (int(content["accessLevel"]),str(content["username"]), str(content["password"]), str(content["email"]))
             self.cursor.execute(sql, data)
             self.connector.commit()
             self.cursor.execute(sql, data)
