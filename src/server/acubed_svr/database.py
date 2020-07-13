@@ -11,11 +11,11 @@ import os
 
 DATABASE_NAME = 'Acubed'
 
-UPLOAD_FOLDER = '/path/to/the/uploads'
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg'}
+#UPLOAD_FOLDER = '/path/to/the/uploads'
+#ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg'}
 
-app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+#app = Flask(__name__)
+#app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 class Database():
     # Initialize the MySQL-connector connection at the begining of of the script to ensure 

@@ -10,7 +10,7 @@ import os
 
 DATABASE_NAME = 'Acubed'
 
-app = Flask(__name__)
+#app = Flask(__name__)
 
 class TestDatabase():
     # Initialize the MySQL-connector connection at the begining of of the script to ensure 
