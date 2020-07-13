@@ -141,9 +141,9 @@ class Database():
     
     def addUser(self,content):
         self.ensureConnected()
-        if  (str(content["access_level"]) == ""):
+        if  (str(content["accessLevel"]) == ""):
             sql = "INSERT INTO user (access_level, username, password, user_email) VALUES (3, %s, %s, %s)"
-            data = (str(content["username"]), str(content["password"]), str(content["user_email"]))
+            data = (str(content["username"]), str(content["password"]), str(content["email"]))
             self.cursor.execute(sql, data)
             self.connector.commit()
             payload = {
@@ -152,7 +152,7 @@ class Database():
             return (json.dumps(payload), 200)
         else:    
             sql = "INSERT INTO user (access_level, username, password, user_email) VALUES (%s, %s, %s, %s)"
-            data = (content["access_level"],str(content["username"]), str(content["password"]), str(content["user_email"]))
+            data = (content["accessLevel"],str(content["username"]), str(content["password"]), str(content["email"]))
             self.cursor.execute(sql, data)
             self.connector.commit()
             self.cursor.execute(sql, data)
