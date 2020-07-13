@@ -91,7 +91,7 @@ class Database():
         self.ensureConnected()
 
         sqlpw = "SELECT password FROM user WHERE username = %s && password = %s"
-        val = (str(content["username"]),str(content["password")) 
+        val = (str(content["username"]),str(content["password"])) 
         self.cursor.execute(sqlpw, val)
 
         result = self.cursor.fetchall()
