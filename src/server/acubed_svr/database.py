@@ -177,23 +177,22 @@ class Database():
                 return (json.dumps(payload), 401)
         else:
             results = (content["user_id"], )
+        
+        sql = "INSERT INTO repository (repo_creator, permission_req, repo_name) VALUES (%s, %s, %s)"
+        data = (int(results[0]), int(content["permission_req"]), str(content["repo_name"]))
+        #repo_creator pulled from user_id from current user, the user creating the repo
+        self.cursor.execute(sql, data)
+        self.connector.commit()
 
-        finally:
-            sql = "INSERT INTO repository (repo_creator, permission_req, repo_name) VALUES (%s, %s, %s)"
-            data = (int(results[0]), int(content["permission_req"]), str(content["repo_name"]))
-            #repo_creator pulled from user_id from current user, the user creating the repo
-            self.cursor.execute(sql, data)
-            self.connector.commit()
-
-            sql = "SELECT * FROM repository WHERE repo_name = %s"
-            val = (str(content["repo_name"]))
-            self.cursor.execute(sql, val)
-            results = self.cursor.fetchall()
-            payload = {
-                "repo_name": results[3],
-                "owner_name": results[1],
-                "err_message": "Success: Repository created. " 
-            }
+        sql = "SELECT * FROM repository WHERE repo_name = %s"
+        val = (str(content["repo_name"]))
+        self.cursor.execute(sql, val)
+        results = self.cursor.fetchall()
+        payload = {
+            "repo_name": results[3],
+            "owner_name": results[1],
+            "err_message": "Success: Repository created. " 
+        }
 
     #def changeUsername(self,content):
 
