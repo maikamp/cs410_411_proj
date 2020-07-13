@@ -46,7 +46,7 @@ class TestDatabase():
         self.cursor.execute(sql)
         answer = self.cursor.fetchall()
         temp = {
-            'tables': answer
+            "tables": answer
         }
         return (temp, 200)
     
@@ -56,7 +56,7 @@ class TestDatabase():
         self.cursor.execute(sql)
         answer = self.cursor.fetchall()
         temp = {
-            'artifact': answer
+            "artifact": answer
         }
         return (temp, 200)
     
@@ -66,7 +66,7 @@ class TestDatabase():
         self.cursor.execute(sql)
         answer = self.cursor.fetchall()
         temp = {
-            'artifact_change_record': answer
+            "artifact_change_record": answer
         }
         return (temp, 200)
 
@@ -76,7 +76,7 @@ class TestDatabase():
         self.cursor.execute(sql)
         answer = self.cursor.fetchall()
         temp = {
-            'permission_level': answer
+            "permission_level": answer
         }
         return (temp, 200)
     
@@ -86,7 +86,7 @@ class TestDatabase():
         self.cursor.execute(sql)
         answer = self.cursor.fetchall()
         temp = {
-            'repository': answer
+            "repository": answer
         }
         return (temp, 200)
     
@@ -96,7 +96,7 @@ class TestDatabase():
         self.cursor.execute(sql)
         answer = self.cursor.fetchall()
         temp = {
-            'tag': answer
+            "tag": answer
         }
         return (temp, 200)
 
@@ -106,7 +106,7 @@ class TestDatabase():
         self.cursor.execute(sql)
         answer = self.cursor.fetchall()
         temp = {
-            'user': answer
+            "user": answer
         }
         return (temp, 200)
     
@@ -116,7 +116,7 @@ class TestDatabase():
         self.cursor.execute(sql)
         answer = self.cursor.fetchall()
         temp = {
-            'user_bookmarks': answer
+            "user_bookmarks": answer
         }
         return (temp, 200)
 
@@ -126,7 +126,7 @@ class TestDatabase():
         self.cursor.execute(sql)
         answer = self.cursor.fetchall()
         temp = {
-            'levels': answer
+            "levels": answer
         }
         return (temp, 200)
 

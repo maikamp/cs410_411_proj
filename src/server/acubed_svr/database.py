@@ -53,19 +53,19 @@ class Database():
 
         if len(result) == 0:
             payload = {
-                'data' : 'Invalid username or password.'
+                "data" : "Invalid username or password."
             }
             return (json.dumps(payload), 401)
         else:
             if len(result) == 1:
                 payload = {
-                    'data' : 'Successful login.',
-                    'user_id' : result,
+                    "data" : "Successful login.",
+                    "user_id" : result,
                 }
                 return (json.dumps(payload), 200)
             else:
                 payload = {
-                    'data' : 'Incorrect password.'
+                    "data" : "Incorrect password."
                 }
                 return (json.dumps(payload), 401)
 
@@ -133,98 +133,6 @@ class Database():
                 return redirect(url_for('uploaded_file',
                                         filename=filename))
     
-
-
-    def testmysql(self):
-        self.ensureConnected()
-        sql = "SHOW TABLES"
-        self.cursor.execute(sql)
-        answer = self.cursor.fetchall()
-        temp = {
-            'tables': answer
-        }
-        return (temp, 200)
-    
-    def testmysqlArtifact(self):
-        self.ensureConnected()
-        sql = "DESCRIBE artifact"
-        self.cursor.execute(sql)
-        answer = self.cursor.fetchall()
-        temp = {
-            'artifact': answer
-        }
-        return (temp, 200)
-    
-    def testmysqlArtifactChangeRecord(self):
-        self.ensureConnected()
-        sql = "DESCRIBE artifact_change_record"
-        self.cursor.execute(sql)
-        answer = self.cursor.fetchall()
-        temp = {
-            'artifact_change_record': answer
-        }
-        return (temp, 200)
-
-    def testmysqlPermissionLevel(self):
-        self.ensureConnected()
-        sql = "DESCRIBE permission_level"
-        self.cursor.execute(sql)
-        answer = self.cursor.fetchall()
-        temp = {
-            'permission_level': answer
-        }
-        return (temp, 200)
-    
-    def testmysqlRepository(self):
-        self.ensureConnected()
-        sql = "DESCRIBE repository"
-        self.cursor.execute(sql)
-        answer = self.cursor.fetchall()
-        temp = {
-            'repository': answer
-        }
-        return (temp, 200)
-    
-    def testmysqlTag(self):
-        self.ensureConnected()
-        sql = "DESCRIBE tag"
-        self.cursor.execute(sql)
-        answer = self.cursor.fetchall()
-        temp = {
-            'tag': answer
-        }
-        return (temp, 200)
-
-    def testmysqlUser(self):
-        self.ensureConnected()
-        sql = "DESCRIBE user"
-        self.cursor.execute(sql)
-        answer = self.cursor.fetchall()
-        temp = {
-            'user': answer
-        }
-        return (temp, 200)
-    
-    def testmysqlUserBookmarks(self):
-        self.ensureConnected()
-        sql = "DESCRIBE user_bookmarks"
-        self.cursor.execute(sql)
-        answer = self.cursor.fetchall()
-        temp = {
-            'user_bookmarks': answer
-        }
-        return (temp, 200)
-
-    def testlevels(self):
-        self.ensureConnected()
-        sql = "SELECT level FROM permission_level"
-        self.cursor.execute(sql)
-        answer = self.cursor.fetchall()
-        temp = {
-            'levels': answer
-        }
-        return (temp, 200)
-
     def addUser(self,content):
         self.ensureConnected()
         sql = "INSERT INTO user (access_level, username, password) VALUES (%s, %s, %s)"
