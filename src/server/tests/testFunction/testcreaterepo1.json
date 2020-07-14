@@ -1,6 +1,7 @@
 {
     "user_id": "",
-    "username": "aberm003",
+    "username": "aberm001",
     "password": "guest1337",
+    "permission_req": "3",
     "repo_name": "testrepo1" 
 }
