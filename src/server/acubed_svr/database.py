@@ -194,7 +194,7 @@ class Database():
             data = (str(content["username"]), str(content["password"]))
             self.cursor.execute(sql, data)
             temp = self.cursor.fetchall()
-            results = int(temp[0])
+            results = (temp[0])
             if len(results) == 0:
                 payload = {
                     "err_message": "Failure: You do not have permission to create a repository."
