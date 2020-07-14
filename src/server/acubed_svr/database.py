@@ -123,26 +123,27 @@ class Database():
             sql = "SELECT user_id FROM user WHERE username = %s && password = %s"
             data = (str(content["username"]), str(content["password"]))
             self.cursor.execute(sql, data)
-            results = self.cursor.fetchall()
-            if len(results) == 0:
+            temp = self.cursor.fetchall()
+            if len(temp) == 0:
                 payload = {
                     "err_message": "Failure: You do not have permission to create a repository."
                 }
                 return (json.dumps(payload), 401)
+            results = (temp[0])
         else:
             results = (content["user_id"], )   
 
         fileUpload = request.files['inputFile']
-        sqlUp = "INSERT INTO artifact (owner_id, artifact_repo, artifact_access_level, artifact_name, artifact_orginal_source, artifact_creation_date) VALUES (%s, %s, %s, %s, %s, %s)" 
-        sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_size, artifact_blob) VALUES (%s, %s, %s, %s)" 
-        dataUp = (int(content["owner_id"]), int(content["artifact_repo"]), int(content["artifact_access_level"]), str(content["artifact_name"]), str(content["artifact_original_source"]), content["artifact_creation_date"]) 
-        dataTwo = (content["change_datetime"], int(content["changer_id"]), int(content["artifact_size"]), content["artifact_blob"]) 
+        sqlUp = "INSERT INTO artifact (owner_id, artifact_repo, artifact_access_level, artifact_name, artifact_orginal_source, artifact_creation_date) VALUES (%s, %s, %s, %s, %s, %s)"
+        sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_size, artifact_blob) VALUES (%s, %s, %s, %s)"
+        dataUp = (int(results[0]), int(content["artifact_repo"]), int(content["artifact_access_level"]), str(content["artifact_name"]), str(content["artifact_original_source"]), content["artifact_creation_date"])
+        dataTwo = (content["change_datetime"], (int(results[0])), int(content["artifact_size"]), content["artifact_blob"].read())
 
         self.cursor.execute(sqlUp, dataUp)
         self.cursor.commit()
         self.cursor.execute(sqlTwo, dataTwo)
         self.cursor.commit()
-
+        
         return fileUpload.filename 
         
         #check if artifact exists in db, by artifact_name
