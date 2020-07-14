@@ -209,15 +209,17 @@ class Database():
         self.cursor.execute(sql, data)
         self.connector.commit()
 
-        sql = "SELECT * FROM repository WHERE repo_name = %s"
-        val = (str(content["repo_name"]))
-        self.cursor.execute(sql, val)
+        sql2 = "SELECT * FROM repository WHERE repo_name = %s"
+        val2 = data[2]
+        #val2 = (str(content["repo_name"]))
+        self.cursor.execute(sql2, val2)
         results = self.cursor.fetchall()
         payload = {
             "repo_name": results[3],
             "owner_name": results[1],
             "err_message": "Success: Repository created. " 
         }
+        return (json.dumps(payload), 200)
 
     #def changeUsername(self,content):
 
