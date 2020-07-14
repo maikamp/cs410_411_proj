@@ -3,5 +3,5 @@
     "username": "aberm001",
     "password": "guest1337",
     "permission_req": "3",
-    "repoName": "testrepo1" 
+    "repo_name": "testrepo1" 
 }

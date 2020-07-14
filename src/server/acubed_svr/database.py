@@ -4,6 +4,7 @@ import requests
 import math
 import json
 import os
+import sys
 #from werkzeug.security import check_password_hash
 #from flask import Flask, flash, request, redirect, url_for
 #from werkzeug.utils import secure_filename
@@ -203,7 +204,7 @@ class Database():
         else:
             results = (int(content["user_id"]), )
         
-        val2 = content["repoName"]
+        val2 = content["repo_name"]
         sql = "INSERT INTO repository (repo_creator, permission_req, repo_name) VALUES (%s, %s, %s)"
         data = (int(results[0]), int(content["permission_req"]), str(val2))
         #repo_creator pulled from user_id from current user, the user creating the repo
@@ -214,6 +215,7 @@ class Database():
         #val2 = str(data[2])
         #val2 = (str(content["repo_name"]))
         self.ensureConnected()
+        print (type(val2) + " " + val2 , file = sys.stderr)
         self.cursor.execute(sql2, val2)
         results = self.cursor.fetchall()
         payload = {
