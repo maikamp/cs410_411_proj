@@ -116,7 +116,7 @@ class Database():
             filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
     #Uploads original file
-    def artifactUpload(self, content):
+    def artifactUpload(self, content, file):
         self.ensureConnected()
 
         if str(content["user_id"]) == "":
@@ -138,14 +138,15 @@ class Database():
         sqlUp = "INSERT INTO artifact (owner_id, artifact_repo, artifact_access_level, artifact_name, artifact_creation_date) VALUES (%s, %s, %s, %s, %s)"
         #can UI send us repository_id or do we need to query for it?
         #creation date, we need to pull current datetime
-        dataUp = (int(results[0]), int(content["artifact_repo"]), int(content["artifact_access_level"]), str(content["artifact_name"]), content["artifact_creation_date"])
+        datecreated = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        dataUp = (int(results[0]), int(content["artifact_repo"]), int(content["artifact_access_level"]), str(content["artifact_name"]), datecreated)
         
         #check extension, then convert to MD step for appropriate file types
 
         #split into new function, artifact upload?
-        sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_size, artifact_blob) VALUES (%s, %s, %s, %s)"
+        sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_blob) VALUES (%s, %s, %s)"
         #datetime from artifact_creation_date, changer_id from owner_id, artifact_size get file size, convert to blob
-        dataTwo = (content["change_datetime"], (int(results[0])), int(content["artifact_size"]), content["artifact_blob"].read())
+        dataTwo = (datecreated, (int(results[0])), file["artifact_blob"].read())
 
         self.cursor.execute(sqlUp, dataUp)
         self.cursor.commit()
