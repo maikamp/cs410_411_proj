@@ -211,11 +211,11 @@ class Database():
         self.cursor.execute(sql, data)
         self.connector.commit()
 
-        sql2 = "SELECT * FROM repository WHERE repo_name = %s"
+        sql2 = "SELECT * FROM repository WHERE repo_name = '%s'"
         #val2 = str(data[2])
         #val2 = (str(content["repo_name"]))
         self.ensureConnected()
-        print (type(val2), file = sys.stderr)
+        print (val2, file = sys.stderr)
         self.cursor.execute(sql2, val2)
         results = self.cursor.fetchall()
         payload = {
