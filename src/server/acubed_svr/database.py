@@ -193,17 +193,18 @@ class Database():
             sql = "SELECT user_id FROM user WHERE username = %s && password = %s"
             data = (str(content["username"]), str(content["password"]))
             self.cursor.execute(sql, data)
-            results = self.cursor.fetchall()
+            temp = self.cursor.fetchall()
+            results = temp[0]
             if len(results) == 0:
                 payload = {
                     "err_message": "Failure: You do not have permission to create a repository."
                 }
                 return (json.dumps(payload), 401)
         else:
-            results = (content["user_id"], )
+            results = int(content["user_id"])
         
         sql = "INSERT INTO repository (repo_creator, permission_req, repo_name) VALUES (%s, %s, %s)"
-        data = (int(results[0]), int(content["permission_req"]), str(content["repo_name"]))
+        data = (int(results), int(content["permission_req"]), str(content["repo_name"]))
         #repo_creator pulled from user_id from current user, the user creating the repo
         self.cursor.execute(sql, data)
         self.connector.commit()
