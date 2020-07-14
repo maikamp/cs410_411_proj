@@ -215,7 +215,7 @@ class Database():
         #val2 = str(data[2])
         #val2 = (str(content["repo_name"]))
         self.ensureConnected()
-        print (type(val2) + " " + val2 , file = sys.stderr)
+        print (type(val2), file = sys.stderr)
         self.cursor.execute(sql2, val2)
         results = self.cursor.fetchall()
         payload = {
