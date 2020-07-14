@@ -210,10 +210,10 @@ class Database():
         self.cursor.execute(sql, data)
         self.connector.commit()
 
-        sql2 = "SELECT * FROM repository WHERE repo_name = %s"
+        sql2 = "SELECT * FROM repository WHERE repo_id = MAX(repo_id)"
         #val2 = str(data[2])
         #val2 = (str(content["repo_name"]))
-        self.cursor.execute(sql2, val2)
+        self.cursor.execute(sql2)
         results = self.cursor.fetchall()
         payload = {
             "repo_name": results[3],
