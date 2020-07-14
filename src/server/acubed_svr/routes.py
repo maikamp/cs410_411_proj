@@ -67,7 +67,7 @@ def register():
     return db.register(request.get_json(force=True))
 
 @app.route('/artifactupload', methods = ['GET', 'POST'])
-def artifactupload(file):
+def artifactupload():
     return db.artifactUpload(request.get_json(force=True), request.files['file'])
 
 @app.route('/adduser', methods = ['GET', 'POST'])
