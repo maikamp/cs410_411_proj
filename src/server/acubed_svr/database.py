@@ -126,21 +126,25 @@ class Database():
             temp = self.cursor.fetchall()
             if len(temp) == 0:
                 payload = {
-                    "err_message": "Failure: You do not have permission to create a repository."
+                    "err_message": "Failure: You do not have permission for that."
                 }
                 return (json.dumps(payload), 401)
             results = (temp[0])
         else:
             results = (content["user_id"], )   
 
-        fileUpload = request.files['inputFile']
-        sqlUp = "INSERT INTO artifact (owner_id, artifact_repo, artifact_access_level, artifact_name, artifact_creation_date) VALUES (%s, %s, %s, %s, %s, %s)"
+        #fileUpload = request.files['inputFile']
+
+        sqlUp = "INSERT INTO artifact (owner_id, artifact_repo, artifact_access_level, artifact_name, artifact_creation_date) VALUES (%s, %s, %s, %s, %s)"
+        #can UI send us repository_id or do we need to query for it?
+        #creation date, we need to pull current datetime
         dataUp = (int(results[0]), int(content["artifact_repo"]), int(content["artifact_access_level"]), str(content["artifact_name"]), content["artifact_creation_date"])
         
         #check extension, then convert to MD step for appropriate file types
 
         #split into new function, artifact upload?
         sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_size, artifact_blob) VALUES (%s, %s, %s, %s)"
+        #datetime from artifact_creation_date, changer_id from owner_id, artifact_size get file size, convert to blob
         dataTwo = (content["change_datetime"], (int(results[0])), int(content["artifact_size"]), content["artifact_blob"].read())
 
         self.cursor.execute(sqlUp, dataUp)
@@ -149,7 +153,7 @@ class Database():
         self.cursor.execute(sqlTwo, dataTwo)
         self.cursor.commit()
         
-        return fileUpload.filename 
+        #return fileUpload.filename 
         
         #check if artifact exists in db, by artifact_name
         #if exisSts, prompt "would you like to update?"
