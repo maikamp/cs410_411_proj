@@ -134,13 +134,18 @@ class Database():
             results = (content["user_id"], )   
 
         fileUpload = request.files['inputFile']
-        sqlUp = "INSERT INTO artifact (owner_id, artifact_repo, artifact_access_level, artifact_name, artifact_orginal_source, artifact_creation_date) VALUES (%s, %s, %s, %s, %s, %s)"
+        sqlUp = "INSERT INTO artifact (owner_id, artifact_repo, artifact_access_level, artifact_name, artifact_creation_date) VALUES (%s, %s, %s, %s, %s, %s)"
+        dataUp = (int(results[0]), int(content["artifact_repo"]), int(content["artifact_access_level"]), str(content["artifact_name"]), content["artifact_creation_date"])
+        
+        #check extension, then convert to MD step for appropriate file types
+
+        #split into new function, artifact upload?
         sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_size, artifact_blob) VALUES (%s, %s, %s, %s)"
-        dataUp = (int(results[0]), int(content["artifact_repo"]), int(content["artifact_access_level"]), str(content["artifact_name"]), str(content["artifact_original_source"]), content["artifact_creation_date"])
         dataTwo = (content["change_datetime"], (int(results[0])), int(content["artifact_size"]), content["artifact_blob"].read())
 
         self.cursor.execute(sqlUp, dataUp)
         self.cursor.commit()
+        
         self.cursor.execute(sqlTwo, dataTwo)
         self.cursor.commit()
         
