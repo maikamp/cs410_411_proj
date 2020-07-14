@@ -31,31 +31,31 @@ def testmysql():
     return testdb.testmysql()
 
 @app.route('/testmysql/artifact', methods = ['GET'])
-def testmysqlArtifact():
+def testmysqlartifact():
     return testdb.testmysqlArtifact()
 
 @app.route('/testmysql/changerecord', methods = ['GET'])
-def testmysqlArtifactChangeRecord():
+def testmysqlartifactchangerecord():
     return testdb.testmysqlArtifactChangeRecord()
 
 @app.route('/testmysql/permissionlevel', methods = ['GET'])
-def testmysqlPermissionLevel():
+def testmysqlpermissionlevel():
     return testdb.testmysqlPermissionLevel()
 
 @app.route('/testmysql/repository', methods = ['GET'])
-def testmysqlRepository():
+def testmysqlrepository():
     return testdb.testmysqlRepository()
 
 @app.route('/testmysql/tag', methods = ['GET'])
-def testmysqlTag():
+def testmysqltag():
     return testdb.testmysqlTag()
 
 @app.route('/testmysql/user', methods = ['GET'])
-def testmysqlUser():
+def testmysqluser():
     return testdb.testmysqlUser()
 
 @app.route('/testmysql/bookmarks', methods = ['GET'])
-def testmysqlUserBookmarks():
+def testmysqluserbookmarks():
     return testdb.testmysqlUserBookmarks()
 
 @app.route('/testlevels', methods = ['GET'])
@@ -67,17 +67,17 @@ def register():
     return db.register(request.get_json(force=True))
 
 @app.route('/artifactupload', methods = ['GET', 'POST'])
-def artifactUpload(filename):
+def artifactupload(filename):
     return db.artifactUpload(request.get_json(force=True))
 
 @app.route('/adduser', methods = ['GET', 'POST'])
-def addUser():
+def adduser():
     return db.addUser(request.get_json(force=True))
 
 @app.route('/createrepo', methods = ['GET', 'POST'])
-def createRepo():
+def createrepo():
     return db.createRepo(request.get_json(force=True))
 
 @app.route('/changepw', methods = ['GET', 'POST'])
-def changePw():
+def changepw():
     return db.changePw(request.get_json(force=True))
