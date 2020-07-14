@@ -203,14 +203,15 @@ class Database():
         else:
             results = (int(content["user_id"]), )
         
+        val2 = str(content["repo_name"])
         sql = "INSERT INTO repository (repo_creator, permission_req, repo_name) VALUES (%s, %s, %s)"
-        data = (int(results[0]), int(content["permission_req"]), str(content["repo_name"]))
+        data = (int(results[0]), int(content["permission_req"]), val2))
         #repo_creator pulled from user_id from current user, the user creating the repo
         self.cursor.execute(sql, data)
         self.connector.commit()
 
         sql2 = "SELECT * FROM repository WHERE repo_name = %s"
-        val2 = data[2]
+        #val2 = str(data[2])
         #val2 = (str(content["repo_name"]))
         self.cursor.execute(sql2, val2)
         results = self.cursor.fetchall()
