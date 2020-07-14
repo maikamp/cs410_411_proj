@@ -156,8 +156,6 @@ class Database():
             data = (int(content["accessLevel"]),str(content["username"]), str(content["password"]), str(content["email"]))
             self.cursor.execute(sql, data)
             self.connector.commit()
-            self.cursor.execute(sql, data)
-            self.connector.commit()
             payload = {
                 "err_message": "Success: User added."
             }
