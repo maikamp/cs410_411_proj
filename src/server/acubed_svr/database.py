@@ -210,7 +210,7 @@ class Database():
         self.cursor.execute(sql, data)
         self.connector.commit()
 
-        sql2 = "SELECT * FROM repository WHERE repo_id = MAX(repo_id)"
+        sql2 = "SELECT * FROM repository WHERE repository_id = MAX(repository_id)"
         #val2 = str(data[2])
         #val2 = (str(content["repo_name"]))
         self.cursor.execute(sql2)
