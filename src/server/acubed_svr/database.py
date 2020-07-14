@@ -205,7 +205,7 @@ class Database():
         
         val2 = str(content["repo_name"])
         sql = "INSERT INTO repository (repo_creator, permission_req, repo_name) VALUES (%s, %s, %s)"
-        data = (int(results[0]), int(content["permission_req"]), val2))
+        data = (int(results[0]), int(content["permission_req"]), val2)
         #repo_creator pulled from user_id from current user, the user creating the repo
         self.cursor.execute(sql, data)
         self.connector.commit()
