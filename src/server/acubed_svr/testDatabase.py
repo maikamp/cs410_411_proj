@@ -53,7 +53,7 @@ class TestDatabase():
         self.cursor.execute(sql)
         answer = self.cursor.fetchall()
         temp = {
-            "artifact": answer
+            "artifact": str(answer)
         }
         return (temp, 200)
     

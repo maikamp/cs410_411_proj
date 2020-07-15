@@ -30,7 +30,7 @@ def login():
 def testmysql():
     return testdb.testmysql()
 
-@app.route('/testmysql/artifact', methods = ['GET', 'POST'])
+@app.route('/testmysql/artifact', methods = ['GET'])
 def testmysqlartifact():
     return testdb.testmysqlArtifact()
 
