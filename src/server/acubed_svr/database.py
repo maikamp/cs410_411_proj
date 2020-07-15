@@ -112,8 +112,13 @@ class Database():
     def allowed_file(self, filename):
         
         extension = filename.rsplit('.', 1)[1].lower()
-
-        print (extension, file = sys.stderr)
+        check = 0
+        if extension in ALLOWED_EXTENSIONS
+            check = 1
+        if extension in CONVERTIBLE_EXTENSIONS
+            check = 2
+            
+        return (extension, check)
         #return '.' in filename and \
             #filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
