@@ -31,7 +31,7 @@ def testmysql():
     return testdb.testmysql()
 
 @app.route('/testmysql/artifact', methods = ['GET'])
-def testmysqlArtifact():
+def testmysqlartifact():
     return testdb.testmysqlArtifact()
 
 @app.route('/testmysql/changerecord', methods = ['GET'])
