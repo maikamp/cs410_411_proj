@@ -164,7 +164,7 @@ class Database():
         payload = {
                 "err_message": "Success: Artifact uploaded."
             }
-            return (json.dumps(payload), 200)
+        return (json.dumps(payload), 200)
         
         #return fileUpload.filename 
         
