@@ -289,7 +289,7 @@ class Database():
     #def updateRepoAttrib(self,content):
         self.ensureConnected()
 
-         if str(content["user_id"]) == "":
+        if str(content["user_id"]) == "":
             sql = "SELECT user_id FROM user WHERE username = %s && password = %s"
             data = (str(content["username"]), str(content["password"]))
             self.cursor.execute(sql, data)
