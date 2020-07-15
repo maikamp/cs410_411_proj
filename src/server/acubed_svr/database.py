@@ -157,10 +157,10 @@ class Database():
         dataTwo = (datecreated, (int(results[0])), artifact_file.read())
 
         self.cursor.execute(sqlUp, dataUp)
-        self.cursor.commit()
+        self.connector.commit()
         
         self.cursor.execute(sqlTwo, dataTwo)
-        self.cursor.commit()
+        self.connector.commit()
         payload = {
                 "err_message": "Success: Artifact uploaded."
             }
