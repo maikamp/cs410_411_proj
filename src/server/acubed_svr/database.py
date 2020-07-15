@@ -158,7 +158,7 @@ class Database():
         self.connector.commit()
         
         #TODO check extension, then convert to MD step for appropriate file types
-        extTuple = self.allowed_file("simplemd.md")
+        extTuple = self.allowed_file("somethingelse.md")
         print (extTuple[0], file = sys.stderr, end = ' ')
         print (extTuple[1], file = sys.stderr)
         
@@ -174,7 +174,7 @@ class Database():
 
         #(variable for version) = (query for previous version, if updating; 1 if no previous version)
         #TODO replace with proper file upload
-        dataTwo = (datecreated, (int(results[0])), temp[0], artifact_file.read(), 1)
+        dataTwo = (datecreated, int(results[0]), temp[0], artifact_file.read(), 1)
         
         self.cursor.execute(sqlTwo, dataTwo)
         self.connector.commit()
