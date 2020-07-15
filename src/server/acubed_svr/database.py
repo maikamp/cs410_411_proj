@@ -107,10 +107,15 @@ class Database():
             }
             return (json.dumps(payload), 200)
 
-    #check file type for defined set of allowed extensions
+    #check file type for defined set of allowed extensions AND check for convertible extensions
+    #lets have this return tuple = ('extension', 0 OR 1 OR 2) where 0 = not allowed, 1 = allowed, 2 = convertible
     def allowed_file(self, filename):
-        return '.' in filename and \
-            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+        
+        extension = filename.rsplit('.', 1)[1].lower()
+
+        print (extension, file = sys.stderr)
+        #return '.' in filename and \
+            #filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
     #Uploads original file
     def artifactUpload(self, content):
@@ -145,7 +150,7 @@ class Database():
         self.connector.commit()
         
         #TODO check extension, then convert to MD step for appropriate file types
-        #call def allowed_file(self, filename) on 'inputFile'
+        self.allowed_file("simplemd.md")
 
         sqlId = "SELECT artifact_id FROM artifact WHERE artifact_name = %s"
         val = (str(content["artifact_name"]))
