@@ -120,7 +120,7 @@ class Database():
             check = 1
         if extension in CONVERTIBLE_EXTENSIONS:
             check = 2
-            
+        filename.close()    
         return (extension, check)
 
     #Uploads original file
