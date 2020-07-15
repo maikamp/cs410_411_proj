@@ -161,6 +161,10 @@ class Database():
         
         self.cursor.execute(sqlTwo, dataTwo)
         self.cursor.commit()
+        payload = {
+                "err_message": "Success: Artifact uploaded."
+            }
+            return (json.dumps(payload), 200)
         
         #return fileUpload.filename 
         
