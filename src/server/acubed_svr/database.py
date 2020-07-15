@@ -138,18 +138,23 @@ class Database():
         #if local file, use fileupload
         #if web file, use webscraper
 
+        
+
         sqlUp = "INSERT INTO artifact (owner_id, artifact_repo, artifact_access_level, artifact_name, artifact_creation_date) VALUES (%s, %s, %s, %s, %s)"
         #can UI send us repository_id or do we need to query for it?
         #creation date, we need to pull current datetime
         datecreated = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         dataUp = (int(results[0]), int(content["artifact_repo"]), int(content["artifact_access_level"]), str(content["artifact_name"]), datecreated)
         
-        #check extension, then convert to MD step for appropriate file types
+        #TODO check extension, then convert to MD step for appropriate file types
 
         #split into new function, artifact upload?
         sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_blob) VALUES (%s, %s, %s)"
         #datetime from artifact_creation_date, changer_id from owner_id, artifact_size get file size, convert to blob
-        dataTwo = (datecreated, (int(results[0])), file["artifact_blob"].read())
+        artifact_file = open("../../test_artifact/simple_md.md", "r")
+
+        #TODO replace with proper file upload
+        dataTwo = (datecreated, (int(results[0])), artifact_file.read())
 
         self.cursor.execute(sqlUp, dataUp)
         self.cursor.commit()
@@ -163,23 +168,26 @@ class Database():
         #if exisSts, prompt "would you like to update?"
         #if not exists, original upload
 
-        #if request.method == 'POST':
-            #check if the post request has the file part
-            #if 'file' not in request.files:
-                #flash('No file part')
-                #return redirect(request.url)
-            #file = request.files[request.url]
-            # if user does not select file, browser also
-            # submit an empty part without filename
-            #if file.filename == '':
-                #flash('No selected file')
-                #return redirect(request.url)
-            #if file and self.allowed_file(file.filename):
+        """
+        if request.method == 'POST':
+            check if the post request has the file part
+            if 'file' not in request.files:
+                flash('No file part')
+                return redirect(request.url)
+            file = request.files[request.url]
+            #if user does not select file, browser also
+            #submit an empty part without filename
+            if file.filename == '':
+                flash('No selected file')
+                return redirect(request.url)
+            if file and self.allowed_file(file.filename):
                 #filename = secure_filename(file.filename)
                 #file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                #TODO return json dump here
                 #return redirect(url_for('uploaded_file',
                                         #filename=filename))
-    
+        """
+        
     def addUser(self,content):
         self.ensureConnected()
         if  (str(content["accessLevel"]) == ""):
