@@ -47,7 +47,7 @@ class TestDatabase():
         }
         return (temp, 200)
     
-    def testmysqlArtifact(self):
+    def testmysqlartifact(self):
         self.ensureConnected()
         sql = "DESCRIBE artifact"
         self.cursor.execute(sql)
@@ -57,7 +57,7 @@ class TestDatabase():
         }
         return (temp, 200)
     
-    def testmysqlArtifactChangeRecord(self):
+    def testmysqlartifactchangerecord(self):
         self.ensureConnected()
         sql = "DESCRIBE artifact_change_record"
         self.cursor.execute(sql)
@@ -67,7 +67,7 @@ class TestDatabase():
         }
         return (temp, 200)
 
-    def testmysqlPermissionLevel(self):
+    def testmysqlpermissionlevel(self):
         self.ensureConnected()
         sql = "DESCRIBE permission_level"
         self.cursor.execute(sql)
@@ -77,7 +77,7 @@ class TestDatabase():
         }
         return (temp, 200)
     
-    def testmysqlRepository(self):
+    def testmysqlrepository(self):
         self.ensureConnected()
         sql = "DESCRIBE repository"
         self.cursor.execute(sql)
@@ -87,7 +87,7 @@ class TestDatabase():
         }
         return (temp, 200)
     
-    def testmysqlTag(self):
+    def testmysqltag(self):
         self.ensureConnected()
         sql = "DESCRIBE tag"
         self.cursor.execute(sql)
@@ -97,7 +97,7 @@ class TestDatabase():
         }
         return (temp, 200)
 
-    def testmysqlUser(self):
+    def testmysqluser(self):
         self.ensureConnected()
         sql = "DESCRIBE user"
         self.cursor.execute(sql)
@@ -107,7 +107,7 @@ class TestDatabase():
         }
         return (temp, 200)
     
-    def testmysqlUserBookmarks(self):
+    def testmysqluserBookmarks(self):
         self.ensureConnected()
         sql = "DESCRIBE user_bookmarks"
         self.cursor.execute(sql)
