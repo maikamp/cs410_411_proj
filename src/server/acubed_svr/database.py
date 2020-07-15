@@ -5,10 +5,6 @@ import math
 import json
 import os
 import sys
-#from werkzeug.security import check_password_hash
-#from flask import Flask, flash, request, redirect, url_for
-#from werkzeug.utils import secure_filename
-#from wtforms import validators
 
 DATABASE_NAME = 'Acubed'
 
@@ -102,7 +98,7 @@ class Database():
             }
             return (json.dumps(payload), 404)
         else:
-            sql = "Update user SET password = %s WHERE username = %s"
+            sql = "UPDATE user SET password = %s WHERE username = %s"
             val = (str(content["new_password"]), str(content["username"]))
             self.cursor.execute(sql, val)
             self.connector.commit()
@@ -235,6 +231,7 @@ class Database():
         else:
             results = (int(content["user_id"]), )
         
+        #create the repository
         val2 = content["repo_name"]
         sql = "INSERT INTO repository (repo_creator, permission_req, repo_name) VALUES (%s, %s, %s)"
         data = (int(results[0]), int(content["permission_req"]), str(val2))
@@ -242,9 +239,8 @@ class Database():
         self.cursor.execute(sql, data)
         self.connector.commit()
 
+        #get ther repository information to return the info to the user
         sql2 = "SELECT * FROM repository WHERE repo_name = %s"
-        #val2 = str(data[2])
-        #val2 = (str(content["repo_name"]))
         self.ensureConnected()
         print (val2, file = sys.stderr)
         self.cursor.execute(sql2, (val2, ))
@@ -257,15 +253,117 @@ class Database():
         }
         return (json.dumps(payload), 200)
 
-    #def changeUsername(self,content):
+    def changeUsername(self,content):
+        self.ensureConnected()
 
+        sqlpw = "SELECT username FROM user WHERE username = %s && password = %s"
+        val = (str(content["username"]),str(content["password"])) 
+        self.cursor.execute(sqlpw, val)
+
+        result = self.cursor.fetchall()
+        if len(result) == 0:
+            payload = {
+                "err_message": "Failure: Username or password does not exist."
+            }
+            return (json.dumps(payload), 404)
+        else:
+            sql = "UPDATE user SET username = %s WHERE username = %s"
+            val = (str(content["new_username"]), str(content["username"]))
+            self.cursor.execute(sql, val)
+            self.connector.commit()
+            payload = {
+                "err_message": "Success: Username changed."
+            }
+            return (json.dumps(payload), 200)
+
+#this needs work
     #def updateRepoAttrib(self,content):
-    
+        self.ensureConnected()
+
+         if str(content["user_id"]) == "":
+            sql = "SELECT user_id FROM user WHERE username = %s && password = %s"
+            data = (str(content["username"]), str(content["password"]))
+            self.cursor.execute(sql, data)
+            temp = self.cursor.fetchall()
+            if len(temp) == 0:
+                payload = {
+                    "err_message": "Failure: You do not have permission to change this repository."
+                }
+                return (json.dumps(payload), 401)
+            
+            results = (temp[0])
+        else:
+            results = (int(content["user_id"]), )
+
+        sql = "UPDATE repository WHERE repo_name = %s SET repo_creator = %s && permission_req = %s && repo_name = %s"
+        val = (str(content["repo_name"]), str(content["attribute": "repo_creator"]), str(content["attribute": "permission_req"]), str(content["attribute": "repo_name"]))
+        self.cursor.execute(sql, val)
+        self.connector.commit()
+        payload = {
+            "err_message": "Success: Repo attributes changes."
+        }
+        return (json.dumps(payload), 200)
+
+#this needs work    
     #def updateArtifactAttrib(self,content):
+        self.ensureConnected()
+
+         if str(content["user_id"]) == "":
+            sql = "SELECT user_id FROM user WHERE username = %s && password = %s"
+            data = (str(content["username"]), str(content["password"]))
+            self.cursor.execute(sql, data)
+            temp = self.cursor.fetchall()
+            if len(temp) == 0:
+                payload = {
+                    "err_message": "Failure: You do not have permission to change this repository."
+                }
+                return (json.dumps(payload), 401)
+            
+            results = (temp[0])
+        else:
+            results = (int(content["user_id"]), )
+
+        sql = "UPDATE artifact WHERE artifact_name = %s && repo_name = %s SET owner_id = %s && artifact_access_level = %s && artifact_name = %s && artifact_original_source = %s"
+        val = (str(content["atrifact_name"]), str(content["repo_name"]), str(content["attribute": "owner_id"]), str(content["attribute": "artifact_access_level"]), str(content["attribute": "artifact_name"]), str(content["artifact_original_source"]))
+        self.cursor.execute(sql, val)
+        self.connector.commit()
+        payload = {
+            "err_message": "Success: Artifact attributes changes."
+        }
+        return (json.dumps(payload), 200)
 
     #def updateArtifact(self,content): ?
 
     #def returnArtifactInfo(self,content):
+        self.ensureConnected()
+
+         if str(content["user_id"]) == "":
+            sql = "SELECT user_id FROM user WHERE username = %s && password = %s"
+            data = (str(content["username"]), str(content["password"]))
+            self.cursor.execute(sql, data)
+            temp = self.cursor.fetchall()          
+            if len(temp) == 0:
+                
+                return (json.dumps(payload), 401)
+            
+            results = (temp[0])
+        else:
+            results = (int(content["user_id"]), )
+
+         if str(content["repo_id"]) == "":
+            sql = "SELECT * FROM repository WHERE repo_name = %s"
+            data = (str(content["repo_name"]))
+            self.cursor.execute(sql, (data, ))
+            temp = self.cursor.fetchall()
+            if len(temp) == 0:
+                payload = {
+                    "err_message": "Failure: That repository does not exist."
+                }
+                return (json.dumps(payload), 401)
+            else:
+            
+        else:
+            
 
     #def returnRepoInfo(self,content):
 

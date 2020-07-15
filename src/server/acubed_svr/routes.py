@@ -81,3 +81,49 @@ def createrepo():
 @app.route('/changepw', methods = ['GET', 'POST'])
 def changepw():
     return db.changePw(request.get_json(force=True))
+
+@app.route('/changeusername' ,methods = ['GET', 'POST'])
+def changeusername():
+    return db.changeUsername(request.get_json(force=True))
+
+@app.route('/updaterepoattrib' ,methods = ['GET', 'POST'])
+def updaterepoattrib():
+    return db.updateRepoAttrib(request.json(force=True))
+
+@app.route('/updateartifactattrib' ,methods = ['GET', 'POST'])
+def updateartifactattrib():
+    return db.updateArtifactAttrib(request.json(force=True))
+
+@app.route('/updateartifact' ,methods = ['GET', 'POST'])
+def updateartifact():
+
+@app.route('/returnartifactinfo' ,methods = ['GET', 'POST'])
+def returnartifactinfo():
+
+@app.route('/returnrepoinfo' ,methods = ['GET', 'POST'])
+def returnrepoinfo():
+
+@app.route('/removerepo' ,methods = ['GET', 'POST'])
+def removerepo():
+
+@app.route('/removeartifact' ,methods = ['GET', 'POST'])
+def removeartifact():
+
+@app.route('/removeuser' ,methods = ['GET', 'POST'])
+def removeuser()):
+
+@app.route('/removeartifact' ,methods = ['GET', 'POST'])
+def removeartifact():
+
+@app.route('/exportartifact' ,methods = ['GET', 'POST'])
+def exportartifact():
+
+@app.route('/addtag' ,methods = ['GET', 'POST'])
+def addtag():
+
+@app.route('/returnlistrepos' ,methods = ['GET', 'POST'])
+def returnlistrepos():
+
+@app.route('/returnlistartifacts' ,methods = ['GET', 'POST'])
+def returnlistartifacts():
+
