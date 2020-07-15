@@ -31,31 +31,31 @@ def testmysql():
     return testdb.testmysql()
 
 @app.route('/testmysql/artifact', methods = ['GET'])
-def testmysqlartifact():
+def testmysqlArtifact():
     return testdb.testmysqlArtifact()
 
 @app.route('/testmysql/changerecord', methods = ['GET'])
-def testmysqlartifactchangerecord():
+def testmysqlArtifactChangeRecord():
     return testdb.testmysqlArtifactChangeRecord()
 
 @app.route('/testmysql/permissionlevel', methods = ['GET'])
-def testmysqlpermissionlevel():
+def testmysqlPermissionLevel():
     return testdb.testmysqlPermissionLevel()
 
 @app.route('/testmysql/repository', methods = ['GET'])
-def testmysqlrepository():
+def testmysqlRepository():
     return testdb.testmysqlRepository()
 
 @app.route('/testmysql/tag', methods = ['GET'])
-def testmysqltag():
+def testmysqlTag():
     return testdb.testmysqlTag()
 
 @app.route('/testmysql/user', methods = ['GET'])
-def testmysqluser():
+def testmysqlUser():
     return testdb.testmysqlUser()
 
 @app.route('/testmysql/bookmarks', methods = ['GET'])
-def testmysqluserbookmarks():
+def testmysqlUserBookmarks():
     return testdb.testmysqlUserBookmarks()
 
 @app.route('/testlevels', methods = ['GET'])
