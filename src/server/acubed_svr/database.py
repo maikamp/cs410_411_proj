@@ -287,7 +287,7 @@ class Database():
 
 #this needs work
     #def updateRepoAttrib(self,content):
-        self.ensureConnected()
+'''        self.ensureConnected()
 
         if str(content["user_id"]) == "":
             sql = "SELECT user_id FROM user WHERE username = %s && password = %s"
@@ -312,8 +312,9 @@ class Database():
             "err_message": "Success: Repo attributes changes."
         }
         return (json.dumps(payload), 200)
-
-#this needs work    
+'''
+#this needs work  
+'''  
     #def updateArtifactAttrib(self,content):
         self.ensureConnected()
 
@@ -340,11 +341,11 @@ class Database():
             "err_message": "Success: Artifact attributes changes."
         }
         return (json.dumps(payload), 200)
-
+'''
     #def updateArtifact(self,content): ?
 
     #def returnArtifactInfo(self,content):
-        self.ensureConnected()
+'''        self.ensureConnected()
 
         if str(content["user_id"]) == "":
             sql = "SELECT user_id FROM user WHERE username = %s && password = %s"
@@ -373,7 +374,7 @@ class Database():
             
         else:
             
-
+'''
     #def returnRepoInfo(self,content):
 
     #def authenticate(self, content):
