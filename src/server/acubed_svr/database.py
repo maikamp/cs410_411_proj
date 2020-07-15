@@ -138,8 +138,6 @@ class Database():
         #if local file, use fileupload
         #if web file, use webscraper
 
-        
-
         sqlUp = "INSERT INTO artifact (owner_id, artifact_repo, artifact_access_level, artifact_name, artifact_creation_date) VALUES (%s, %s, %s, %s, %s)"
         #can UI send us repository_id or do we need to query for it?
         #creation date, we need to pull current datetime
@@ -154,7 +152,7 @@ class Database():
         sqlId = "SELECT artifact_id FROM artifact WHERE artifact_name = %s"
         val = (str(content["artifact_name"]))
         self.cursor.execute(sqlId, (val, ))
-        temp = self.cursor.fetchall()
+        temp = self.cursor.fetchone()
         
         #split into new function, artifact upload?
         sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_id, artifact_blob) VALUES (%s, %s, %s, %s)"
