@@ -107,6 +107,7 @@ class Database():
             }
             return (json.dumps(payload), 200)
 
+    #check file type for defined set of allowed extensions
     def allowed_file(self, filename):
         return '.' in filename and \
             filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -144,6 +145,7 @@ class Database():
         self.connector.commit()
         
         #TODO check extension, then convert to MD step for appropriate file types
+        #call def allowed_file(self, filename) on 'inputFile'
 
         sqlId = "SELECT artifact_id FROM artifact WHERE artifact_name = %s"
         val = (str(content["artifact_name"]))
@@ -155,6 +157,7 @@ class Database():
         #datetime from artifact_creation_date, changer_id from owner_id, artifact_size get file size, convert to blob
         artifact_file = open("simplemd.md", "r")
 
+        #(variable for version) = (query for previous version, if updating; 1 if no previous version)
         #TODO replace with proper file upload
         dataTwo = (datecreated, (int(results[0])), temp[0], artifact_file.read(), 1)
         
@@ -169,9 +172,10 @@ class Database():
         #return fileUpload.filename 
         
         #check if artifact exists in db, by artifact_name
-        #if exisSts, prompt "would you like to update?"
+        #if exists, prompt "would you like to update?"
         #if not exists, original upload
 
+        #fileupload steps
         """
         if request.method == 'POST':
             check if the post request has the file part
