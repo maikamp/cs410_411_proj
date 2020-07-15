@@ -113,9 +113,9 @@ class Database():
         
         extension = filename.rsplit('.', 1)[1].lower()
         check = 0
-        if extension in ALLOWED_EXTENSIONS
+        if extension in ALLOWED_EXTENSIONS:
             check = 1
-        if extension in CONVERTIBLE_EXTENSIONS
+        if extension in CONVERTIBLE_EXTENSIONS:
             check = 2
             
         return (extension, check)
