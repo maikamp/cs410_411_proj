@@ -151,7 +151,7 @@ class Database():
         #split into new function, artifact upload?
         sqlTwo = "INSERT INTO artifact_change_record (changer_id, artifact_blob) VALUES (%s, %s)"
         #datetime from artifact_creation_date, changer_id from owner_id, artifact_size get file size, convert to blob
-        artifact_file = open("../tests/test_artifact/simple_md.md", "r")
+        artifact_file = open("simplemd.md", "r")
 
         #TODO replace with proper file upload
         dataTwo = ( (int(results[0])), artifact_file.read())
