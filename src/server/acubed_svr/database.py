@@ -44,19 +44,19 @@ class Database():
         sql = "SELECT user_id, access_level FROM user WHERE username = %s && password = %s"
         usr = (str(content["username"]), str(content["password"]))
         self.cursor.execute(sql, usr)
-        result = self.cursor.fetchall()
-
-        if len(result) == 0:
+        temp = self.cursor.fetchall()
+        results = temp[0]
+        if len(temp) == 0:
             payload = {
                 "err_message" : "Failure: Invalid username or password."
             }
             return (json.dumps(payload), 401)
         else:
-            if len(result) == 1:
+            if len(temp) == 1:
                 payload = {
                     "err_message" : "Successful login.",
-                    "user_id" : result[0],
-                    "permission_level": result[1]
+                    "user_id" : results[0],
+                    "permission_level": results[1]
                 }
                 return (json.dumps(payload), 200)
             else:
