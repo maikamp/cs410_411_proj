@@ -134,6 +134,9 @@ class Database():
             results = (content["user_id"], )   
 
         #fileUpload = request.files['inputFile']
+        #file location in json, either "local file": "file location" OR "web file": url
+        #if local file, use fileupload
+        #if web file, use webscraper
 
         sqlUp = "INSERT INTO artifact (owner_id, artifact_repo, artifact_access_level, artifact_name, artifact_creation_date) VALUES (%s, %s, %s, %s, %s)"
         #can UI send us repository_id or do we need to query for it?
@@ -251,6 +254,9 @@ class Database():
     #def returnRepoInfo(self,content):
 
     #def authenticate(self, content):
+        #receive username and pw or user_id
+        #check against db
+        #return tuple (user_id, )
 
     #def diff(self, content):
         #check file type, can be diff'd, full diff
