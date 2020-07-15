@@ -143,7 +143,7 @@ class Database():
         sqlUp = "INSERT INTO artifact (owner_id, artifact_repo, artifact_access_level, artifact_name, artifact_creation_data) VALUES (%s, %s, %s, %s, %s)"
         #can UI send us repository_id or do we need to query for it?
         #creation date, we need to pull current datetime
-        datecreated = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        datecreated = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         dataUp = (int(results[0]), int(content["artifact_repo"]), int(content["artifact_access_level"]), str(content["artifact_name"]), datecreated)
         
         #TODO check extension, then convert to MD step for appropriate file types
