@@ -116,7 +116,7 @@ class Database():
             filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
     #Uploads original file
-    def artifactUpload(self, content, file):
+    def artifactUpload(self, content):
         self.ensureConnected()
 
         if str(content["user_id"]) == "":
