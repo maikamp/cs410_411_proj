@@ -63,7 +63,7 @@ class TestDatabase():
         self.cursor.execute(sql)
         answer = self.cursor.fetchall()
         temp = {
-            "artifact_change_record": answer.decode()
+            "artifact_change_record": str(answer)
         }
         return (temp, 200)
 
@@ -73,7 +73,7 @@ class TestDatabase():
         self.cursor.execute(sql)
         answer = self.cursor.fetchall()
         temp = {
-            "permission_level": answer
+            "permission_level": str(answer)
         }
         return (temp, 200)
     
@@ -83,7 +83,7 @@ class TestDatabase():
         self.cursor.execute(sql)
         answer = self.cursor.fetchall()
         temp = {
-            "repository": answer
+            "repository": str(answer)
         }
         return (temp, 200)
     
@@ -93,7 +93,7 @@ class TestDatabase():
         self.cursor.execute(sql)
         answer = self.cursor.fetchall()
         temp = {
-            "tag": answer
+            "tag": str(answer)
         }
         return (temp, 200)
 
@@ -103,7 +103,7 @@ class TestDatabase():
         self.cursor.execute(sql)
         answer = self.cursor.fetchall()
         temp = {
-            "user": answer
+            "user": str(answer)
         }
         return (temp, 200)
     
@@ -113,7 +113,7 @@ class TestDatabase():
         self.cursor.execute(sql)
         answer = self.cursor.fetchall()
         temp = {
-            "user_bookmarks": answer
+            "user_bookmarks": str(answer)
         }
         return (temp, 200)
 
@@ -123,7 +123,7 @@ class TestDatabase():
         self.cursor.execute(sql)
         answer = self.cursor.fetchall()
         temp = {
-            "levels": answer
+            "levels": str(answer)
         }
         return (temp, 200)
 
