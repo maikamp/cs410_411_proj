@@ -94,6 +94,7 @@ def updaterepoattrib():
 def updateartifactattrib():
     return db.updateArtifactAttrib(request.json(force=True))
 
+'''
 @app.route('/updateartifact' ,methods = ['GET', 'POST'])
 def updateartifact():
 
@@ -126,4 +127,4 @@ def returnlistrepos():
 
 @app.route('/returnlistartifacts' ,methods = ['GET', 'POST'])
 def returnlistartifacts():
-
+'''
