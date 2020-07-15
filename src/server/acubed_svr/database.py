@@ -155,11 +155,12 @@ class Database():
 
         sqlId = "SELECT artifact_id FROM artifact WHERE artifact_name = %s"
         val = (str(content["artifact_name"]))
-        self.cursor.execute(sqlId, val)
+        self.cursor.execute(sqlId, (val, ))
         temp = self.cursor.fetchall()
+        temp2 = temp[0]
 
         #TODO replace with proper file upload
-        dataTwo = (datecreated, (int(results[0])), temp[0], artifact_file.read())
+        dataTwo = (datecreated, (int(results[0])), temp2[0], artifact_file.read())
 
         self.cursor.execute(sqlUp, dataUp)
         self.connector.commit()
