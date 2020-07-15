@@ -165,6 +165,7 @@ class Database():
         val = (str(content["artifact_name"]))
         self.cursor.execute(sqlId, (val, ))
         temp = self.cursor.fetchone()
+        tempTrash = self.cursor.fetchall()
         
         #split into new function, artifact upload?
         sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_id, artifact_blob, version) VALUES (%s, %s, %s, %s, %s)"
