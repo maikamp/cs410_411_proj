@@ -41,7 +41,7 @@ class Database():
     
     def login(self, content):
         self.ensureConnected()
-        sql = "SELECT user_id, permission_level FROM user WHERE username = %s && password = %s"
+        sql = "SELECT user_id, access_level FROM user WHERE username = %s && password = %s"
         usr = (str(content["username"]), str(content["password"]))
         self.cursor.execute(sql, usr)
         result = self.cursor.fetchall()
