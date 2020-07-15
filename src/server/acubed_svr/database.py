@@ -149,12 +149,17 @@ class Database():
         #TODO check extension, then convert to MD step for appropriate file types
 
         #split into new function, artifact upload?
-        sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_blob) VALUES (%s, %s, %s)"
+        sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_id, artifact_blob) VALUES (%s, %s, %s, %s)"
         #datetime from artifact_creation_date, changer_id from owner_id, artifact_size get file size, convert to blob
         artifact_file = open("simplemd.md", "r")
 
+        sqlId = "SELECT artifact_id FROM artifact WHERE artifact_name = %s"
+        val = (str(content["artifact_name"]))
+        self.cursor.execute(sqlId, val)
+        temp = self.cursor.fetchall()
+
         #TODO replace with proper file upload
-        dataTwo = (datecreated, (int(results[0])), artifact_file.read())
+        dataTwo = (datecreated, (int(results[0])), temp[0], artifact_file.read())
 
         self.cursor.execute(sqlUp, dataUp)
         self.connector.commit()
