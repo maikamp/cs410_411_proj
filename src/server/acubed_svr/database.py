@@ -120,7 +120,6 @@ class Database():
             check = 1
         if extension in CONVERTIBLE_EXTENSIONS:
             check = 2
-        filename.close()    
         return (extension, check)
 
     #Uploads original file
@@ -155,7 +154,9 @@ class Database():
         self.cursor.execute(sqlUp, dataUp)
         self.connector.commit()
         
+        artifact_file = open("simplemd.md", "r")
         #TODO check extension, then convert to MD step for appropriate file types
+        
         extTuple = self.allowed_file("simplemd.md")
         print (extTuple[0], file = sys.stderr, end = ' ')
         print (extTuple[1], file = sys.stderr)
@@ -168,7 +169,7 @@ class Database():
         #split into new function, artifact upload?
         sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_id, artifact_blob, version) VALUES (%s, %s, %s, %s, %s)"
         #datetime from artifact_creation_date, changer_id from owner_id, artifact_size get file size, convert to blob
-        artifact_file = open("simplemd.md", "r")
+
 
         #(variable for version) = (query for previous version, if updating; 1 if no previous version)
         #TODO replace with proper file upload
