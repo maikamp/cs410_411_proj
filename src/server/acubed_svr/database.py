@@ -155,12 +155,12 @@ class Database():
         temp = self.cursor.fetchone()
         
         #split into new function, artifact upload?
-        sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_id, artifact_blob) VALUES (%s, %s, %s, %s)"
+        sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_id, artifact_blob, version) VALUES (%s, %s, %s, %s, %s)"
         #datetime from artifact_creation_date, changer_id from owner_id, artifact_size get file size, convert to blob
         artifact_file = open("simplemd.md", "r")
 
         #TODO replace with proper file upload
-        dataTwo = (datecreated, (int(results[0])), temp[0], artifact_file.read())
+        dataTwo = (datecreated, (int(results[0])), temp[0], artifact_file.read(), 1)
         
         self.cursor.execute(sqlTwo, dataTwo)
         self.connector.commit()
