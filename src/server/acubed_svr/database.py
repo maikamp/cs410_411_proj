@@ -140,21 +140,21 @@ class Database():
 
         
 
-        sqlUp = "INSERT INTO artifact (owner_id, artifact_repo, artifact_access_level, artifact_name, artifact_creation_date) VALUES (%s, %s, %s, %s, %s)"
+        sqlUp = "INSERT INTO artifact (owner_id, artifact_repo, artifact_access_level, artifact_name) VALUES (%s, %s, %s, %s)"
         #can UI send us repository_id or do we need to query for it?
         #creation date, we need to pull current datetime
-        datecreated = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        dataUp = (int(results[0]), int(content["artifact_repo"]), int(content["artifact_access_level"]), str(content["artifact_name"]), datecreated)
+        #datecreated = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        dataUp = (int(results[0]), int(content["artifact_repo"]), int(content["artifact_access_level"]), str(content["artifact_name"]))
         
         #TODO check extension, then convert to MD step for appropriate file types
 
         #split into new function, artifact upload?
-        sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_blob) VALUES (%s, %s, %s)"
+        sqlTwo = "INSERT INTO artifact_change_record (changer_id, artifact_blob) VALUES (%s, %s)"
         #datetime from artifact_creation_date, changer_id from owner_id, artifact_size get file size, convert to blob
         artifact_file = open("../tests/test_artifact/simple_md.md", "r")
 
         #TODO replace with proper file upload
-        dataTwo = (datecreated, (int(results[0])), artifact_file.read())
+        dataTwo = ( (int(results[0])), artifact_file.read())
 
         self.cursor.execute(sqlUp, dataUp)
         self.cursor.commit()
