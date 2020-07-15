@@ -155,8 +155,10 @@ class Database():
         self.connector.commit()
         
         #TODO check extension, then convert to MD step for appropriate file types
-        self.allowed_file("simplemd.md")
-
+        extTuple = self.allowed_file("simplemd.md")
+        print (extTuple[0], file = sys.stderr, end = ' ')
+        print (extTuple[1], file = sys.stderr)
+        
         sqlId = "SELECT artifact_id FROM artifact WHERE artifact_name = %s"
         val = (str(content["artifact_name"]))
         self.cursor.execute(sqlId, (val, ))
