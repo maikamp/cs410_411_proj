@@ -7,6 +7,9 @@ import os
 import sys
 
 DATABASE_NAME = 'Acubed'
+UPLOAD_FOLDER = '/path/to/the/uploads'
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'docx', 'doc', 'ppt', 'pptx', 'odt', 'htm', 'html', 'md', 'py', 'java', 'cpp'}
+CONVERTIBLE_EXTENSIONS = {'pdf', 'doc', 'docx', 'ppt', 'pptx', 'odt', 'htm', 'html'}
 
 class Database():
     # Initialize the MySQL-connector connection at the begining of of the script to ensure 
