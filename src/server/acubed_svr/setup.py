@@ -63,6 +63,7 @@ TABLES['artifact'] = """
     `artifact_access_level` INT NOT NULL,
     `artifact_name` varchar(40) NOT NULL,
     `artifact_original_source` text,
+    `artifact_original_filetype` text,
     `artifact_creation_date` datetime NOT NULL,
     `artifact_last_accessed` datetime,
     `artifact_access_count` INT,

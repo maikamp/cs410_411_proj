@@ -145,21 +145,40 @@ class Database():
         #if local file, use fileupload
         #if web file, use webscraper
 
-        sqlUp = "INSERT INTO artifact (owner_id, artifact_repo, artifact_access_level, artifact_name, artifact_creation_date) VALUES (%s, %s, %s, %s, %s)"
+        sqlUp = "INSERT INTO artifact (owner_id, artifact_repo, artifact_access_level, artifact_name, artifact_creation_date, artifact_original_filetype) VALUES (%s, %s, %s, %s, %s, %s)"
         #can UI send us repository_id or do we need to query for it?
         #creation date, we need to pull current datetime
         datecreated = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        dataUp = (int(results[0]), int(content["artifact_repo"]), int(content["artifact_access_level"]), str(content["artifact_name"]), datecreated)
+        dataUp = (int(results[0]), int(content["artifact_repo"]), int(content["artifact_access_level"]), str(content["artifact_name"]), datecreated, "filetype goes here")
         
         self.cursor.execute(sqlUp, dataUp)
         self.connector.commit()
         
         artifact_file = open("simplemd.md", "r")
+        #fileupload steps
+        """
+        if request.method == 'POST':
+            check if the post request has the file part
+            if 'file' not in request.files:
+                flash('No file part')
+                return redirect(request.url)
+            file = request.files[request.url]
+            #if user does not select file, browser also
+            #submit an empty part without filename
+            if file.filename == '':
+                flash('No selected file')
+                return redirect(request.url)
+            if file and self.allowed_file(file.filename):
+                #filename = secure_filename(file.filename)
+                #file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                #TODO return json dump here
+                #return redirect(url_for('uploaded_file',
+                                        #filename=filename))
+        """
+
         #TODO check extension, then convert to MD step for appropriate file types
-        
-        extTuple = self.allowed_file("simplemd.md")
-        print (extTuple[0], file = sys.stderr, end = ' ')
-        print (extTuple[1], file = sys.stderr)
+        #extTuple = self.allowed_file("simplemd.md")
+
         
         sqlId = "SELECT artifact_id FROM artifact WHERE artifact_name = %s"
         val = (str(content["artifact_name"]))
@@ -190,27 +209,6 @@ class Database():
         #check if artifact exists in db, by artifact_name
         #if exists, prompt "would you like to update?"
         #if not exists, original upload
-
-        #fileupload steps
-        """
-        if request.method == 'POST':
-            check if the post request has the file part
-            if 'file' not in request.files:
-                flash('No file part')
-                return redirect(request.url)
-            file = request.files[request.url]
-            #if user does not select file, browser also
-            #submit an empty part without filename
-            if file.filename == '':
-                flash('No selected file')
-                return redirect(request.url)
-            if file and self.allowed_file(file.filename):
-                #filename = secure_filename(file.filename)
-                #file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                #TODO return json dump here
-                #return redirect(url_for('uploaded_file',
-                                        #filename=filename))
-        """
 
     def addUser(self,content):
         self.ensureConnected()
