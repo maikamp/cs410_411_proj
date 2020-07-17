@@ -362,12 +362,14 @@ class Database():
             self.cursor.execute(sql, data)
             temp = self.cursor.fetchall()          
             if len(temp) == 0:
-                
+                payload = {
+                    "err_message": "Failure: That username or password does not exist."
+                }
                 return (json.dumps(payload), 401)
             
-            results = (temp[0])
+            userId = (temp[0])
         else:
-            results = (int(content["user_id"]), )
+            userId = (int(content["user_id"]), )
 
         if str(content["repository_id"]) == "":
             sql = "SELECT repository_id FROM repository WHERE repo_name = %s"
@@ -400,7 +402,8 @@ class Database():
         sql = "SELECT * FROM artifact WHERE artifact_repo = %s && artifact_id = %s"
         data = (repoId, artifactId)
         self.cursor.execute(sql, data)
-        artifactData = self.cursor.fetchall()
+        temp = self.cursor.fetchall()
+        artifactData = temp[0]
 
         if str(content["version]) == "":
             sql = "SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s"
@@ -414,7 +417,8 @@ class Database():
         sql = "SELECT * FROM artifact_change_record WHERE artifact_id = %s && version = %s"
         data = (artifactId, version)
         self.cursor.execute(sql, data)
-        artifactChange = self.cursor.fetchall()
+        temp = self.cursor.fetchall()
+        artifactChange = temp[0]
 
         payload = {
             "artifact_id": artifactData[0],
@@ -433,7 +437,51 @@ class Database():
         }
         return (json.dumps(payload), 200)
 
-    #def returnRepoInfo(self,content):
+    def returnRepoInfo(self,content):
+        self.ensureConnected()
+
+        if str(content["user_id"]) == "":
+            sql = "SELECT user_id FROM user WHERE username = %s && password = %s"
+            data = (str(content["username"]), str(content["password"]))
+            self.cursor.execute(sql, data)
+            temp = self.cursor.fetchall()          
+            if len(temp) == 0:
+                payload = {
+                    "err_message": "Failure: That username or password does not exist."
+                }
+                return (json.dumps(payload), 401)
+            
+            userId = (temp[0])
+        else:
+            userId = (int(content["user_id"]), )
+
+        if str(content["repository_id"]) == "":
+            sql = "SELECT repository_id FROM repository WHERE repo_name = %s"
+            data = (str(content["repo_name"]))
+            self.cursor.execute(sql, (data, ))
+            temp = self.cursor.fetchall()
+            if len(temp) == 0:
+                payload = {
+                    "err_message": "Failure: That repository does not exist."
+                }
+                return (json.dumps(payload), 401)
+            repoId = (temp[0])
+        else:
+            repoId = (int(content["repository_id]))
+        
+        sql = "SELECT * FROM repository WHERE repository_id = %s"
+        data = (repoId)
+        self.cursor.execute(sql, (data, ))
+        temp = self.cursor.fetchall()
+        repoData = temp[0]
+        payload = {
+            "repository_id": repoData[0],
+            "repo_name": repoData[3],
+            "repo_creator": repoData[1],
+            "permission_req": repoData[2]
+        }
+        return (json.dumps(payload), 200)
+
 
     #def authenticate(self, content):
         #receive username and pw or user_id
