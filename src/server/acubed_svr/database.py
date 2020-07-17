@@ -5,6 +5,7 @@ import math
 import json
 import os
 import sys
+import pypandoc
 
 DATABASE_NAME = 'Acubed'
 UPLOAD_FOLDER = '/path/to/the/uploads'
@@ -502,7 +503,7 @@ class Database():
         }
         return (json.dumps(payload), 200)
 
-    '''
+'''
     def authenticate(self, content):
         #receive username and pw or user_id
         #check against db
@@ -519,11 +520,46 @@ class Database():
     def removeArtifact(self, content):
 
     def removeUser(self, content): 
+'''
 
-    def convertToMD(self, content):
+    #receives string filename, returns converted file in MD
+    def convertToMD(self, filename):
+        #file = open(str(content("filename")), "r")
+'''
+        sql = "SELECT artifact_id FROM artifact WHERE artifact_name = %s"
+        data = (str(content("artifact_name")),)
+
+        self.cursor.execute(sql, data)
+        temp = self.cursor.fetchone()
+        while (self.cursor.fetchone() != None):
+            tempTrash = self.cursor.fetchone()
+'''
+        fileMD = pypandoc.convert_file(filename, 'md')
+        
+        return fileMD
 
     def convertFromMD(self, content):
+        #if version not selected, select highest version, else select specified version
+        if str(content["version"]) == "":
+            sql = "SELECT artifact_blob FROM artifact_change_record WHERE artifact_id = %s && version = {SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s}"
+            data = (str(content("artifact_id")), str(content("artifact_id")))
+        else:
+            sql = "SELECT artifact_blob FROM artifact_change_record WHERE artifact_id = %s && version = %s"
+            data = (str(content("artifact_id")), str(content("version")))
 
+        self.cursor.execute(sql, data)
+        temp = self.cursor.fetchone()
+        while (self.cursor.fetchone() != None):
+            tempTrash = self.cursor.fetchone()
+        
+        #write blob to file
+        file = temp[0].write()
+        
+        #convert file to md
+        og_file = pypandoc.convert_file(file, 'md')
+
+        return og_file
+'''
     def exportArtifact(self, content):
 
     def addTag(self, content):
@@ -539,6 +575,6 @@ class Database():
     def addArtifactChangeRecord(self, content):
 
     def returnArtifactChangeRecord(self, content):
-    '''
+'''
 
     
