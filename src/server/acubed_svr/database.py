@@ -90,7 +90,7 @@ class Database():
     def register(self, content):
         self.ensureConnected()
         sql_unique_user = "SELECT * FROM user WHERE username = %s OR user_email = %s"
-        self.cursor.execute(sql_unique_user, (content.username, content.email))
+        self.cursor.execute(sql_unique_user, (content["username"], content["email"]))
 
         result = self.cursor.fetchall()
         #checking to see if account/email exists within the database, if it does, throw an error, if not, create account.
@@ -478,20 +478,20 @@ class Database():
             userId = (int(content["user_id"]), )
         if str(content["repository_id"]) == "":
             sql = "SELECT repository_id FROM repository WHERE repo_name = %s"
-            data = (str(content["repo_name"]))
-            self.cursor.execute(sql, (data, ))
+            data = (str(content["repo_name"]),)
+            self.cursor.execute(sql, data)
             temp = self.cursor.fetchall()
             if len(temp) == 0:
                 payload = {
                     "err_message": "Failure: That repository does not exist."
                 }
                 return (json.dumps(payload), 401)
-            repoId = (temp[0])
+            repoId = temp[0][0]
         else:
-            repoId = (int(content["repository_id"]))
+            repoId = int(content["repository_id"])
         sql = "SELECT * FROM repository WHERE repository_id = %s"
-        data = (repoId)
-        self.cursor.execute(sql, (data, ))
+        data = (repoId, )
+        self.cursor.execute(sql, data)
         temp = self.cursor.fetchall()
         repoData = temp[0]
         payload = {
