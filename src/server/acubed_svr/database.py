@@ -292,7 +292,7 @@ class Database():
             payload = {
                 "err_message": "Success: Username changed."
             }
-            return (json.dumps(payload), 200)
+        return (json.dumps(payload), 200)
 
 #this needs work
     #def updateRepoAttrib(self,content):
