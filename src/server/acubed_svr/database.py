@@ -90,7 +90,7 @@ class Database():
     def register(self, content):
         self.ensureConnected()
         sql_unique_user = "SELECT * FROM user WHERE username = %s OR user_email = %s"
-        self.cursor.execute(sql_unique_user, (content.username, content.user_email))
+        self.cursor.execute(sql_unique_user, (content.username, content.email))
 
         result = self.cursor.fetchall()
         #checking to see if account/email exists within the database, if it does, throw an error, if not, create account.
