@@ -284,19 +284,20 @@ class Database():
                 "err_message": "Failure: Username or password does not exist."
             }
             return (json.dumps(payload), 404)
-        else:
-            sql = "UPDATE user SET username = %s WHERE username = %s"
-            val = (str(content["new_username"]), str(content["username"]))
-            self.cursor.execute(sql, val)
-            self.connector.commit()
-            payload = {
-                "err_message": "Success: Username changed."
-            }
+        
+        sql = "UPDATE user SET username = %s WHERE username = %s"
+        val = (str(content["new_username"]), str(content["username"]))
+        self.cursor.execute(sql, val)
+        self.connector.commit()
+        payload = {
+            "err_message": "Success: Username changed."
+        }
         return (json.dumps(payload), 200)
 
-#this needs work
-    #def updateRepoAttrib(self,content):
-'''        self.ensureConnected()
+    """
+    this needs work
+    def updateRepoAttrib(self,content):
+        self.ensureConnected()
 
         if str(content["user_id"]) == "":
             sql = "SELECT user_id FROM user WHERE username = %s && password = %s"
@@ -321,10 +322,10 @@ class Database():
             "err_message": "Success: Repo attributes changes."
         }
         return (json.dumps(payload), 200)
-'''
-#this needs work  
-'''  
-    #def updateArtifactAttrib(self,content):
+
+    this needs work  
+  
+    def updateArtifactAttrib(self,content):
         self.ensureConnected()
 
         if str(content["user_id"]) == "":
@@ -350,10 +351,10 @@ class Database():
             "err_message": "Success: Artifact attributes changes."
         }
         return (json.dumps(payload), 200)
-'''
-    #def updateArtifact(self,content): ?
 
-    def returnArtifactInfo(self,content):
+    def updateArtifact(self,content): ?
+    """ 
+    def returnArtifactInfo(self, content):
         self.ensureConnected()
 
         if str(content["user_id"]) == "":
@@ -382,7 +383,7 @@ class Database():
                 return (json.dumps(payload), 401)
             repoId = temp
         else:
-            repoId = (int(content["repository_id]))
+            repoId = (int(content["repository_id"]))
         
         if str(content["artifact_id"]) == "":
             sql = "SELECT artifact_id FROM artifact WHERE artifact_repo = %s && artifact_name"
@@ -396,7 +397,7 @@ class Database():
                 return (json.dumps(payload), 401)
             artifactId = (temp[0])
         else:
-            artifactId = (int(content["artifact_id]))
+            artifactId = (int(content["artifact_id"]))
 
         sql = "SELECT * FROM artifact WHERE artifact_repo = %s && artifact_id = %s"
         data = (repoId, artifactId)
@@ -404,7 +405,7 @@ class Database():
         temp = self.cursor.fetchall()
         artifactData = temp[0]
 
-        if str(content["version]) == "":
+        if str(content["version"]) == "":
             sql = "SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s"
             data = (artifactId)
             self.cursor.execute(sql, (data, ))
@@ -466,7 +467,7 @@ class Database():
                 return (json.dumps(payload), 401)
             repoId = (temp[0])
         else:
-            repoId = (int(content["repository_id]))
+            repoId = (int(content["repository_id"]))
         
         sql = "SELECT * FROM repository WHERE repository_id = %s"
         data = (repoId)
