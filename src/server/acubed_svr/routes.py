@@ -97,10 +97,11 @@ def updateartifactattrib():
 '''
 @app.route('/updateartifact' ,methods = ['GET', 'POST'])
 def updateartifact():
-
+'''
 @app.route('/returnartifactinfo' ,methods = ['GET', 'POST'])
 def returnartifactinfo():
-
+    return db.returnArtifactInfo(request.json(force=True))
+'''
 @app.route('/returnrepoinfo' ,methods = ['GET', 'POST'])
 def returnrepoinfo():
 

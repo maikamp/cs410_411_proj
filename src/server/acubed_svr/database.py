@@ -353,8 +353,8 @@ class Database():
 '''
     #def updateArtifact(self,content): ?
 
-    #def returnArtifactInfo(self,content):
-'''        self.ensureConnected()
+    def returnArtifactInfo(self,content):
+        self.ensureConnected()
 
         if str(content["user_id"]) == "":
             sql = "SELECT user_id FROM user WHERE username = %s && password = %s"
@@ -369,8 +369,8 @@ class Database():
         else:
             results = (int(content["user_id"]), )
 
-        if str(content["repo_id"]) == "":
-            sql = "SELECT * FROM repository WHERE repo_name = %s"
+        if str(content["repository_id"]) == "":
+            sql = "SELECT repository_id FROM repository WHERE repo_name = %s"
             data = (str(content["repo_name"]))
             self.cursor.execute(sql, (data, ))
             temp = self.cursor.fetchall()
@@ -379,11 +379,60 @@ class Database():
                     "err_message": "Failure: That repository does not exist."
                 }
                 return (json.dumps(payload), 401)
-            else:
-            
+            repoId = (temp[0])
         else:
-            
-'''
+            repoId = (int(content["repository_id]))
+        
+        if str(content["artifact_id"]) == "":
+            sql = "SELECT artifact_id FROM artifact WHERE artifact_repo = %s && artifact_name"
+            data = (repoId, str(content["artifact_name"]))
+            self.cursor.execute(sql, data)
+            temp = self.cursor.fetchall()
+            if len(temp) == 0:
+                payload = {
+                    "err_message": "Failure: That artifact does not exist."
+                }
+                return (json.dumps(payload), 401)
+            artifactId = (temp[0])
+        else:
+            artifactId = (int(content["artifact_id]))
+
+        sql = "SELECT * FROM artifact WHERE artifact_repo = %s && artifact_id = %s"
+        data = (repoId, artifactId)
+        self.cursor.execute(sql, data)
+        artifactData = self.cursor.fetchall()
+
+        if str(content["version]) == "":
+            sql = "SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s"
+            data = (artifactId)
+            self.cursor.execute(sql, (data, ))
+            temp = self.cursor.fetchall()
+            version = temp[0]
+        else:
+            version = (int(content["version"]))
+        
+        sql = "SELECT * FROM artifact_change_record WHERE artifact_id = %s && version = %s"
+        data = (artifactId, version)
+        self.cursor.execute(sql, data)
+        artifactChange = self.cursor.fetchall()
+
+        payload = {
+            "artifact_id": artifactData[0],
+            "owner_id": artifactData[1],
+            "artifact_repo": artifactData[2],
+            "artifact_access_level": artifactData[3],
+            "artifact_name": artifactData[4],
+            "artifact_original_source": artifactData[5],
+            "artifact_original_filetype": artifactData[6],
+            "artifact_creation_date": artifactData[7],
+            "artifact_last_accessed": artifactData[8],
+            "artifact_access_count": artifactData[9],
+            "change_datetime": artifactChange[0],
+            "artifact_size": artifactChange[3],
+            "version": artifactChange[5]
+        }
+        return (json.dumps(payload), 200)
+
     #def returnRepoInfo(self,content):
 
     #def authenticate(self, content):
