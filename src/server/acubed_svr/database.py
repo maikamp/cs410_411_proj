@@ -357,31 +357,30 @@ class Database():
         self.ensureConnected()
 
         if str(content["user_id"]) == "":
-            sql = "SELECT user_id FROM user WHERE username = %s && password = %s"
-            data = (str(content["username"]), str(content["password"]))
-            self.cursor.execute(sql, data)
-            temp = self.cursor.fetchall()          
+            temp = get_user_id(str(content["username"]), str(content["password"]))        
             if len(temp) == 0:
                 payload = {
                     "err_message": "Failure: That username or password does not exist."
                 }
-                return (json.dumps(payload), 401)
-            
-            userId = (temp[0])
+                return (json.dumps(payload), 401)   
+            userId = temp
         else:
             userId = (int(content["user_id"]), )
 
+        sql = "SELECT access_level FROM user WHERE user_id = %s"
+        data = (userId, )
+        self.cursor.execute(sql, data)
+        temp = self.cursor.fetchall()
+        permissionLevel = temp[0][0]
+
         if str(content["repository_id"]) == "":
-            sql = "SELECT repository_id FROM repository WHERE repo_name = %s"
-            data = (str(content["repo_name"]))
-            self.cursor.execute(sql, (data, ))
-            temp = self.cursor.fetchall()
+            temp = get_repo_id(str(content["repo_name"]), permissionLevel)
             if len(temp) == 0:
                 payload = {
                     "err_message": "Failure: That repository does not exist."
                 }
                 return (json.dumps(payload), 401)
-            repoId = (temp[0])
+            repoId = temp
         else:
             repoId = (int(content["repository_id]))
         
@@ -410,7 +409,7 @@ class Database():
             data = (artifactId)
             self.cursor.execute(sql, (data, ))
             temp = self.cursor.fetchall()
-            version = temp[0]
+            version = temp[0][0]
         else:
             version = (int(content["version"]))
         
@@ -519,3 +518,26 @@ class Database():
     #def addArtifactChangeRecord(self, content):
 
     #def returnArtifactChangeRecord(self, content):
+
+    def get_user_id(self, username, password):
+        sql = "SELECT user_id FROM user WHERE username = %s && password = %s"
+        data = (username, password)
+        self.cursor.execute(sql, data)
+        temp = self.cursor.fetchall()
+        result = temp[0]
+        if len(temp) == 0:
+            userID = none
+        else:
+            userId = result[0]
+        return userId
+
+    def get_repo_id(self, reponame, permissionLevel):
+        sql = "SELECT repository_id FROM repository WHERE repo_name = %s && permission_req = %s"
+        data = (reponame, permissionLevel)
+        self.cursor.execute(sql, data)
+        temp = self.cursor.fetchall()
+        if len(temp) == 0:
+            repoID = none
+        else:
+            repoId = temp[0][0]
+        return repoId
