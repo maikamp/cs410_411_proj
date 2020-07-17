@@ -541,7 +541,7 @@ class Database():
     def convertFromMD(self, content):
         #if version not selected, select highest version, else select specified version
         if str(content["version"]) == "":
-            sql = "SELECT artifact_blob FROM artifact_change_record WHERE artifact_id = %s && version = {SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s}"
+            sql = "SELECT artifact_blob FROM artifact_change_record WHERE artifact_id = %s && version = (SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s)"
             data = (str(content("artifact_id")), str(content("artifact_id")))
         else:
             sql = "SELECT artifact_blob FROM artifact_change_record WHERE artifact_id = %s && version = %s"
