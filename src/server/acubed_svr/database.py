@@ -37,6 +37,29 @@ class Database():
                 port = '3306'
             )
             self.cursor = self.connector.cursor()
+
+    def getUserId(self, username, password):
+        sql = "SELECT user_id FROM user WHERE username = %s && password = %s"
+        data = (username, password)
+        self.cursor.execute(sql, data)
+        temp = self.cursor.fetchall()
+        result = temp[0]
+        if len(temp) == 0:
+            userId = None
+        else:
+            userId = result[0]
+        return userId
+
+    def getRepoId(self, reponame, permissionLevel):
+        sql = "SELECT repository_id FROM repository WHERE repo_name = %s && permission_req = %s"
+        data = (reponame, permissionLevel)
+        self.cursor.execute(sql, data)
+        temp = self.cursor.fetchall()
+        if len(temp) == 0:
+            repoId = None
+        else:
+            repoId = temp[0][0]
+        return repoId
     
     def login(self, content):
         self.ensureConnected()
@@ -358,7 +381,7 @@ class Database():
         self.ensureConnected()
 
         if str(content["user_id"]) == "":
-            temp = get_user_id(str(content["username"]), str(content["password"]))        
+            temp = self.getUserId(str(content["username"]), str(content["password"]))        
             if len(temp) == 0:
                 payload = {
                     "err_message": "Failure: That username or password does not exist."
@@ -375,7 +398,7 @@ class Database():
         permissionLevel = temp[0][0]
 
         if str(content["repository_id"]) == "":
-            temp = get_repo_id(str(content["repo_name"]), permissionLevel)
+            temp = self.getRepoId(str(content["repo_name"]), permissionLevel)
             if len(temp) == 0:
                 payload = {
                     "err_message": "Failure: That repository does not exist."
@@ -451,7 +474,7 @@ class Database():
                 }
                 return (json.dumps(payload), 401)
             
-            userId = (temp[0])
+            userId = temp[0][0]
         else:
             userId = (int(content["user_id"]), )
 
@@ -482,63 +505,43 @@ class Database():
         }
         return (json.dumps(payload), 200)
 
-
-    #def authenticate(self, content):
+    '''
+    def authenticate(self, content):
         #receive username and pw or user_id
         #check against db
         #return tuple (user_id, )
 
-    #def diff(self, content):
+    def diff(self, content):
         #check file type, can be diff'd, full diff
         #can't be diff'd, simple compare
 
-    #def simpleCompare (self, content):
+    def simpleCompare (self, content):
 
-    #def removeRepo(self,content):
+    def removeRepo(self,content):
 
-    #def removeArtifact(self, content):
+    def removeArtifact(self, content):
 
-    #def removeUser(self, content): 
+    def removeUser(self, content): 
 
-    #def convertToMD(self, content):
+    def convertToMD(self, content):
 
-    #def convertFromMD(self, content):
+    def convertFromMD(self, content):
 
-    #def exportArtifact(self, content):
+    def exportArtifact(self, content):
 
-    #def addTag(self, content):
+    def addTag(self, content):
 
-    #def addBookmark(self,content):
+    def addBookmark(self,content):
 
-    #def changeTag(self, content):
+    def changeTag(self, content):
 
-    #def removeBookmark(self, content):
+    def removeBookmark(self, content):
 
-    #def makeBlob?
+    def makeBlob?
 
-    #def addArtifactChangeRecord(self, content):
+    def addArtifactChangeRecord(self, content):
 
-    #def returnArtifactChangeRecord(self, content):
+    def returnArtifactChangeRecord(self, content):
+    '''
 
-    def get_user_id(self, username, password):
-        sql = "SELECT user_id FROM user WHERE username = %s && password = %s"
-        data = (username, password)
-        self.cursor.execute(sql, data)
-        temp = self.cursor.fetchall()
-        result = temp[0]
-        if len(temp) == 0:
-            userID = none
-        else:
-            userId = result[0]
-        return userId
-
-    def get_repo_id(self, reponame, permissionLevel):
-        sql = "SELECT repository_id FROM repository WHERE repo_name = %s && permission_req = %s"
-        data = (reponame, permissionLevel)
-        self.cursor.execute(sql, data)
-        temp = self.cursor.fetchall()
-        if len(temp) == 0:
-            repoID = none
-        else:
-            repoId = temp[0][0]
-        return repoId
+    

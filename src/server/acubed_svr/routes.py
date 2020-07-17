@@ -85,7 +85,7 @@ def changepw():
 @app.route('/changeusername' ,methods = ['GET', 'POST'])
 def changeusername():
     return db.changeUsername(request.get_json(force=True))
-
+'''
 @app.route('/updaterepoattrib' ,methods = ['GET', 'POST'])
 def updaterepoattrib():
     return db.updateRepoAttrib(request.json(force=True))
@@ -94,7 +94,6 @@ def updaterepoattrib():
 def updateartifactattrib():
     return db.updateArtifactAttrib(request.json(force=True))
 
-'''
 @app.route('/updateartifact' ,methods = ['GET', 'POST'])
 def updateartifact():
 '''
