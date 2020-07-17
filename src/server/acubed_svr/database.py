@@ -45,7 +45,7 @@ class Database():
         temp = self.cursor.fetchall()
         result = temp[0]
         if len(temp) == 0:
-            userId = None
+            userId = ""
         else:
             userId = result[0]
         return userId
@@ -56,7 +56,7 @@ class Database():
         self.cursor.execute(sql, data)
         temp = self.cursor.fetchall()
         if len(temp) == 0:
-            repoId = None
+            repoId = ""
         else:
             repoId = temp[0][0]
         return repoId
