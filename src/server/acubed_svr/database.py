@@ -473,11 +473,9 @@ class Database():
                     "err_message": "Failure: That username or password does not exist."
                 }
                 return (json.dumps(payload), 401)
-            
             userId = temp[0][0]
         else:
             userId = (int(content["user_id"]), )
-
         if str(content["repository_id"]) == "":
             sql = "SELECT repository_id FROM repository WHERE repo_name = %s"
             data = (str(content["repo_name"]))
@@ -491,7 +489,6 @@ class Database():
             repoId = (temp[0])
         else:
             repoId = (int(content["repository_id"]))
-        
         sql = "SELECT * FROM repository WHERE repository_id = %s"
         data = (repoId)
         self.cursor.execute(sql, (data, ))
