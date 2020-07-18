@@ -3,3 +3,4 @@ mysql-connector-python
 requests
 beautifulsoup4
 python-dotenv
+pypandoc
