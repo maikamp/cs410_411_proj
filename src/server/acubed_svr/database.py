@@ -317,7 +317,7 @@ class Database():
         }
         return (json.dumps(payload), 200)
 
-    """
+    '''
     this needs work
     def updateRepoAttrib(self,content):
         self.ensureConnected()
@@ -347,7 +347,8 @@ class Database():
         return (json.dumps(payload), 200)
 
     this needs work  
-  
+    '''
+    '''
     def updateArtifactAttrib(self,content):
         self.ensureConnected()
 
@@ -376,7 +377,8 @@ class Database():
         return (json.dumps(payload), 200)
 
     def updateArtifact(self,content): ?
-    """ 
+    '''
+    ''' 
     def artifactInfo(self, content):
         self.ensureConnected()
 
@@ -459,7 +461,7 @@ class Database():
             "version": artifactChange[5]
         }
         return (json.dumps(payload), 200)
-
+    '''
     def repoInfo(self,content):
         self.ensureConnected()
         
@@ -477,7 +479,7 @@ class Database():
         else:
             userId = (int(content["user_id"]), )
         print(userId, file=sys.stderr, end=' ')
-        '''
+        
         if str(content["repository_id"]) == "":
             sql = "SELECT repository_id FROM repository WHERE repo_name = %s"
             data = (str(content["repo_name"]),)
@@ -497,7 +499,7 @@ class Database():
         self.cursor.execute(sql, data)
         temp = self.cursor.fetchall()
         repoData = temp[0]
-        '''
+
         payload = {
             "repository_id": repoData[0],
             "repo_name": repoData[3],

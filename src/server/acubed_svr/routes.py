@@ -85,18 +85,18 @@ def changepw():
 @app.route('/changeusername' ,methods = ['GET', 'POST'])
 def changeusername():
     return db.changeUsername(request.get_json(force=True))
-'''
-@app.route('/updaterepoattrib' ,methods = ['GET', 'POST'])
-def updaterepoattrib():
-    return db.updateRepoAttrib(request.json(force=True))
 
-@app.route('/updateartifactattrib' ,methods = ['GET', 'POST'])
-def updateartifactattrib():
-    return db.updateArtifactAttrib(request.json(force=True))
+#@app.route('/updaterepoattrib' ,methods = ['GET', 'POST'])
+#def updaterepoattrib():
+#    return db.updateRepoAttrib(request.json(force=True))
 
-@app.route('/updateartifact' ,methods = ['GET', 'POST'])
-def updateartifact():
-'''
+#@app.route('/updateartifactattrib' ,methods = ['GET', 'POST'])
+#def updateartifactattrib():
+#    return db.updateArtifactAttrib(request.json(force=True))
+
+#@app.route('/updateartifact' ,methods = ['GET', 'POST'])
+#def updateartifact():
+
 @app.route('/returnartifactinfo' ,methods = ['GET', 'POST'])
 def returnartifactinfo():
     return db.artifactInfo(request.json(force=True))
@@ -104,6 +104,7 @@ def returnartifactinfo():
 @app.route('/returnrepoinfo' ,methods = ['GET', 'POST'])
 def returnrepoinfo():
     return db.repoInfo(request.json(force=True))
+
 '''
 @app.route('/removerepo' ,methods = ['GET', 'POST'])
 def removerepo():
