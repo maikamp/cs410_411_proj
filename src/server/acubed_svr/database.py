@@ -474,7 +474,6 @@ class Database():
                 }
                 return (json.dumps(payload), 401)
             userId = temp[0][0]
-            else:
         else:
             userId = (int(content["user_id"]), )
 
@@ -488,7 +487,6 @@ class Database():
                     "err_message": "Failure: That repository does not exist."
                 }
                 return (json.dumps(payload), 401)
-            else:
             repoId = int(temp[0][0])
         else:
             repoId = int(content["repository_id"])
