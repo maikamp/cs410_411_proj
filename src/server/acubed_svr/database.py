@@ -561,7 +561,7 @@ class Database():
         return og_file
     
     def exportArtifact(self, content):
-    
+        pass
     '''
     def addTag(self, content):
 
