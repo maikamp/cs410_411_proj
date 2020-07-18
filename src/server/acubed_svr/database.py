@@ -7,6 +7,7 @@ import os
 import sys
 import pypandoc
 
+#Global Variables
 DATABASE_NAME = 'Acubed'
 UPLOAD_FOLDER = '/path/to/the/uploads'
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'docx', 'doc', 'ppt', 'pptx', 'odt', 'htm', 'html', 'md', 'py', 'java', 'cpp'}
@@ -39,6 +40,7 @@ class Database():
             )
             self.cursor = self.connector.cursor()
 
+    #get user id when you have a username and password
     def getUserId(self, username, password):
         sql = "SELECT user_id FROM user WHERE username = %s && password = %s"
         data = (username, password)
@@ -46,22 +48,26 @@ class Database():
         temp = self.cursor.fetchall()
         result = temp[0]
         if len(temp) == 0:
+            #set to an empty string for no users
             userId = ""
         else:
             userId = result[0]
         return userId
 
+    #get repo id when you only have the repo name
     def getRepoId(self, reponame, permissionLevel):
         sql = "SELECT repository_id FROM repository WHERE repo_name = %s && permission_req = %s"
         data = (reponame, permissionLevel)
         self.cursor.execute(sql, data)
         temp = self.cursor.fetchall()
         if len(temp) == 0:
+            #set an empty string for no repository
             repoId = ""
         else:
             repoId = temp[0][0]
         return repoId
     
+    #get the user id and access level for a user 
     def login(self, content):
         self.ensureConnected()
         sql = "SELECT user_id, access_level FROM user WHERE username = %s && password = %s"
@@ -87,7 +93,8 @@ class Database():
                     "err_message" : "Failure: Multiple users exist please contact admin."
                 }
                 return (json.dumps(payload), 401)
-
+    
+    #register a new user
     def register(self, content):
         self.ensureConnected()
         sql_unique_user = "SELECT * FROM user WHERE username = %s OR user_email = %s"
@@ -97,7 +104,6 @@ class Database():
         #checking to see if account/email exists within the database, if it does, throw an error, if not, create account.
         if len(result) == 0:
             sqlUserInsert = "INSERT INTO user (access_level, username, password, user_email) VALUES (%s, %s, %s, %s, %s, %s)"
-                
             val = (content['access_level'], content['username'], content['password'], content['user_email'])
             self.cursor.execute(sqlUserInsert, val)
             payload = {
@@ -117,9 +123,9 @@ class Database():
         sqlpw = "SELECT password FROM user WHERE username = %s && password = %s"
         val = (str(content["username"]),str(content["password"])) 
         self.cursor.execute(sqlpw, val)
-
-        result = self.cursor.fetchall()
-        if len(result) == 0:
+        temp = self.cursor.fetchall()
+        result = temp[0]
+        if len(temp == 0):
             payload = {
                 "err_message": "Failure: Username or password does not exist."
             }
@@ -137,7 +143,6 @@ class Database():
     #check file type for defined set of allowed extensions AND check for convertible extensions
     #returns tuple = ('extension', 0 OR 1 OR 2) where 0 = not allowed, 1 = allowed, 2 = convertible
     def allowed_file(self, filename):
-        
         extension = filename.rsplit('.', 1)[1].lower()
         check = 0
         if extension in ALLOWED_EXTENSIONS:
@@ -202,8 +207,6 @@ class Database():
 
         #TODO check extension, then convert to MD step for appropriate file types
         #extTuple = self.allowed_file("simplemd.md")
-
-        
         sqlId = "SELECT artifact_id FROM artifact WHERE artifact_name = %s"
         val = (str(content["artifact_name"]))
         self.cursor.execute(sqlId, (val, ))
@@ -214,8 +217,6 @@ class Database():
         #split into new function, artifact upload?
         sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_id, artifact_blob, version) VALUES (%s, %s, %s, %s, %s)"
         #datetime from artifact_creation_date, changer_id from owner_id, artifact_size get file size, convert to blob
-
-
         #(variable for version) = (query for previous version, if updating; 1 if no previous version)
         #TODO replace with proper file upload
         dataTwo = (datecreated, int(results[0]), temp[0], artifact_file.read(), 1)
@@ -229,7 +230,6 @@ class Database():
         return (json.dumps(payload), 200)
         
         #return fileUpload.filename 
-        
         #check if artifact exists in db, by artifact_name
         #if exists, prompt "would you like to update?"
         #if not exists, original upload
@@ -268,7 +268,6 @@ class Database():
                     "err_message": "Failure: You do not have permission to create a repository."
                 }
                 return (json.dumps(payload), 401)
-            
             results = (temp[0])
         else:
             results = (int(content["user_id"]), )
@@ -388,9 +387,9 @@ class Database():
                     "err_message": "Failure: That username or password does not exist."
                 }
                 return (json.dumps(payload), 401)   
-            userId = temp
+            userId = int(temp)
         else:
-            userId = (int(content["user_id"]), )
+            userId = int(content["user_id"])
 
         sql = "SELECT access_level FROM user WHERE user_id = %s"
         data = (userId, )
@@ -405,9 +404,9 @@ class Database():
                     "err_message": "Failure: That repository does not exist."
                 }
                 return (json.dumps(payload), 401)
-            repoId = temp
+            repoId = int(temp)
         else:
-            repoId = (int(content["repository_id"]))
+            repoId = int(content["repository_id"])
         
         if str(content["artifact_id"]) == "":
             sql = "SELECT artifact_id FROM artifact WHERE artifact_repo = %s && artifact_name"
@@ -421,7 +420,7 @@ class Database():
                 return (json.dumps(payload), 401)
             artifactId = (temp[0])
         else:
-            artifactId = (int(content["artifact_id"]))
+            artifactId = int(content["artifact_id"])
 
         sql = "SELECT * FROM artifact WHERE artifact_repo = %s && artifact_id = %s"
         data = (repoId, artifactId)
@@ -431,10 +430,10 @@ class Database():
 
         if str(content["version"]) == "":
             sql = "SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s"
-            data = (artifactId)
-            self.cursor.execute(sql, (data, ))
+            data = (artifactId, )
+            self.cursor.execute(sql, data)
             temp = self.cursor.fetchall()
-            version = temp[0][0]
+            version = int(temp[0][0])
         else:
             version = (int(content["version"]))
         
@@ -477,6 +476,7 @@ class Database():
             userId = temp[0][0]
         else:
             userId = (int(content["user_id"]), )
+
         if str(content["repository_id"]) == "":
             sql = "SELECT repository_id FROM repository WHERE repo_name = %s"
             data = (str(content["repo_name"]),)
@@ -487,7 +487,7 @@ class Database():
                     "err_message": "Failure: That repository does not exist."
                 }
                 return (json.dumps(payload), 401)
-            repoId = temp[0][0]
+            repoId = int(temp[0][0])
         else:
             repoId = int(content["repository_id"])
         sql = "SELECT * FROM repository WHERE repository_id = %s"
@@ -503,7 +503,7 @@ class Database():
         }
         return (json.dumps(payload), 200)
 
-'''
+    '''
     def authenticate(self, content):
         #receive username and pw or user_id
         #check against db
@@ -520,12 +520,12 @@ class Database():
     def removeArtifact(self, content):
 
     def removeUser(self, content): 
-'''
+    '''
 
     #receives string filename, returns converted file in MD
     def convertToMD(self, filename):
         #file = open(str(content("filename")), "r")
-'''
+        '''
         sql = "SELECT artifact_id FROM artifact WHERE artifact_name = %s"
         data = (str(content("artifact_name")),)
 
@@ -533,7 +533,7 @@ class Database():
         temp = self.cursor.fetchone()
         while (self.cursor.fetchone() != None):
             tempTrash = self.cursor.fetchone()
-'''
+        '''
         fileMD = pypandoc.convert_file(filename, 'md')
         
         return fileMD
@@ -559,7 +559,7 @@ class Database():
         og_file = pypandoc.convert_file(file, 'md')
 
         return og_file
-'''
+    '''
     def exportArtifact(self, content):
 
     def addTag(self, content):
@@ -575,6 +575,6 @@ class Database():
     def addArtifactChangeRecord(self, content):
 
     def returnArtifactChangeRecord(self, content):
-'''
+    '''
 
     
