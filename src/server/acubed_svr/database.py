@@ -390,7 +390,7 @@ class Database():
             userId = int(temp)
         else:
             userId = int(content["user_id"])
-
+        
         sql = "SELECT access_level FROM user WHERE user_id = %s"
         data = (userId, )
         self.cursor.execute(sql, data)
@@ -442,7 +442,7 @@ class Database():
         self.cursor.execute(sql, data)
         temp = self.cursor.fetchall()
         artifactChange = temp[0]
-
+    
         payload = {
             "artifact_id": artifactData[0],
             "owner_id": artifactData[1],
@@ -477,7 +477,7 @@ class Database():
         else:
             userId = (int(content["user_id"]), )
         print(userId, file=sys.stderr, end=' ')
-
+        '''
         if str(content["repository_id"]) == "":
             sql = "SELECT repository_id FROM repository WHERE repo_name = %s"
             data = (str(content["repo_name"]),)
@@ -497,6 +497,7 @@ class Database():
         self.cursor.execute(sql, data)
         temp = self.cursor.fetchall()
         repoData = temp[0]
+        '''
         payload = {
             "repository_id": repoData[0],
             "repo_name": repoData[3],
