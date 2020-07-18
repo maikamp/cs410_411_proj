@@ -462,7 +462,7 @@ class Database():
 
     def repoInfo(self,content):
         self.ensureConnected()
-
+        
         if str(content["user_id"]) == "":
             sql = "SELECT user_id FROM user WHERE username = %s && password = %s"
             data = (str(content["username"]), str(content["password"]))
@@ -476,6 +476,7 @@ class Database():
             userId = temp[0][0]
         else:
             userId = (int(content["user_id"]), )
+        print(userId, file=sys.stderr, end=' ')
 
         if str(content["repository_id"]) == "":
             sql = "SELECT repository_id FROM repository WHERE repo_name = %s"
