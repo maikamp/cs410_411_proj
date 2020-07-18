@@ -86,13 +86,13 @@ def changepw():
 def changeusername():
     return db.changeUsername(request.get_json(force=True))
 
-#@app.route('/updaterepoattrib' ,methods = ['GET', 'POST'])
-#def updaterepoattrib():
-#    return db.updateRepoAttrib(request.json(force=True))
+@app.route('/updaterepoattrib' ,methods = ['GET', 'POST'])
+def updaterepoattrib():
+    return db.updateRepoAttrib(request.get_json(force=True))
 
-#@app.route('/updateartifactattrib' ,methods = ['GET', 'POST'])
-#def updateartifactattrib():
-#    return db.updateArtifactAttrib(request.json(force=True))
+@app.route('/updateartifactattrib' ,methods = ['GET', 'POST'])
+def updateartifactattrib():
+    return db.updateArtifactAttrib(request.get_json(force=True))
 
 #@app.route('/updateartifact' ,methods = ['GET', 'POST'])
 #def updateartifact():

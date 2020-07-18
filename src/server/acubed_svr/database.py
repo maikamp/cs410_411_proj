@@ -66,6 +66,13 @@ class Database():
         else:
             repoId = temp[0][0]
         return repoId
+
+    def getPermissionLevel(self, userId):
+        sql = "SELECT access_level FROM user WHERE user_id = %s"
+        data = (userId, )
+        self.cursor.execute(sql, data)
+        temp = self.cursor.fetchall()
+        return temp[0][0]
     
     #get the user id and access level for a user 
     def login(self, content):
@@ -124,7 +131,6 @@ class Database():
         val = (str(content["username"]),str(content["password"])) 
         self.cursor.execute(sqlpw, val)
         temp = self.cursor.fetchall()
-        result = temp[0]
         if len(temp == 0):
             payload = {
                 "err_message": "Failure: Username or password does not exist."
@@ -259,23 +265,20 @@ class Database():
         self.ensureConnected()
         #authenticate
         if str(content["user_id"]) == "":
-            sql = "SELECT user_id FROM user WHERE username = %s && password = %s"
-            data = (str(content["username"]), str(content["password"]))
-            self.cursor.execute(sql, data)
-            temp = self.cursor.fetchall()
-            if len(temp) == 0:
+            temp = self.getUserId(str(content["username"]), str(content["password"]))        
+            if temp == "":
                 payload = {
-                    "err_message": "Failure: You do not have permission to create a repository."
+                    "err_message": "Failure: That username or password does not exist."
                 }
-                return (json.dumps(payload), 401)
-            results = (temp[0])
+                return (json.dumps(payload), 401)   
+            userId = int(temp)
         else:
-            results = (int(content["user_id"]), )
+            userId = int(content["user_id"])
         
         #create the repository
         val2 = content["repo_name"]
         sql = "INSERT INTO repository (repo_creator, permission_req, repo_name) VALUES (%s, %s, %s)"
-        data = (int(results[0]), int(content["permission_req"]), str(val2))
+        data = (userId, int(content["permission_req"]), str(val2))
         #repo_creator pulled from user_id from current user, the user creating the repo
         self.cursor.execute(sql, data)
         self.connector.commit()
@@ -316,9 +319,9 @@ class Database():
             "err_message": "Success: Username changed."
         }
         return (json.dumps(payload), 200)
-
     '''
     this needs work
+    '''
     def updateRepoAttrib(self,content):
         self.ensureConnected()
 
@@ -345,37 +348,38 @@ class Database():
             "err_message": "Success: Repo attributes changes."
         }
         return (json.dumps(payload), 200)
-
+    '''
     this needs work  
     '''
-    '''
+    
     def updateArtifactAttrib(self,content):
         self.ensureConnected()
 
         if str(content["user_id"]) == "":
-            sql = "SELECT user_id FROM user WHERE username = %s && password = %s"
-            data = (str(content["username"]), str(content["password"]))
-            self.cursor.execute(sql, data)
-            temp = self.cursor.fetchall()
-            if len(temp) == 0:
+            temp = self.getUserId(str(content["username"]), str(content["password"]))        
+            if temp == "":
                 payload = {
-                    "err_message": "Failure: You do not have permission to change this repository."
+                    "err_message": "Failure: That username or password does not exist."
                 }
-                return (json.dumps(payload), 401)
-            
-            results = (temp[0])
+                return (json.dumps(payload), 401)   
+            userId = int(temp)
         else:
-            results = (int(content["user_id"]), )
+            userId = int(content["user_id"])
+        
+        permissionLevel = self.getPermissionLevel(userId)
 
         sql = "UPDATE artifact WHERE artifact_name = %s && repo_name = %s SET owner_id = %s && artifact_access_level = %s && artifact_name = %s && artifact_original_source = %s"
-        val = (str(content["atrifact_name"]), str(content["repo_name"]), str(content["attribute": "owner_id"]), str(content["attribute": "artifact_access_level"]), str(content["attribute": "artifact_name"]), str(content["artifact_original_source"]))
+        val = (str(content["artifact_name"]), str(content["repo_name"]), str(content["attribute": ["owner_id"]]), 
+                str(content["attribute": ["artifact_access_level"]]), str(content["attribute": ["artifact_name"]]), 
+                str(content["artifact_original_source"]))
         self.cursor.execute(sql, val)
         self.connector.commit()
         payload = {
             "err_message": "Success: Artifact attributes changes."
         }
         return (json.dumps(payload), 200)
-
+    
+    '''
     def updateArtifact(self,content): ?
     '''
      
@@ -393,11 +397,7 @@ class Database():
         else:
             userId = int(content["user_id"])
         
-        sql = "SELECT access_level FROM user WHERE user_id = %s"
-        data = (userId, )
-        self.cursor.execute(sql, data)
-        temp = self.cursor.fetchall()
-        permissionLevel = temp[0][0]
+        permissionLevel = self.getPermissionLevel(userId)
 
         if str(content["repository_id"]) == "":
             temp = self.getRepoId(str(content["repo_name"]), permissionLevel)
@@ -466,31 +466,26 @@ class Database():
         self.ensureConnected()
         
         if str(content["user_id"]) == "":
-            sql = "SELECT user_id FROM user WHERE username = %s && password = %s"
-            data = (str(content["username"]), str(content["password"]))
-            self.cursor.execute(sql, data)
-            temp = self.cursor.fetchall()          
-            if len(temp) == 0:
+            temp = self.getUserId(str(content["username"]), str(content["password"]))        
+            if temp == "":
                 payload = {
                     "err_message": "Failure: That username or password does not exist."
                 }
-                return (json.dumps(payload), 401)
-            userId = temp[0][0]
+                return (json.dumps(payload), 401)   
+            userId = int(temp)
         else:
-            userId = (int(content["user_id"]), )
-        print(userId, file=sys.stderr, end=' ')
+            userId = int(content["user_id"])
         
+        permissionLevel = self.getPermissionLevel(userId)
+
         if str(content["repository_id"]) == "":
-            sql = "SELECT repository_id FROM repository WHERE repo_name = %s"
-            data = (str(content["repo_name"]),)
-            self.cursor.execute(sql, data)
-            temp = self.cursor.fetchall()
-            if len(temp) == 0:
+            temp = self.getRepoId(str(content["repo_name"]), permissionLevel)
+            if temp == "":
                 payload = {
                     "err_message": "Failure: That repository does not exist."
                 }
                 return (json.dumps(payload), 401)
-            repoId = int(temp[0][0])
+            repoId = int(temp)
         else:
             repoId = int(content["repository_id"])
 
@@ -564,9 +559,10 @@ class Database():
         og_file = pypandoc.convert_file(file, 'md')
 
         return og_file
-    '''
+    
     def exportArtifact(self, content):
-
+    
+    '''
     def addTag(self, content):
 
     def addBookmark(self,content):
