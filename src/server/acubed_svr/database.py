@@ -420,7 +420,7 @@ class Database():
                     "err_message": "Failure: That artifact does not exist."
                 }
                 return (json.dumps(payload), 401)
-            artifactId = int(temp[0])
+            artifactId = int(temp[0][0])
         else:
             artifactId = int(content["artifact_id"])
 
