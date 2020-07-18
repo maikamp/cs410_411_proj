@@ -377,7 +377,7 @@ class Database():
 
     def updateArtifact(self,content): ?
     """ 
-    def returnArtifactInfo(self, content):
+    def artifactInfo(self, content):
         self.ensureConnected()
 
         if str(content["user_id"]) == "":
@@ -460,7 +460,7 @@ class Database():
         }
         return (json.dumps(payload), 200)
 
-    def returnRepoInfo(self,content):
+    def repoInfo(self,content):
         self.ensureConnected()
 
         if str(content["user_id"]) == "":
