@@ -411,7 +411,7 @@ class Database():
             repoId = int(content["repository_id"])
         
         if str(content["artifact_id"]) == "":
-            sql = "SELECT artifact_id FROM artifact WHERE artifact_repo = %s && artifact_name"
+            sql = "SELECT artifact_id FROM artifact WHERE artifact_repo = %s && artifact_name = %s"
             data = (repoId, str(content["artifact_name"]))
             self.cursor.execute(sql, data)
             temp = self.cursor.fetchall()
