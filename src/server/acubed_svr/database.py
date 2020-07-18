@@ -378,7 +378,7 @@ class Database():
 
     def updateArtifact(self,content): ?
     '''
-    ''' 
+     
     def artifactInfo(self, content):
         self.ensureConnected()
 
@@ -461,7 +461,7 @@ class Database():
             "version": artifactChange[5]
         }
         return (json.dumps(payload), 200)
-    '''
+    
     def repoInfo(self,content):
         self.ensureConnected()
         

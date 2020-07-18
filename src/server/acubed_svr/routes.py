@@ -99,11 +99,11 @@ def changeusername():
 
 @app.route('/returnartifactinfo' ,methods = ['GET', 'POST'])
 def returnartifactinfo():
-    return db.artifactInfo(request.json(force=True))
+    return db.artifactInfo(request.get_json(force=True))
 
 @app.route('/returnrepoinfo' ,methods = ['GET', 'POST'])
 def returnrepoinfo():
-    return db.repoInfo(request.json(force=True))
+    return db.repoInfo(request.get_json(force=True))
 
 '''
 @app.route('/removerepo' ,methods = ['GET', 'POST'])
