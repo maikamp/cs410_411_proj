@@ -384,7 +384,7 @@ class Database():
 
         if str(content["user_id"]) == "":
             temp = self.getUserId(str(content["username"]), str(content["password"]))        
-            if len(temp) == 0:
+            if temp == "":
                 payload = {
                     "err_message": "Failure: That username or password does not exist."
                 }
@@ -401,7 +401,7 @@ class Database():
 
         if str(content["repository_id"]) == "":
             temp = self.getRepoId(str(content["repo_name"]), permissionLevel)
-            if len(temp) == 0:
+            if temp == "":
                 payload = {
                     "err_message": "Failure: That repository does not exist."
                 }
