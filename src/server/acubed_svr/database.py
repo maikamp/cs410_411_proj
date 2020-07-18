@@ -84,8 +84,8 @@ class Database():
             if len(temp) == 1:
                 payload = {
                     "err_message" : "Successful login.",
-                    "user_id" : results[0],
-                    "permission_level": results[1]
+                    "user_id" : str(results[0]),
+                    "permission_level": str(results[1])
                 }
                 return (json.dumps(payload), 200)
             else:
@@ -288,8 +288,8 @@ class Database():
         temp = self.cursor.fetchall()
         results = temp[0]
         payload = {
-            "repo_name": results[3],
-            "owner_name": results[1],
+            "repo_name": str(results[3]),
+            "owner_name": str(results[1]),
             "err_message": "Success: Repository created. " 
         }
         return (json.dumps(payload), 200)
@@ -446,19 +446,19 @@ class Database():
         artifactChange = temp[0]
     
         payload = {
-            "artifact_id": artifactData[0],
-            "owner_id": artifactData[1],
-            "artifact_repo": artifactData[2],
-            "artifact_access_level": artifactData[3],
-            "artifact_name": artifactData[4],
-            "artifact_original_source": artifactData[5],
-            "artifact_original_filetype": artifactData[6],
+            "artifact_id": str(artifactData[0]),
+            "owner_id": str(artifactData[1]),
+            "artifact_repo": str(artifactData[2]),
+            "artifact_access_level": str(artifactData[3]),
+            "artifact_name": str(artifactData[4]),
+            "artifact_original_source": str(artifactData[5]),
+            "artifact_original_filetype": str(artifactData[6]),
             "artifact_creation_date": str(artifactData[7]),
             "artifact_last_accessed": str(artifactData[8]),
-            "artifact_access_count": artifactData[9],
+            "artifact_access_count": str(artifactData[9]),
             "change_datetime": str(artifactChange[0]),
-            "artifact_size": artifactChange[3],
-            "version": artifactChange[5]
+            "artifact_size": str(artifactChange[3]),
+            "version": str(artifactChange[5])
         }
         return (json.dumps(payload), 200)
     
@@ -501,10 +501,10 @@ class Database():
         repoData = temp[0]
 
         payload = {
-            "repository_id": repoData[0],
-            "repo_name": repoData[3],
-            "repo_creator": repoData[1],
-            "permission_req": repoData[2]
+            "repository_id": str(repoData[0]),
+            "repo_name": str(repoData[3]),
+            "repo_creator": str(repoData[1]),
+            "permission_req": str(repoData[2])
         }
         return (json.dumps(payload), 200)
 
