@@ -490,6 +490,7 @@ class Database():
             repoId = int(temp[0][0])
         else:
             repoId = int(content["repository_id"])
+            
         sql = "SELECT * FROM repository WHERE repository_id = %s"
         data = (repoId, )
         self.cursor.execute(sql, data)
