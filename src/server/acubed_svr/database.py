@@ -456,7 +456,7 @@ class Database():
             "artifact_creation_date": artifactData[7],
             "artifact_last_accessed": artifactData[8],
             "artifact_access_count": artifactData[9],
-            "change_datetime": artifactChange[0],
+            "change_datetime": str(artifactChange[0]),
             "artifact_size": artifactChange[3],
             "version": artifactChange[5]
         }
