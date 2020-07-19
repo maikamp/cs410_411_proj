@@ -109,25 +109,29 @@ class Database():
         self.cursor.execute(sql_unique_user, (content["username"], content["email"]))
 
         result = self.cursor.fetchall()
+        if content["access_level"] == "":
+            access_level = "3"
+        else: 
+            access_level = content["access_level"]
+
         #checking to see if account/email exists within the database, if it does, throw an error, if not, create account.
         if len(result) == 0:
             sqlUserInsert = "INSERT INTO user (access_level, username, password, user_email) VALUES (%s, %s, %s, %s, %s, %s)"
-            val = (content['access_level'], content['username'], content['password'], content['user_email'])
+            val = (access_level, content["username"], content["password"], content["email"])
             self.cursor.execute(sqlUserInsert, val)
             payload = {
-                'data' : 'Account created.'
+                "err_message" : "Success: Account created."
             }
             return (json.dumps(payload), 201)
         else:
             payload = {
-                'data' : 'Username or email already in use.'
+                "err_message" : "Failure: Username or email already in use."
             }
             return(json.dumps(payload), 401)
 
     #Update a user's password
     def changePw(self, content):
         self.ensureConnected()
-
         sqlpw = "SELECT password FROM user WHERE username = %s && password = %s"
         val = (str(content["username"]),str(content["password"])) 
         self.cursor.execute(sqlpw, val)
@@ -241,26 +245,26 @@ class Database():
         #if exists, prompt "would you like to update?"
         #if not exists, original upload
 
-    def addUser(self,content):
-        self.ensureConnected()
-        if  (str(content["accessLevel"]) == ""):
-            sql = "INSERT INTO user (access_level, username, password, user_email) VALUES (3, %s, %s, %s)"
-            data = (str(content["username"]), str(content["password"]), str(content["email"]))
-            self.cursor.execute(sql, data)
-            self.connector.commit()
-            payload = {
-                "err_message": "Success: User added."
-            }
-            return (json.dumps(payload), 200)
-        else:    
-            sql = "INSERT INTO user (access_level, username, password, user_email) VALUES (%s, %s, %s, %s)"
-            data = (content["accessLevel"],str(content["username"]), str(content["password"]), str(content["email"]))
-            self.cursor.execute(sql, data)
-            self.connector.commit()
-            payload = {
-                "err_message": "Success: User added."
-            }
-            return (json.dumps(payload), 200)
+    #def addUser(self,content):
+    #   self.ensureConnected()
+    #    if  (str(content["accessLevel"]) == ""):
+    #        sql = "INSERT INTO user (access_level, username, password, user_email) VALUES (3, %s, %s, %s)"
+    #        data = (str(content["username"]), str(content["password"]), str(content["email"]))
+    #        self.cursor.execute(sql, data)
+    #        self.connector.commit()
+    #        payload = {
+    #            "err_message": "Success: User added."
+    #        }
+    #        return (json.dumps(payload), 200)
+    #    else:    
+    #        sql = "INSERT INTO user (access_level, username, password, user_email) VALUES (%s, %s, %s, %s)"
+    #        data = (content["accessLevel"],str(content["username"]), str(content["password"]), str(content["email"]))
+    #        self.cursor.execute(sql, data)
+    #        self.connector.commit()
+    #        payload = {
+    #            "err_message": "Success: User added."
+    #        }
+    #        return (json.dumps(payload), 200)
 
     def createRepo(self,content):
         self.ensureConnected()
@@ -276,27 +280,39 @@ class Database():
         else:
             userId = int(content["user_id"])
         
-        #create the repository
-        val2 = content["repo_name"]
-        sql = "INSERT INTO repository (repo_creator, permission_req, repo_name) VALUES (%s, %s, %s)"
-        data = (userId, int(content["permission_req"]), str(val2))
-        #repo_creator pulled from user_id from current user, the user creating the repo
-        self.cursor.execute(sql, data)
-        self.connector.commit()
+        if self.getPermissionLevel(userId) >= 3:
+            sql = "SELECT * FROM repository WHERE repo_creator = %s && repo_name = %s"
+            val = (userId, str(content["repo_name"]))
+            self.cursor.execute(sql, val)
+            temp = self.cursor.fetchall()
+            if len(temp) == 0:
+                #create the repository
+                sql = "INSERT INTO repository (repo_creator, permission_req, repo_name) VALUES (%s, %s, %s)"
+                data = (userId, int(content["permission_req"]), str(content["repo_name"]))
+                #repo_creator pulled from user_id from current user, the user creating the repo
+                self.cursor.execute(sql, data)
+                self.connector.commit()
 
-        #get ther repository information to return the info to the user
-        sql2 = "SELECT * FROM repository WHERE repo_name = %s"
-        self.ensureConnected()
-        print (val2, file = sys.stderr)
-        self.cursor.execute(sql2, (val2, ))
-        temp = self.cursor.fetchall()
-        results = temp[0]
-        payload = {
-            "repo_name": str(results[3]),
-            "owner_name": str(results[1]),
-            "err_message": "Success: Repository created. " 
-        }
-        return (json.dumps(payload), 200)
+                #get the repository information to return the info to the user
+                sql2 = "SELECT * FROM repository WHERE repo_name = %s"
+                self.ensureConnected()
+                print (str(content["repo_name"]), file = sys.stderr)
+                self.cursor.execute(sql2, (str(content["repo_name"]), ))
+                temp = self.cursor.fetchall()
+                payload = {
+                    "repo_name": str(temp[0][3]),
+                    "owner_name": str(temp[0][1]),
+                    "err_message": "Success: Repository created. " 
+                }
+                return (json.dumps(payload), 200)
+            else:
+                payload = {
+                    "err_message": "Failure: You already own a repository with this name."
+                }
+        else:
+            payload = {
+                "err_message: Failure you do not have permission to create a repository."
+            }
 
     def changeUsername(self,content):
         self.ensureConnected()
@@ -304,7 +320,6 @@ class Database():
         sqlpw = "SELECT username FROM user WHERE username = %s && password = %s"
         val = (str(content["username"]),str(content["password"])) 
         self.cursor.execute(sqlpw, val)
-
         result = self.cursor.fetchall()
         if len(result) == 0:
             payload = {
@@ -312,8 +327,8 @@ class Database():
             }
             return (json.dumps(payload), 404)
         
-        sql = "UPDATE user SET username = %s WHERE username = %s"
-        val = (str(content["new_username"]), str(content["username"]))
+        sql = "UPDATE user SET username = %s WHERE username = %s && password = %s "
+        val = (str(content["new_username"]), str(content["username"]), str(content["password"]))
         self.cursor.execute(sql, val)
         self.connector.commit()
         payload = {
@@ -327,22 +342,27 @@ class Database():
         self.ensureConnected()
 
         if str(content["user_id"]) == "":
-            sql = "SELECT user_id FROM user WHERE username = %s && password = %s"
-            data = (str(content["username"]), str(content["password"]))
-            self.cursor.execute(sql, data)
-            temp = self.cursor.fetchall()
-            if len(temp) == 0:
+            temp = self.getUserId(str(content["username"]), str(content["password"]))        
+            if temp == "":
                 payload = {
-                    "err_message": "Failure: You do not have permission to change this repository."
+                    "err_message": "Failure: That username or password does not exist."
                 }
-                return (json.dumps(payload), 401)
-            
-            results = (temp[0])
+                return (json.dumps(payload), 401)   
+            userId = int(temp)
         else:
-            results = (int(content["user_id"]), )
+            userId = int(content["user_id"])
+        
+        permissionLevel = self.getPermissionLevel()
+        
+        repo_id = self.getRepoId(str(content["repo_name"]), userId)
+
+        sql = "SELECT repo_creator FROM repository WHERE repository_id = %s"
+        self.cursor.execute(sql, (repo_id, ))
+        self.cursor.fetchall()
+
 
         sql = "UPDATE repository WHERE repo_name = %s SET repo_creator = %s && permission_req = %s && repo_name = %s"
-        val = (str(content["repo_name"]), str(content["attribute": "repo_creator"]), str(content["attribute": "permission_req"]), str(content["attribute": "repo_name"]))
+        val = (str(content["repo_name"]), userId, str(content["attribute": "permission_req"]), str(content["attribute": "repo_name"]))
         self.cursor.execute(sql, val)
         self.connector.commit()
         payload = {
@@ -639,7 +659,6 @@ class Database():
         }
 
         return (send_file(filename, attachment_filename=filename))
-    
     
     '''
     def addTag(self, content):

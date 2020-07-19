@@ -62,6 +62,7 @@ def testmysqlUserBookmarks():
 def testlevels():
     return testdb.testlevels()
 
+@app.route('/adduser', methods = ['POST'])
 @app.route('/register', methods = ['POST'])
 def register():
     return db.register(request.get_json(force=True))
@@ -70,9 +71,9 @@ def register():
 def artifactupload():
     return db.artifactUpload(request.get_json(force=True))
 
-@app.route('/adduser', methods = ['GET', 'POST'])
-def adduser():
-    return db.addUser(request.get_json(force=True))
+#@app.route('/adduser', methods = ['GET', 'POST'])
+#def adduser():
+#    return db.addUser(request.get_json(force=True))
 
 @app.route('/createrepo', methods = ['GET', 'POST'])
 def createrepo():
