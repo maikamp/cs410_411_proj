@@ -6,7 +6,7 @@ import json
 import os
 import sys
 import pypandoc
-from flask import send_file
+from flask import send_file, redirect, url_for
 
 #Global Variables
 DATABASE_NAME = 'Acubed'
