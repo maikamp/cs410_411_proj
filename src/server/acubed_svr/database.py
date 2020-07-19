@@ -190,11 +190,11 @@ class Database():
         self.cursor.execute(sqlUp, dataUp)
         self.connector.commit()
         
-        artifact_file = open("simplemd.md", "r")
+        #artifact_file = open("simplemd.md", "r")
         #fileupload steps
-        """
+        
         if request.method == 'POST':
-            check if the post request has the file part
+            #check if the post request has the file part
             if 'file' not in request.files:
                 flash('No file part')
                 return redirect(request.url)
@@ -205,12 +205,12 @@ class Database():
                 flash('No selected file')
                 return redirect(request.url)
             if file and self.allowed_file(file.filename):
-                #filename = secure_filename(file.filename)
-                #file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename)
                 #TODO return json dump here
-                #return redirect(url_for('uploaded_file',
-                                        #filename=filename))
-        """
+                return redirect(url_for('uploaded_file',
+                                        filename=filename))
+        
 
         #TODO check extension, then convert to MD step for appropriate file types
         #extTuple = self.allowed_file("simplemd.md")
