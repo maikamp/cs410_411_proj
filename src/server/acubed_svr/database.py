@@ -558,7 +558,8 @@ class Database():
         
         return fileMD
 
-    def convertFromMD(self, content):
+    def convertFromMD(self, filename, ext):
+        '''
         #if version not selected, select highest version, else select specified version
         if str(content["version"]) == "":
             sql = "SELECT artifact_blob FROM artifact_change_record WHERE artifact_id = %s && version = (SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s)"
@@ -571,14 +572,12 @@ class Database():
         temp = self.cursor.fetchone()
         while (self.cursor.fetchone() != None):
             tempTrash = self.cursor.fetchone()
-        
-        #write blob to file
-        file = temp[0].write()
+        '''
         
         #convert file to md
-        og_file = pypandoc.convert_file(file, 'md')
+        converted_file = pypandoc.convert_file(filename, ext)
 
-        return og_file
+        return converted_file
     
     def exportArtifact(self, content):
         self.ensureConnected()
