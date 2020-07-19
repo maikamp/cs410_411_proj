@@ -351,7 +351,7 @@ class Database():
         else:
             userId = int(content["user_id"])
         
-        permissionLevel = self.getPermissionLevel()
+        permissionLevel = self.getPermissionLevel(userId)
         
         repo_id = self.getRepoId(str(content["repo_name"]), userId)
 
@@ -647,14 +647,26 @@ class Database():
 
         blobfile = artifactChange[4]
         
-        with open(filename, 'wb') as file:
-            file.write(blobfile)
-        if (str(artifactData[6]) in CONVERTIBLE_EXTENSIONS) and (str(content["new_file_type"]) in CONVERTIBLE_EXTENSIONS):
+        if str(artifactData[6]) in CONVERTIBLE_EXTENSIONS):
+            with open(filenameMD, 'wb') as file:
+                file.write(blobfile)
+
             if str(content["new_file_type"]) == "":
                 convertedfile = self.convertFromMD(filenameMD, str(artifactData[6]))
             else:
-                convertedfile = self.convertFromMD(filenameMD, str(content["new_file_type"]))
-           
+                if (str(content["new_file_type"]) in CONVERTIBLE_EXTENSIONS):
+                    convertedfile = self.convertFromMD(filenameMD, str(content["new_file_type"]))
+                    fullfilename = filename + str(content["new_file_type"])
+                else:
+                    payload = {
+                        "err_message": "Failure: We cannot convert to that type."
+                    }
+            return (send_file(convertedfile, attachment_filename=fullfilename))
+
+        else:
+            with open(fullfilename, 'wb') as file:
+                file.write(blobfile)
+
             #payload = {
             #    "artifact_id": str(artifactData[0]),
             #    "owner_id": str(artifactData[1]),
@@ -663,8 +675,7 @@ class Database():
             #    "artifact_size": str(artifactChange[3]),
             #    "version": str(artifactChange[5])
             #}
-
-        return (send_file(convertedfile, attachment_filename=fullfilename))
+            return (send_file(fullfilename, attachment_filename=fullfilename))
     
     '''
     def addTag(self, content):
