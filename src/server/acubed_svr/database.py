@@ -617,14 +617,14 @@ class Database():
         else:
             version = (int(content["version"]))
 
-        fileextension = '.' + str(artifactData[6])
-        filename = str(artifactData[1]) + fileextension
         sql = "SELECT * FROM artifact_change_record WHERE artifact_id = %s && version = %s"
         data = (artifactId, version)
         self.cursor.execute(sql, data)
         temp = self.cursor.fetchall()
         artifactChange = temp[0]
-        
+
+        fileextension = '.' + str(artifactData[6])
+        filename = str(artifactData[1]) + fileextension
         blobfile = artifactChange[4]
         with open(filename, 'wb') as file:
             file.write(blobfile)
@@ -637,7 +637,8 @@ class Database():
             "artifact_size": str(artifactChange[3]),
             "version": str(artifactChange[5])
         }
-        return (json.dumps(payload), send_file(filename, attachment_filename=filename))
+
+        return (send_file(filename, attachment_filename=filename))
     
     
     '''
