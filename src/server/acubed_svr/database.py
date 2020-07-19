@@ -189,6 +189,8 @@ class Database():
         #can UI send us repository_id or do we need to query for it?
         #creation date, we need to pull current datetime
         datecreated = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        #pull extension from filename
+        #exten = self.allowed_file(filename)
         dataUp = (int(results[0]), int(content["artifact_repo"]), int(content["artifact_access_level"]), str(content["artifact_name"]), datecreated, "filetype goes here")
         
         self.cursor.execute(sqlUp, dataUp)
