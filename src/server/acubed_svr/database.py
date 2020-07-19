@@ -653,7 +653,7 @@ class Database():
             if str(content["new_file_type"]) == "":
                 convertedfile = self.convertFromMD(filenameMD, str(artifactData[6]))
             else:
-                convertedfile = self.convertFromMD(filenameMD, str(content["new_file_type"])
+                convertedfile = self.convertFromMD(filenameMD, str(content["new_file_type"]))
            
             #payload = {
             #    "artifact_id": str(artifactData[0]),
