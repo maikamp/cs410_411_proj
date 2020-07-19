@@ -28,3 +28,7 @@ yarn-error.log*
 src/server/docker-compose.yaml
 .vscode/settings.json
 CLI/__pycache__/test.cpython-38.pyc
+.vscode/settings.json
+CLI/__pycache__/test.cpython-38.pyc
+CLI/objects/__pycache__/member.cpython-38.pyc
+CLI/objects/__pycache__/user.cpython-38.pyc
