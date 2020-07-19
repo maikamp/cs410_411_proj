@@ -3,5 +3,5 @@ mysql-connector-python
 requests
 beautifulsoup4
 python-dotenv
-pandoc --user
+--user pandoc
 pypandoc
