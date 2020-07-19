@@ -208,8 +208,7 @@ class Database():
                 filename = secure_filename(file.filename)
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename)
                 #TODO return json dump here
-                return redirect(url_for('uploaded_file',
-                                        filename=filename))
+                return redirect(url_for('uploaded_file', filename=filename))
         
 
         #TODO check extension, then convert to MD step for appropriate file types
