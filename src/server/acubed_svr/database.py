@@ -8,7 +8,7 @@ import sys
 import pypandoc
 from flask import send_file, redirect, url_for
 
-os.environ.setdefault('PYPANDOC_PANDOC', '/.local/lib/python3.8/site-packages/pandoc')
+os.environ.setdefault('PYPANDOC_PANDOC', '/root/.local/lib/python3.8/site-packages/pandoc')
 
 #Global Variables
 DATABASE_NAME = 'Acubed'
