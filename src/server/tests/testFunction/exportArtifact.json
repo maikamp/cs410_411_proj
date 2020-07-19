@@ -1,11 +1,11 @@
 {
-    "user_id": "",
-    "username": "aberm002",
-    "password": "guest1337",
+    "user_id": "2",
+    "username": "",
+    "password": "",
     "repository_id": "1",
     "repo_name": "",
-    "artifact_id": "",
-    "artifact_name": "dope artifact",
+    "artifact_id": "2",
+    "artifact_name": "",
     "version": "",
     "new_file_type": ""
 }
