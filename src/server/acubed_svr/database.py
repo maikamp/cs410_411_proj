@@ -647,7 +647,7 @@ class Database():
 
         blobfile = artifactChange[4]
         
-        if str(artifactData[6]) in CONVERTIBLE_EXTENSIONS):
+        if str(artifactData[6]) in CONVERTIBLE_EXTENSIONS:
             with open(filenameMD, 'wb') as file:
                 file.write(blobfile)
 
