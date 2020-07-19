@@ -117,10 +117,11 @@ def removeuser()):
 
 @app.route('/removeartifact' ,methods = ['GET', 'POST'])
 def removeartifact():
-
+'''
 @app.route('/exportartifact' ,methods = ['GET', 'POST'])
 def exportartifact():
-
+    return db.exportArtifact(request.get_json(force=True))
+'''
 @app.route('/addtag' ,methods = ['GET', 'POST'])
 def addtag():
 

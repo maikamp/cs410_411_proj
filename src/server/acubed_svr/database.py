@@ -6,6 +6,7 @@ import json
 import os
 import sys
 import pypandoc
+from Flask import send_file
 
 #Global Variables
 DATABASE_NAME = 'Acubed'
@@ -561,7 +562,84 @@ class Database():
         return og_file
     
     def exportArtifact(self, content):
-        pass
+        self.ensureConnected()
+
+        if str(content["user_id"]) == "":
+            temp = self.getUserId(str(content["username"]), str(content["password"]))        
+            if temp == "":
+                payload = {
+                    "err_message": "Failure: That username or password does not exist."
+                }
+                return (json.dumps(payload), 401)   
+            userId = int(temp)
+        else:
+            userId = int(content["user_id"])
+        
+        permissionLevel = self.getPermissionLevel(userId)
+
+        if str(content["repository_id"]) == "":
+            temp = self.getRepoId(str(content["repo_name"]), permissionLevel)
+            if temp == "":
+                payload = {
+                    "err_message": "Failure: That repository does not exist."
+                }
+                return (json.dumps(payload), 401)
+            repoId = int(temp)
+        else:
+            repoId = int(content["repository_id"])
+        
+        if str(content["artifact_id"]) == "":
+            sql = "SELECT artifact_id FROM artifact WHERE artifact_repo = %s && artifact_name = %s"
+            data = (repoId, str(content["artifact_name"]))
+            self.cursor.execute(sql, data)
+            temp = self.cursor.fetchall()
+            if len(temp) == 0:
+                payload = {
+                    "err_message": "Failure: That artifact does not exist."
+                }
+                return (json.dumps(payload), 401)
+            artifactId = int(temp[0][0])
+        else:
+            artifactId = int(content["artifact_id"])
+
+        sql = "SELECT * FROM artifact WHERE artifact_repo = %s && artifact_id = %s"
+        data = (repoId, artifactId)
+        self.cursor.execute(sql, data)
+        temp = self.cursor.fetchall()
+        artifactData = temp[0]
+
+        if str(content["version"]) == "":
+            sql = "SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s"
+            data = (artifactId, )
+            self.cursor.execute(sql, data)
+            temp = self.cursor.fetchall()
+            version = int(temp[0][0])
+        else:
+            version = (int(content["version"]))
+
+        fileextension = '.' + str(artifactData[6])
+        filename = str(artifactData[1]) + fileextension
+        sql = "SELECT * FROM artifact_change_record WHERE artifact_id = %s && version = %s"
+        data = (artifactId, version)
+        self.cursor.execute(sql, data)
+        temp = self.cursor.fetchall()
+        artifactChange = temp[0]
+        
+        blobfile = artifactChange[4]
+        with open(filename, 'wb') as file:
+            file.write(blobfile)
+    
+        payload = {
+            "artifact_id": str(artifactData[0]),
+            "owner_id": str(artifactData[1]),
+            "artifact_name": str(artifactData[4]),
+            "artifact_original_filetype": str(artifactData[6]),
+            "artifact_size": str(artifactChange[3]),
+            "version": str(artifactChange[5])
+        }
+        return (json.dumps(payload), send_file(filename, attachment_filename=filename))
+    
+    
     '''
     def addTag(self, content):
 
