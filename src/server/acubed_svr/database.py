@@ -640,23 +640,31 @@ class Database():
         self.cursor.execute(sql, data)
         temp = self.cursor.fetchall()
         artifactChange = temp[0]
+        
+        filename = str(artifactData[1]) + '.'
+        fullfilename = filename + str(artifactData[6])
+        filenameMD = filename + 'md'
 
-        fileextension = '.' + str(artifactData[6])
-        filename = str(artifactData[1]) + fileextension
         blobfile = artifactChange[4]
+        
         with open(filename, 'wb') as file:
             file.write(blobfile)
-    
-        payload = {
-            "artifact_id": str(artifactData[0]),
-            "owner_id": str(artifactData[1]),
-            "artifact_name": str(artifactData[4]),
-            "artifact_original_filetype": str(artifactData[6]),
-            "artifact_size": str(artifactChange[3]),
-            "version": str(artifactChange[5])
-        }
+        if (str(artifactData[6]) in CONVERTIBLE_EXTENSIONS) and (str(content["new_file_type"]) in CONVERTIBLE_EXTENSIONS):
+            if str(content["new_file_type"]) == "":
+                convertedfile = self.convertFromMD(filenameMD, str(artifactData[6]))
+            else:
+                convertedfile = self.convertFromMD(filenameMD, str(content["new_file_type"])
+           
+            #payload = {
+            #    "artifact_id": str(artifactData[0]),
+            #    "owner_id": str(artifactData[1]),
+            #    "artifact_name": str(artifactData[4]),
+            #    "artifact_original_filetype": str(artifactData[6]),
+            #    "artifact_size": str(artifactChange[3]),
+            #    "version": str(artifactChange[5])
+            #}
 
-        return (send_file(filename, attachment_filename=filename))
+        return (send_file(convertedfile, attachment_filename=fullfilename))
     
     '''
     def addTag(self, content):
