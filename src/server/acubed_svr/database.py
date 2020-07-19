@@ -643,7 +643,7 @@ class Database():
         temp = self.cursor.fetchall()
         artifactChange = temp[0]
         
-        filename = str(artifactData[1]) + '.'
+        filename = str(artifactData[4]) + '.'
         fullfilename = filename + str(artifactData[6])
         filenameMD = filename + 'md'
 
