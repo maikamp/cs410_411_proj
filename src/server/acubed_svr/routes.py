@@ -68,7 +68,7 @@ def register():
 
 @app.route('/artifactupload', methods = ['GET', 'POST'])
 def artifactupload():
-    return db.artifactUpload(request.get_json(force=True), reqeust.files['file'])
+    return db.artifactUpload(request.get_json(force=True), request.files['file'])
 
 @app.route('/adduser', methods = ['GET', 'POST'])
 def adduser():
