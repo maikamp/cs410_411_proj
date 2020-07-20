@@ -5,7 +5,6 @@ import math
 import json
 import os
 import sys
-import pandoc
 import pypandoc
 from flask import send_file, redirect, url_for
 
