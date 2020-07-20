@@ -195,7 +195,7 @@ class Database():
                 return (json.dumps(payload), 200)
         '''
         print(len(content), sys.stderr, end=' ')
-        if str(content[0]["aritfact_id"]) == "":
+        if str(content[0]) == "":
             sql = "SELECT user_id FROM user WHERE username = %s && password = %s"
             data = (str(content["username"]), str(content["password"]))
             self.cursor.execute(sql, data)
