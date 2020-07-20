@@ -164,7 +164,7 @@ class Database():
         return (extension, check)
 
     #Uploads original file
-    def artifactUpload(self, content):
+    def artifactUpload(self, content, file):
         self.ensureConnected()
 
         if str(content["user_id"]) == "":
