@@ -1,9 +1,6 @@
 from __future__ import print_function
 import mysql.connector
 from mysql.connector import errorcode
-from pypandoc.pandoc_download import download_pandoc
-download_pandoc()
-
 
 config = {
     'user': 'root',
