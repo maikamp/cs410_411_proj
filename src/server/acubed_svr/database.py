@@ -198,23 +198,35 @@ class Database():
         
         #artifact_file = open("simplemd.md", "r")
         #fileupload steps
-        
+        #TODO change redirects to json dumps
         if request.method == 'POST':
             #check if the post request has the file part
             if 'file' not in request.files:
                 flash('No file part')
-                return redirect(request.url)
+                payload = {
+                    "err_message": "Failure: You do not have permission for that."
+                }
+                return (json.dumps(payload), 401)
             file = request.files[request.url]
             #if user does not select file, browser also
             #submit an empty part without filename
             if file.filename == '':
                 flash('No selected file')
-                return redirect(request.url)
+                payload = {
+                    "err_message": "Failure: You do not have permission for that."
+                }
+                return (json.dumps(payload), 401)
             if file and self.allowed_file(file.filename):
                 filename = secure_filename(file.filename)
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 #TODO return json dump here
-                return redirect(url_for('uploaded_file', filename=filename))
+                payload = {
+                    "err_message": "Success: Artifact uploaded."
+                }
+                return (json.dumps(payload), 200)
+                
+                
+                
         
 
         #TODO check extension, then convert to MD step for appropriate file types
@@ -231,7 +243,8 @@ class Database():
         #datetime from artifact_creation_date, changer_id from owner_id, artifact_size get file size, convert to blob
         #(variable for version) = (query for previous version, if updating; 1 if no previous version)
         #TODO replace with proper file upload
-        dataTwo = (datecreated, int(results[0]), temp[0], artifact_file.read(), 1)
+        artifact_blob = open((os.path.join(app.config['UPLOAD_FOLDER'], filename), "rb").read()
+        dataTwo = (datecreated, int(results[0]), temp[0], artifact_blob, 1)
         
         self.cursor.execute(sqlTwo, dataTwo)
         self.connector.commit()
