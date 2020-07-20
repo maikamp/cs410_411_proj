@@ -22,17 +22,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-.vs*
-*__pycache__*
-.vscode/settings.json
-src/server/docker-compose.yaml
-.vscode/settings.json
-CLI/__pycache__/test.cpython-38.pyc
-.vscode/settings.json
-CLI/__pycache__/test.cpython-38.pyc
-CLI/objects/__pycache__/member.cpython-38.pyc
-CLI/objects/__pycache__/user.cpython-38.pyc
-.vscode/settings.json
-CLI/__pycache__/test.cpython-38.pyc
-CLI/objects/__pycache__/member.cpython-38.pyc
-CLI/objects/__pycache__/user.cpython-38.pyc
+**.vs*
+**__pycache__*
+
