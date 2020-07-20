@@ -194,7 +194,7 @@ class Database():
                 }
                 return (json.dumps(payload), 200)
         '''
-        print(type(content[0]), sys.stderr, end=' ')
+        print(len(content), sys.stderr, end=' ')
         if str(content[0]["aritfact_id"]) == "":
             sql = "SELECT user_id FROM user WHERE username = %s && password = %s"
             data = (str(content["username"]), str(content["password"]))
