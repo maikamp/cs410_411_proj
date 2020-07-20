@@ -225,10 +225,7 @@ class Database():
                 }
                 return (json.dumps(payload), 200)
                 
-                
-                
         
-
         #TODO check extension, then convert to MD step for appropriate file types
         #extTuple = self.allowed_file("simplemd.md")
         sqlId = "SELECT artifact_id FROM artifact WHERE artifact_name = %s"
@@ -243,7 +240,7 @@ class Database():
         #datetime from artifact_creation_date, changer_id from owner_id, artifact_size get file size, convert to blob
         #(variable for version) = (query for previous version, if updating; 1 if no previous version)
         #TODO replace with proper file upload
-        artifact_blob = open((os.path.join(app.config['UPLOAD_FOLDER'], filename), "rb").read()
+        #artifact_blob = open((os.path.join(app.config['UPLOAD_FOLDER'], filename), "rb").read()
         dataTwo = (datecreated, int(results[0]), temp[0], artifact_blob, 1)
         
         self.cursor.execute(sqlTwo, dataTwo)
