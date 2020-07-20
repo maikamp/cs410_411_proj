@@ -193,7 +193,7 @@ class Database():
                 }
                 return (json.dumps(payload), 200)
         '''
-        temp = content.read().decode('utf-8').json
+        temp = json.loads(content.read().decode('utf-8'))
 
         print(str(temp), file=sys.stderr, end=' ')
         #print(str(file), file=sys.stderr, end=' ')
