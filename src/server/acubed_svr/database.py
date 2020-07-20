@@ -164,7 +164,7 @@ class Database():
         return (extension, check)
 
     #Uploads original file  content = request.files['file']
-    def artifactUpload(self, content):
+    def artifactUpload(self, file, content):
         self.ensureConnected()
         '''
         request.files.getlist('files[]')
@@ -194,9 +194,8 @@ class Database():
                 }
                 return (json.dumps(payload), 200)
         '''
-        temp1 = content[0]
-        #temp2 = content[1]
-        print(str(temp1.mimetype_params), file=sys.stderr, end=' ')
+        
+        print(str(content), file=sys.stderr, end=' ')
         #print(str(temp2.mimetype_params), file=sys.stderr, end=' ')
         #print(str(content.mimetype_params), file=sys.stderr, end=' ')
         if str(content[0]) == "":
