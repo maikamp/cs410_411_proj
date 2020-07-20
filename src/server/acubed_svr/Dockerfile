@@ -1,5 +1,4 @@
 # Use official Python version 3.8 ans the runtime image
-FROM pandoc/core:2.9.2
 FROM python:3.8
 # EXPOSE indicates the port number the container will listen for connections
 # 5000 is the FLASK default
@@ -17,5 +16,6 @@ COPY ./ /acubed_svr
 RUN pip3 install -r requirementsSV.txt
 
 RUN chmod +x boot.sh
+FROM pandoc/core:2.9.2
 ENTRYPOINT ["./boot.sh"]
 
