@@ -14,7 +14,6 @@ ENV FLASK_RUN_HOST 0.0.0.0
 # Install all the needed packages specified in the requirements.txt
 COPY ./ /acubed_svr
 
-RUN pip3 install --user pandoc
 RUN pip3 install -r requirementsSV.txt
 
 RUN chmod +x boot.sh
