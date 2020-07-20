@@ -15,7 +15,7 @@ ENV FLASK_RUN_HOST 0.0.0.0
 COPY ./ /acubed_svr
 
 RUN pip3 install -r requirementsSV.txt
-FROM pandoc:2.9.2
+FROM pandoc/core:2.9.2
 RUN chmod +x boot.sh
 ENTRYPOINT ["./boot.sh"]
 
