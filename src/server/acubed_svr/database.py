@@ -6,7 +6,7 @@ import json
 import os
 import sys
 import pypandoc
-from flask import send_file, redirect, url_for
+from flask import send_file, redirect, url_for, request
 
 #Global Variables
 DATABASE_NAME = 'Acubed'
@@ -199,7 +199,7 @@ class Database():
         #artifact_file = open("simplemd.md", "r")
         #fileupload steps
         
-        if request.method == 'POST':
+        if self.request.method() == 'POST':
             #check if the post request has the file part
             if 'file' not in request.files:
                 flash('No file part')
@@ -241,7 +241,7 @@ class Database():
         #(variable for version) = (query for previous version, if updating; 1 if no previous version)
         #TODO replace with proper file upload
         artifact_blob = open(os.path.join(app.config['UPLOAD_FOLDER'], filename), "rb").read()
-        dataTwo = (datecreated, int(results[0]), temp[0], artifact_blob_test, 1)
+        dataTwo = (datecreated, int(results[0]), temp[0], artifact_blob, 1)
         
         self.cursor.execute(sqlTwo, dataTwo)
         self.connector.commit()
