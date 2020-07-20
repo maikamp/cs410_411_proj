@@ -198,7 +198,7 @@ class Database():
         
         #artifact_file = open("simplemd.md", "r")
         #fileupload steps
-        #TODO change redirects to json dumps
+        
         if request.method == 'POST':
             #check if the post request has the file part
             if 'file' not in request.files:
@@ -240,8 +240,8 @@ class Database():
         #datetime from artifact_creation_date, changer_id from owner_id, artifact_size get file size, convert to blob
         #(variable for version) = (query for previous version, if updating; 1 if no previous version)
         #TODO replace with proper file upload
-        #artifact_blob = open((os.path.join(app.config['UPLOAD_FOLDER'], filename), "rb").read()
-        dataTwo = (datecreated, int(results[0]), temp[0], artifact_blob, 1)
+        artifact_blob_test = open((os.path.join(app.config['UPLOAD_FOLDER'], filename), "rb").read()
+        dataTwo = (datecreated, int(results[0]), temp[0], artifact_blob_test, 1)
         
         self.cursor.execute(sqlTwo, dataTwo)
         self.connector.commit()
