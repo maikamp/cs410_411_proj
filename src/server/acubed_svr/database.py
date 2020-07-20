@@ -193,8 +193,10 @@ class Database():
                 }
                 return (json.dumps(payload), 200)
         '''
-        print(str(content), file=sys.stderr, end=' ')
-        print(str(file), file=sys.stderr, end=' ')
+        temp = content.read().json
+
+        print(str(temp), file=sys.stderr, end=' ')
+        #print(str(file), file=sys.stderr, end=' ')
         #print(str(temp2.mimetype_params), file=sys.stderr, end=' ')
         #print(str(content.mimetype_params), file=sys.stderr, end=' ')
         if str(content[0]) == "":
