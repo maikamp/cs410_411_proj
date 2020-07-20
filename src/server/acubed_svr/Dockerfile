@@ -16,6 +16,5 @@ COPY ./ /acubed_svr
 RUN pip3 install -r requirementsSV.txt
 
 RUN chmod +x boot.sh
-FROM pandoc/core:2.9.2
 ENTRYPOINT ["./boot.sh"]
 
