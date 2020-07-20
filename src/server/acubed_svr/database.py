@@ -6,11 +6,12 @@ import json
 import os
 import sys
 import pypandoc
-from flask import send_file, redirect, url_for, request
+from flask import send_file, redirect, url_for, request, flash
+from werkzeug.utils import secure_filename
 
 #Global Variables
 DATABASE_NAME = 'Acubed'
-UPLOAD_FOLDER = '/path/to/the/uploads'
+UPLOAD_FOLDER = './uploads'
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'docx', 'doc', 'ppt', 'pptx', 'odt', 'htm', 'html', 'md', 'py', 'java', 'cpp'}
 CONVERTIBLE_EXTENSIONS = {'pdf', 'doc', 'docx', 'ppt', 'pptx', 'odt', 'htm', 'html'}
 
@@ -199,7 +200,7 @@ class Database():
         #artifact_file = open("simplemd.md", "r")
         #fileupload steps
         
-        if self.request.method() == 'POST':
+        if request.method() == 'POST':
             #check if the post request has the file part
             if 'file' not in request.files:
                 flash('No file part')
@@ -218,7 +219,7 @@ class Database():
                 return (json.dumps(payload), 401)
             if file and self.allowed_file(file.filename):
                 filename = secure_filename(file.filename)
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                file.save(os.path.join(UPLOAD_FOLDER, filename))
                 #TODO return json dump here
                 payload = {
                     "err_message": "Success: Artifact uploaded."
@@ -240,7 +241,7 @@ class Database():
         #datetime from artifact_creation_date, changer_id from owner_id, artifact_size get file size, convert to blob
         #(variable for version) = (query for previous version, if updating; 1 if no previous version)
         #TODO replace with proper file upload
-        artifact_blob = open(os.path.join(app.config['UPLOAD_FOLDER'], filename), "rb").read()
+        artifact_blob = open(os.path.join(UPLOAD_FOLDER, filename), "rb").read()
         dataTwo = (datecreated, int(results[0]), temp[0], artifact_blob, 1)
         
         self.cursor.execute(sqlTwo, dataTwo)
