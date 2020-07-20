@@ -167,7 +167,6 @@ class Database():
     def artifactUpload(self, file, content):
         self.ensureConnected()
         '''
-        request.files.getlist('files[]')
         if request.method == 'POST':
             #check if the post request has the file part
             if 'file' not in content:
@@ -194,8 +193,8 @@ class Database():
                 }
                 return (json.dumps(payload), 200)
         '''
-        
         print(str(content), file=sys.stderr, end=' ')
+        print(str(file), file=sys.stderr, end=' ')
         #print(str(temp2.mimetype_params), file=sys.stderr, end=' ')
         #print(str(content.mimetype_params), file=sys.stderr, end=' ')
         if str(content[0]) == "":
