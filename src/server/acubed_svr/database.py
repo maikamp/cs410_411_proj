@@ -187,7 +187,7 @@ class Database():
         #file location in json, either "local file": "file location" OR "web file": url
         #if local file, use fileupload
         #if web file, use webscraper
-        extension = filename.rsplit('.', 1)[1].lower()
+        extension = file.filename.rsplit('.', 1)[1].lower()
         sqlUp = "INSERT INTO artifact (owner_id, artifact_repo, artifact_access_level, artifact_name, artifact_creation_date, artifact_original_filetype) VALUES (%s, %s, %s, %s, %s, %s)"
         #can UI send us repository_id or do we need to query for it?
         #creation date, we need to pull current datetime
