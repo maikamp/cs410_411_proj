@@ -234,8 +234,8 @@ class Database():
         #TODO check extension, then convert to MD step for appropriate file types
         #extTuple = self.allowed_file("simplemd.md")
         sqlId = "SELECT artifact_id FROM artifact WHERE artifact_name = %s"
-        val = (str(content["artifact_name"]))
-        self.cursor.execute(sqlId, (val, ))
+        val = (str(content["artifact_name"]), )
+        self.cursor.execute(sqlId, val)
         temp = self.cursor.fetchall()
                 
         #split into new function, artifact upload?
@@ -246,7 +246,7 @@ class Database():
         artifact_blob = open(os.path.join(UPLOAD_FOLDER, filename), "rb").read()
         #temp_filename = UPLOAD_FOLDER + '/'
         #temp_blob = temp_filename + file.filename
-        dataTwo = (datecreated, int(results[0]), temp[0], artifact_blob, 1)
+        dataTwo = (datecreated, int(results[0]), temp[0][0], artifact_blob, 1)
         
         self.cursor.execute(sqlTwo, dataTwo)
         self.connector.commit()
