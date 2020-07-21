@@ -202,31 +202,31 @@ class Database():
         #artifact_file = open("simplemd.md", "r")
         #fileupload steps
         
-        if request.method == 'POST':
-            #check if the post request has the file part
-            if 'file' not in request.files:
-                flash('No file part')
-                payload = {
-                    "err_message": "Failure: You do not have permission for that."
-                }
-                return (json.dumps(payload), 401)
-            file = request.files[request.url]
-            #if user does not select file, browser also
-            #submit an empty part without filename
-            if file.filename == '':
-                flash('No selected file')
-                payload = {
-                    "err_message": "Failure: You do not have permission for that."
-                }
-                return (json.dumps(payload), 401)
-            if file and self.allowed_file(file.filename):
-                filename = secure_filename(file.filename)
-                file.save(os.path.join(UPLOAD_FOLDER, filename))
-                #TODO return json dump here
-                payload = {
-                    "err_message": "Success: Artifact uploaded."
-                }
-                return (json.dumps(payload), 200)
+        #if request.method == 'POST':
+        #check if the post request has the file part
+        if 'file' not in request.files:
+            flash('No file part')
+            payload = {
+                "err_message": "Failure: You do not have permission for that."
+            }
+            return (json.dumps(payload), 401)
+        file = request.files[request.url]
+        #if user does not select file, browser also
+        #submit an empty part without filename
+        if file.filename == '':
+            flash('No selected file')
+            payload = {
+                "err_message": "Failure: You do not have permission for that."
+            }
+            return (json.dumps(payload), 401)
+        if file and self.allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(UPLOAD_FOLDER, filename))
+            #TODO return json dump here
+            payload = {
+                "err_message": "Success: Artifact uploaded."
+            }
+            return (json.dumps(payload), 200)
                 
         
         #TODO check extension, then convert to MD step for appropriate file types
