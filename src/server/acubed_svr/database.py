@@ -117,7 +117,7 @@ class Database():
 
         #checking to see if account/email exists within the database, if it does, throw an error, if not, create account.
         if len(result) == 0:
-            sqlUserInsert = "INSERT INTO user (access_level, username, password, user_email) VALUES (%s, %s, %s, %s, %s, %s)"
+            sqlUserInsert = "INSERT INTO user (access_level, username, password, user_email) VALUES (%s, %s, %s, %s)"
             val = (access_level, content["username"], content["password"], content["email"])
             self.cursor.execute(sqlUserInsert, val)
             payload = {
