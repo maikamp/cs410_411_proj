@@ -219,11 +219,11 @@ class Database():
                 "err_message": "No selected file."
             }
             return (json.dumps(payload), 404)
-        #if file and self.allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        file.save(os.path.join(UPLOAD_FOLDER, filename))
-        print("you are here.")
-            #TODO return json dump here
+        if file and self.allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(UPLOAD_FOLDER, filename))
+        #print("you are here.")
+        #TODO return json dump here
             '''
             payload = {
                 "err_message": "Success: Artifact uploaded."
