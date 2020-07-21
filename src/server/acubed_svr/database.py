@@ -210,7 +210,7 @@ class Database():
                 "err_message": "Failure: You do not have permission for that."
             }
             return (json.dumps(payload), 401)
-        file = request.files[request.url]
+        #file = request.files[request.url]
         #if user does not select file, browser also
         #submit an empty part without filename
         if file.filename == '':
