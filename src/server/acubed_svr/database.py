@@ -246,7 +246,8 @@ class Database():
         #(variable for version) = (query for previous version, if updating; 1 if no previous version)
         #TODO replace with proper file upload
         #artifact_blob = open(os.path.join(UPLOAD_FOLDER, filename), "rb").read()
-        dataTwo = (datecreated, int(results[0]), temp[0], file.read(), 1)
+        temp_blob = UPLOAD_FOLDER + file.filename
+        dataTwo = (datecreated, int(results[0]), temp[0], temp_blob.read(), 1)
         
         self.cursor.execute(sqlTwo, dataTwo)
         self.connector.commit()
