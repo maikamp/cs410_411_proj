@@ -169,7 +169,7 @@ class Database():
         
         content = json.loads(content.read().decode('utf-8'))
 
-        if str(content[0]) == "":
+        if str(content["user_id"]) == "":
             sql = "SELECT user_id FROM user WHERE username = %s && password = %s"
             data = (str(content["username"]), str(content["password"]))
             self.cursor.execute(sql, data)
