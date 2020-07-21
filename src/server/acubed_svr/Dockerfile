@@ -15,5 +15,6 @@ COPY ./ /acubed_svr
 RUN pip3 install -r requirementsSV.txt
 
 RUN chmod +x boot.sh
+RUN mkdir uploads
 ENTRYPOINT ["./boot.sh"]
 

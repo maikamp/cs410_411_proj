@@ -245,10 +245,10 @@ class Database():
         #datetime from artifact_creation_date, changer_id from owner_id, artifact_size get file size, convert to blob
         #(variable for version) = (query for previous version, if updating; 1 if no previous version)
         #TODO replace with proper file upload
-        #artifact_blob = open(os.path.join(UPLOAD_FOLDER, filename), "rb").read()
-        temp_filename = UPLOAD_FOLDER + '/'
-        temp_blob = temp_filename + file.filename
-        dataTwo = (datecreated, int(results[0]), temp[0], temp_blob.read(), 1)
+        artifact_blob = open(os.path.join(UPLOAD_FOLDER, filename), "rb").read()
+        #temp_filename = UPLOAD_FOLDER + '/'
+        #temp_blob = temp_filename + file.filename
+        dataTwo = (datecreated, int(results[0]), temp[0], artifact_blob, 1)
         
         self.cursor.execute(sqlTwo, dataTwo)
         self.connector.commit()
