@@ -202,7 +202,7 @@ class Database():
         #artifact_file = open("simplemd.md", "r")
         #fileupload steps
         
-        if request.method() == 'POST':
+        if request.method == 'POST':
             #check if the post request has the file part
             if 'file' not in request.files:
                 flash('No file part')
