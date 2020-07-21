@@ -223,11 +223,12 @@ class Database():
             filename = secure_filename(file.filename)
             file.save(os.path.join(UPLOAD_FOLDER, filename))
             #TODO return json dump here
+            '''
             payload = {
                 "err_message": "Success: Artifact uploaded."
             }
             return (json.dumps(payload), 200)
-                
+            '''
         
         #TODO check extension, then convert to MD step for appropriate file types
         #extTuple = self.allowed_file("simplemd.md")
