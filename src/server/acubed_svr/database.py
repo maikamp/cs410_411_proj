@@ -120,6 +120,7 @@ class Database():
             sqlUserInsert = "INSERT INTO user (access_level, username, password, user_email) VALUES (%s, %s, %s, %s)"
             val = (access_level, content["username"], content["password"], content["email"])
             self.cursor.execute(sqlUserInsert, val)
+            self.cursor.commit()
             payload = {
                 "err_message" : "Success: Account created."
             }
