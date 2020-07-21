@@ -133,24 +133,23 @@ class Database():
     #Update a user's password
     def changePw(self, content):
         self.ensureConnected()
-        sqlpw = "SELECT password FROM user WHERE username = %s && password = %s"
-        val = (str(content["username"]),str(content["password"])) 
-        self.cursor.execute(sqlpw, val)
-        temp = self.cursor.fetchall()
-        if len(temp == 0):
+
+        temp = self.getUserId(str(content["username"]), str(content["password"]))        
+        if temp == "":
             payload = {
-                "err_message": "Failure: Username or password does not exist."
+                "err_message": "Failure: That username or password does not exist."
             }
-            return (json.dumps(payload), 404)
-        else:
-            sql = "UPDATE user SET password = %s WHERE username = %s"
-            val = (str(content["new_password"]), str(content["username"]))
-            self.cursor.execute(sql, val)
-            self.connector.commit()
-            payload = {
-                "err_message": "Success: Password changed."
-            }
-            return (json.dumps(payload), 200)
+            return (json.dumps(payload), 401)
+
+        userId = int(temp)
+        sql = "UPDATE user SET password = %s WHERE user_id = %s"
+        val = (str(content["new_password"]), userId)
+        self.cursor.execute(sql, val)
+        self.connector.commit()
+        payload = {
+            "err_message": "Success: Password changed."
+        }
+        return (json.dumps(payload), 200)
 
     #check file type for defined set of allowed extensions AND check for convertible extensions
     #returns tuple = ('extension', 0 OR 1 OR 2) where 0 = not allowed, 1 = allowed, 2 = convertible
@@ -236,17 +235,15 @@ class Database():
         sqlId = "SELECT artifact_id FROM artifact WHERE artifact_name = %s"
         val = (str(content["artifact_name"]))
         self.cursor.execute(sqlId, (val, ))
-        temp = self.cursor.fetchone()
-        while (self.cursor.fetchone() != None):
-            tempTrash = self.cursor.fetchone()
-        
+        temp = self.cursor.fetchall()
+                
         #split into new function, artifact upload?
         sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_id, artifact_blob, version) VALUES (%s, %s, %s, %s, %s)"
         #datetime from artifact_creation_date, changer_id from owner_id, artifact_size get file size, convert to blob
         #(variable for version) = (query for previous version, if updating; 1 if no previous version)
         #TODO replace with proper file upload
         #artifact_blob = open(os.path.join(UPLOAD_FOLDER, filename), "rb").read()
-        dataTwo = (datecreated, int(results[0]), temp[0], file.read(), 1)
+        dataTwo = (datecreated, int(results[0]), temp[0][0], file.read(), 1)
         
         self.cursor.execute(sqlTwo, dataTwo)
         self.connector.commit()
@@ -372,22 +369,40 @@ class Database():
         
         repo_id = self.getRepoId(str(content["repo_name"]), userId)
 
-        sql = "SELECT repo_creator FROM repository WHERE repository_id = %s"
-        self.cursor.execute(sql, (repo_id, ))
-        self.cursor.fetchall()
-
-
-        sql = "UPDATE repository WHERE repo_name = %s SET repo_creator = %s && permission_req = %s && repo_name = %s"
-        val = (str(content["repo_name"]), userId, str(content["attribute": "permission_req"]), str(content["attribute": "repo_name"]))
-        self.cursor.execute(sql, val)
-        self.connector.commit()
-        payload = {
-            "err_message": "Success: Repo attributes changes."
-        }
-        return (json.dumps(payload), 200)
-    '''
-    this needs work  
-    '''
+        if int(permissionLevel) >= 3:
+            sql = "SELECT repo_creator FROM repository WHERE repository_id = %s"
+            self.cursor.execute(sql, (repo_id, ))
+            temp = self.cursor.fetchall()
+            if int(temp[0][0]) == userId or int(permissionLevel)==5:
+                if not str(content["new_repo_creator"]):
+                    sql = "UPDATE repository WHERE repository_id = %s SET repo_creator = %s"
+                    val = (repo_id, str(content["new_repo_creator"]))
+                    self.cursor.execute(sql, val)
+                    self.cursor.commit()
+                if not str(content["new_permission_req"]):
+                    sql = "UPDATE repository WHERE repository_id = %s SET permission_req = %s"
+                    val = (repo_id, str(content["new_permission_req"]))
+                    self.cursor.execute(sql, val)
+                    self.cursor.commit()
+                if not str(content["new_repo_name"]):
+                    sql = "UPDATE repository WHERE repository_id = %s SET repo_name = %s"
+                    val = (repo_id, str(content["new_repo_name"]))
+                    self.cursor.execute(sql, val)
+                    self.cursor.commit()
+                payload = {
+                    "err_message": "Success: Repo attributes changes."
+                }
+                return (json.dumps(payload), 200)
+            else:
+                payload = {
+                    "err_message": "Failure: You do not have permission to change attributes on this repository."
+                }
+                return (json.dumps(payload), 401)
+        else:
+            payload = {
+                "err_message": "Failure: You do not have permission to change attributes on this repository."
+            }
+            return (json.dumps(payload), 401)
     
     def updateArtifactAttrib(self,content):
         self.ensureConnected()
