@@ -188,13 +188,13 @@ class Database():
         #if local file, use fileupload
         #if web file, use webscraper
         extension = file.filename.rsplit('.', 1)[1].lower()
-        sqlUp = "INSERT INTO artifact (artifact_repo, artifact_access_level, artifact_name, artifact_creation_date, artifact_original_filetype) VALUES (%s, %s, %s, %s, %s)"
+        sqlUp = "INSERT INTO artifact (owner_id, artifact_repo, artifact_access_level, artifact_name, artifact_original_filetype, artifact_creation_date ) VALUES (%s, %s, %s, %s, %s, %s)"
         #can UI send us repository_id or do we need to query for it?
         #creation date, we need to pull current datetime
         datecreated = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         #pull extension from filename
         #exten = self.allowed_file(filename)
-        dataUp = (int(content["artifact_repo"]), int(content["artifact_access_level"]), str(content["artifact_name"]), datecreated, extension)
+        dataUp = (int(results[0]), int(content["artifact_repo"]), int(content["artifact_access_level"]), str(content["artifact_name"]), extension, datecreated)
         
         self.cursor.execute(sqlUp, dataUp)
         self.connector.commit()
