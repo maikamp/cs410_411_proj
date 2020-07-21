@@ -207,21 +207,22 @@ class Database():
         if 'file' not in request.files:
             flash('No file part')
             payload = {
-                "err_message": "Failure: You do not have permission for that."
+                "err_message": "No file part."
             }
-            return (json.dumps(payload), 401)
+            return (json.dumps(payload), 404)
         #file = request.files[request.url]
         #if user does not select file, browser also
         #submit an empty part without filename
         if file.filename == '':
             flash('No selected file')
             payload = {
-                "err_message": "Failure: You do not have permission for that."
+                "err_message": "No selected file."
             }
-            return (json.dumps(payload), 401)
+            return (json.dumps(payload), 404)
         if file and self.allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(UPLOAD_FOLDER, filename))
+            print("you are here.")
             #TODO return json dump here
             '''
             payload = {
