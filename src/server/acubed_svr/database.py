@@ -691,7 +691,7 @@ class Database():
         tempname = "./uploads/temp." + ext
         converted_file = pypandoc.convert_file(filename, ext, outputfile=tempname)
 
-        return converted_file
+        return tempname
     
     def exportArtifact(self, content):
         self.ensureConnected()
