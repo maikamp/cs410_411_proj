@@ -1,1 +1,1 @@
-{"err_message": "Failure: Username or email already in use."}
+{"err_message": "Success: Account created."}
