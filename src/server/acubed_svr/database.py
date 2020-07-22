@@ -236,6 +236,7 @@ class Database():
             filename = secure_filename(file.filename)
             file.save(os.path.join(UPLOAD_FOLDER, filename))
             if self.convertible_file(file.filename):
+                print(filename, file = sys.stderr, end='')
                 file.save(self.convertToMD(filename))
 
             #split into new function, artifact upload?
