@@ -642,7 +642,7 @@ class Database():
         artifactChangePrevious = temp[0]
 
         d = difflib.HtmlDiff()
-        return  (d.make_table(str(artifactChange), str(artifactChangePrevious)), 200)
+        return  (d.make_file(str(artifactChange), str(artifactChangePrevious)), 200)
     
     '''
     def removeRepo(self,content):
