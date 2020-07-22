@@ -686,8 +686,10 @@ class Database():
             tempTrash = self.cursor.fetchone()
         '''
         
+        
         #convert file to md
-        converted_file = pypandoc.convert_file(filename, ext)
+        tempname = "./uploads/temp." + ext
+        converted_file = pypandoc.convert_file(filename, ext, tempname)
 
         return converted_file
     
@@ -773,8 +775,8 @@ class Database():
                     convertedfile = self.convertFromMD(filenameMD, str(artifactData[6]))
                 else:
                     if (str(content["new_file_type"]) in CONVERTIBLE_EXTENSIONS):
-                        convertedfile = self.convertFromMD(filenameMD, str(content["new_file_type"]))
                         fullfilename = filename + str(content["new_file_type"])
+                        convertedfile = self.convertFromMD(filenameMD, str(content["new_file_type"]))
                     else:
                         payload = {
                             "err_message": "Failure: We cannot convert to that type."
