@@ -6,6 +6,7 @@ import json
 import os
 import sys
 import pypandoc
+import difflib
 from flask import send_file, redirect, url_for, request, flash
 from werkzeug.utils import secure_filename
 
@@ -567,9 +568,83 @@ class Database():
     def diff(self, content):
         #check file type, can be diff'd, full diff
         #can't be diff'd, simple compare
-
+    
+    '''
     def simpleCompare (self, content):
+        self.ensureConnected()
 
+        if str(content["user_id"]) == "":
+            temp = self.getUserId(str(content["username"]), str(content["password"]))        
+            if temp == "":
+                payload = {
+                    "err_message": "Failure: That username or password does not exist."
+                }
+                return (json.dumps(payload), 401)   
+            userId = int(temp)
+        else:
+            userId = int(content["user_id"])
+        
+        permissionLevel = self.getPermissionLevel(userId)
+
+        if str(content["repository_id"]) == "":
+            temp = self.getRepoId(str(content["repo_name"]), permissionLevel)
+            if temp == "":
+                payload = {
+                    "err_message": "Failure: That repository does not exist."
+                }
+                return (json.dumps(payload), 401)
+            repoId = int(temp)
+        else:
+            repoId = int(content["repository_id"])
+        
+        if str(content["artifact_id"]) == "":
+            sql = "SELECT artifact_id FROM artifact WHERE artifact_repo = %s && artifact_name = %s"
+            data = (repoId, str(content["artifact_name"]))
+            self.cursor.execute(sql, data)
+            temp = self.cursor.fetchall()
+            if len(temp) == 0:
+                payload = {
+                    "err_message": "Failure: That artifact does not exist."
+                }
+                return (json.dumps(payload), 401)
+            artifactId = int(temp[0][0])
+        else:
+            artifactId = int(content["artifact_id"])
+
+        if str(content["version"]) == "":
+            sql = "SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s"
+            data = (artifactId, )
+            self.cursor.execute(sql, data)
+            temp = self.cursor.fetchall()
+            version = int(temp[0][0])
+        else:
+            version = (int(content["version"]))
+        
+        sql = "SELECT * FROM artifact_change_record WHERE artifact_id = %s && version = %s"
+        data = (artifactId, version)
+        self.cursor.execute(sql, data)
+        temp = self.cursor.fetchall()
+        artifactChange = temp[0]
+
+        if str(content["previous_version"]) == "":
+            sql = "SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s"
+            data = (artifactId, )
+            self.cursor.execute(sql, data)
+            temp = self.cursor.fetchall()
+            version = int(temp[0][0])
+        else:
+            version = (int(content["version"]))
+
+        sql = "SELECT * FROM artifact_change_record WHERE artifact_id = %s && version = %s"
+        data = (artifactId, version)
+        self.cursor.execute(sql, data)
+        temp = self.cursor.fetchall()
+        artifactChangePrevious = temp[0]
+
+        d = difflib.HtmlDiff()
+        return  (d.make_table(artifactChange, artifactChangePrevious), 200)
+    
+    '''
     def removeRepo(self,content):
 
     def removeArtifact(self, content):

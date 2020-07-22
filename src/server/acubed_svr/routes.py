@@ -107,6 +107,9 @@ def returnartifactinfo():
 def returnrepoinfo():
     return db.repoInfo(request.get_json(force=True))
 
+@app.route('/simplecompare' ,methods = ['GET', 'POST'])
+def simplecompare():
+    return db.simpleCompare(request.get_json(force=True))
 '''
 @app.route('/removerepo' ,methods = ['GET', 'POST'])
 def removerepo():
