@@ -13,8 +13,8 @@ from werkzeug.utils import secure_filename
 #Global Variables
 DATABASE_NAME = 'Acubed'
 UPLOAD_FOLDER = './uploads'
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'docx', 'doc', 'ppt', 'pptx', 'odt', 'htm', 'html', 'md', 'py', 'java', 'cpp'}
-CONVERTIBLE_EXTENSIONS = {'pdf', 'doc', 'docx', 'ppt', 'pptx', 'odt', 'htm', 'html'}
+ALLOWED_EXTENSIONS = {'txt', 'docx', 'doc', 'odt', 'htm', 'html', 'md', 'py', 'java', 'cpp'}
+CONVERTIBLE_EXTENSIONS = {'doc', 'docx', 'odt', 'htm', 'html'}
 
 class Database():
     # Initialize the MySQL-connector connection at the begining of of the script to ensure 
