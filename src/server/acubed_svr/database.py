@@ -156,13 +156,12 @@ class Database():
     #check file type for defined set of allowed extensions AND check for convertible extensions
     #returns tuple = ('extension', 0 OR 1 OR 2) where 0 = not allowed, 1 = allowed, 2 = convertible
     def allowed_file(self, filename):
-        extension = filename.rsplit('.', 1)[1].lower()
-        check = 0
-        if extension in ALLOWED_EXTENSIONS:
-            check = 1
-        if extension in CONVERTIBLE_EXTENSIONS:
-            check = 2
-        return (extension, check)
+        return '.' in filename and \
+            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+    def convertible_file(self, filename):
+        return '.' in filename and \
+            filename.rsplit('.', 1)[1].lower() in CONVERTIBLE_EXTENSIONS
     
     #Uploads original file  content = request.files['file']
     def artifactUpload(self, file, content):
@@ -233,27 +232,49 @@ class Database():
             }
             return (json.dumps(payload), 404)
         if file and self.allowed_file(file.filename):
+
             filename = secure_filename(file.filename)
             file.save(os.path.join(UPLOAD_FOLDER, filename))
+            if self.convertible_file(file.filename):
+                temp = self.convertToMD(os.path.join(UPLOAD_FOLDER, filename))
+                temp.save(os.path.join(UPLOAD_FOLDER, filename))
+
+            #split into new function, artifact upload?
+            sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_id, artifact_blob, version) VALUES (%s, %s, %s, %s, %s)"
+            #datetime from artifact_creation_date, changer_id from owner_id, artifact_size get file size, convert to blob
+            #(variable for version) = (query for previous version, if updating; 1 if no previous version)
+            #TODO replace with proper file upload
+            artifact_blob = open(os.path.join(UPLOAD_FOLDER, filename), "rb").read()
+            #temp_filename = UPLOAD_FOLDER + '/'
+            #temp_blob = temp_filename + file.filename
+            dataTwo = (datecreated, userId, temp[0][0], artifact_blob, version)
             
-        
-        #split into new function, artifact upload?
-        sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_id, artifact_blob, version) VALUES (%s, %s, %s, %s, %s)"
-        #datetime from artifact_creation_date, changer_id from owner_id, artifact_size get file size, convert to blob
-        #(variable for version) = (query for previous version, if updating; 1 if no previous version)
-        #TODO replace with proper file upload
-        artifact_blob = open(os.path.join(UPLOAD_FOLDER, filename), "rb").read()
-        #temp_filename = UPLOAD_FOLDER + '/'
-        #temp_blob = temp_filename + file.filename
-        dataTwo = (datecreated, userId, temp[0][0], artifact_blob, version)
-        
-        self.cursor.execute(sqlTwo, dataTwo)
-        self.connector.commit()
-        
-        payload = {
-                "err_message": "Success: Artifact uploaded."
-            }
-        return (json.dumps(payload), 200)
+            self.cursor.execute(sqlTwo, dataTwo)
+            self.connector.commit()
+            
+            payload = {
+                    "err_message": "Success: Artifact uploaded."
+                }
+            return (json.dumps(payload), 200)
+        else:
+            #TODO store along side database
+            temp = UPLOAD_FOLDER + file.filename
+            sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_id, version) VALUES (%s, %s, %s, %s)"
+            #datetime from artifact_creation_date, changer_id from owner_id, artifact_size get file size, convert to blob
+            #(variable for version) = (query for previous version, if updating; 1 if no previous version)
+
+            #temp_filename = UPLOAD_FOLDER + '/'
+            #temp_blob = temp_filename + file.filename
+            dataTwo = (datecreated, userId, temp[0][0], version)
+            
+            self.cursor.execute(sqlTwo, dataTwo)
+            self.connector.commit()
+            
+            payload = {
+                    "err_message": "Success: Artifact uploaded."
+                }
+            return (json.dumps(payload), 200)
+
 
     def createRepo(self,content):
         self.ensureConnected()
