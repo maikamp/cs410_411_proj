@@ -201,7 +201,7 @@ class Database():
             #creation date, we need to pull current datetime
             #pull extension from filename
             #exten = self.allowed_file(filename)
-            dataUp = (int(results[0]), int(content["artifact_repo"]), int(content["artifact_access_level"]), str(content["artifact_name"]), extension, datecreated)
+            dataUp = (userId, int(content["artifact_repo"]), int(content["artifact_access_level"]), str(content["artifact_name"]), extension, datecreated)
         
             self.cursor.execute(sqlUp, dataUp)
             self.connector.commit()
@@ -244,7 +244,7 @@ class Database():
         artifact_blob = open(os.path.join(UPLOAD_FOLDER, filename), "rb").read()
         #temp_filename = UPLOAD_FOLDER + '/'
         #temp_blob = temp_filename + file.filename
-        dataTwo = (datecreated, int(results[0]), temp[0][0], artifact_blob, version)
+        dataTwo = (datecreated, userId, temp[0][0], artifact_blob, version)
         
         self.cursor.execute(sqlTwo, dataTwo)
         self.connector.commit()
