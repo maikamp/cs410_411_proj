@@ -236,6 +236,7 @@ class Database():
             filename = secure_filename(file.filename)
             file.save(os.path.join(UPLOAD_FOLDER, filename))
             if self.convertible_file(file.filename):
+                #tempname = 
                 print(filename, file = sys.stderr, end='')
                 file.save(self.convertToMD(filename))
 
