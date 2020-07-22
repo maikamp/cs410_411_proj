@@ -318,7 +318,7 @@ class Database():
                 temp = self.cursor.fetchall()
                 payload = {
                     "repo_name": str(temp[0][3]),
-                    "owner_name": str(temp[0][1]),
+                    "owner_id": str(temp[0][1]),
                     "err_message": "Success: Repository created. " 
                 }
                 return (json.dumps(payload), 200)
