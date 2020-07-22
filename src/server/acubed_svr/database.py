@@ -668,7 +668,7 @@ class Database():
         print(mdfilename, file = sys.stderr)
         fileMD = pypandoc.convert_file(tempfilename, 'md', outputfile = mdfilename)
         
-        return fileMD
+        return filename + '.md'
 
     def convertFromMD(self, filename, ext):
         '''
