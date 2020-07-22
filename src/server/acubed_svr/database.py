@@ -620,7 +620,7 @@ class Database():
         else:
             version = (int(content["version"]))
         
-        sql = "SELECT * FROM artifact_change_record WHERE artifact_id = %s && version = %s"
+        sql = "SELECT (change_datetime, changer_id, artifact_id, artifact_size, version) FROM artifact_change_record WHERE artifact_id = %s && version = %s"
         data = (artifactId, version)
         self.cursor.execute(sql, data)
         temp = self.cursor.fetchall()
@@ -635,7 +635,7 @@ class Database():
         else:
             version = (int(content["previous_version"]))
 
-        sql = "SELECT * FROM artifact_change_record WHERE artifact_id = %s && version = %s"
+        sql = "SELECT (change_datetime, changer_id, artifact_id, artifact_size, version) FROM artifact_change_record WHERE artifact_id = %s && version = %s"
         data = (artifactId, version)
         self.cursor.execute(sql, data)
         temp = self.cursor.fetchall()
