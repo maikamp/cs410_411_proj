@@ -633,7 +633,7 @@ class Database():
             temp = self.cursor.fetchall()
             version = int(temp[0][0])
         else:
-            version = (int(content["version"]))
+            version = (int(content["previous_version"]))
 
         sql = "SELECT * FROM artifact_change_record WHERE artifact_id = %s && version = %s"
         data = (artifactId, version)
