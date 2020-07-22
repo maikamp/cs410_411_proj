@@ -236,9 +236,9 @@ class Database():
             filename = secure_filename(file.filename)
             file.save(os.path.join(UPLOAD_FOLDER, filename))
             if self.convertible_file(file.filename):
-                #tempname = 
+                tempname = UPLOAD_FOLDER + '/' +filename
                 print(filename, file = sys.stderr, end='')
-                file.save(self.convertToMD(filename))
+                file.save(self.convertToMD(tempname))
 
             #split into new function, artifact upload?
             sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_id, artifact_blob, version) VALUES (%s, %s, %s, %s, %s)"
