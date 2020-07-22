@@ -644,7 +644,8 @@ class Database():
 
         d = difflib.HtmlDiff()
         return  (d.make_file(artifactChange.split('\n'), artifactChangePrevious.split('\n')), 200)
-    
+        #to only retuurn a HTML table for ui to use if they need it
+        #return  (d.make_table(artifactChange.split('\n'), artifactChangePrevious.split('\n')), 200)
     '''
     def removeRepo(self,content):
 
