@@ -6,3 +6,4 @@ python-dotenv
 pandoc
 pypandoc
 nano
+pyopenssl
