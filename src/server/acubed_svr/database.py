@@ -664,7 +664,9 @@ class Database():
         
         mdfilename = './uploads/' + filename + '.md'
         filename = './uploads/' + filename + ext
-        fileMD = pypandoc.convert_file(filename, 'md', outputfile=mdfilename)
+        print(filename, file = sys.stderr)
+        print(mdfilename, file = sys.stderr)
+        fileMD = pypandoc.convert_file(filename, 'md', outputfile = mdfilename)
         
         return fileMD
 
