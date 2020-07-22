@@ -231,10 +231,9 @@ class Database():
                 "err_message": "No selected file."
             }
             return (json.dumps(payload), 404)
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(UPLOAD_FOLDER, filename))
         if file and self.allowed_file(file.filename):
-
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(UPLOAD_FOLDER, filename))
             if self.convertible_file(file.filename):
                 tempname = str(content["artifact_name"])
                 extension = file.filename.rsplit('.', 1)[1].lower()
@@ -261,7 +260,10 @@ class Database():
                 }
             return (json.dumps(payload), 200)
         else:
-            #TODO store along side database
+            sql = "SELECT artifact_id FROM artifact WHERE owner_id = %s && artifact_repo = %s && artifact_name = %s"
+            val = (userId, repoId, str(content["artifact_name"]))
+            self.cursor.execute(sql, val)
+            temp = self.cursor.fetchall()
             temp = UPLOAD_FOLDER + file.filename
             sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_id, version) VALUES (%s, %s, %s, %s)"
             #datetime from artifact_creation_date, changer_id from owner_id, artifact_size get file size, convert to blob
