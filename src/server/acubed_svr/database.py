@@ -241,11 +241,13 @@ class Database():
                 print(filename, file = sys.stderr, end='')
                 filename = self.convertToMD(tempname, extension)
 
-            #split into new function, artifact upload?
+            sql = "SELECT artifact_id FROM artifact WHERE owner_id = %s && artifact_repo = %s && artifact_name = %s"
+            val = (userId, repoId, str(content["artifact_name"]))
+            self.cursor.execute(sql, val)
+            temp = self.cursor.fetchall()
             sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_id, artifact_blob, version) VALUES (%s, %s, %s, %s, %s)"
             #datetime from artifact_creation_date, changer_id from owner_id, artifact_size get file size, convert to blob
             #(variable for version) = (query for previous version, if updating; 1 if no previous version)
-            #TODO replace with proper file upload
             artifact_blob = open(os.path.join(UPLOAD_FOLDER, filename), "rb").read()
             #temp_filename = UPLOAD_FOLDER + '/'
             #temp_blob = temp_filename + file.filename
