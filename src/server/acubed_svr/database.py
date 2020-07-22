@@ -644,7 +644,7 @@ class Database():
 
         d = difflib.HtmlDiff()
         return  (d.make_file(artifactChange.split('\n'), artifactChangePrevious.split('\n')), 200)
-        #to only retuurn a HTML table for ui to use if they need it
+        #to only return a HTML table for ui to use if they need it
         #return  (d.make_table(artifactChange.split('\n'), artifactChangePrevious.split('\n')), 200)
     '''
     def removeRepo(self,content):
@@ -736,58 +736,64 @@ class Database():
         data = (repoId, artifactId)
         self.cursor.execute(sql, data)
         temp = self.cursor.fetchall()
-        artifactData = temp[0]
+        if len(temp) == 0:
+            payload = {
+                "err_message": "Failure there is no artifact here."
+            }
+            return (json.dumps(payload), 401)
+        else:
+            artifactData = temp[0]
 
-        if str(content["version"]) == "":
-            sql = "SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s"
-            data = (artifactId, )
+            if str(content["version"]) == "":
+                sql = "SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s"
+                data = (artifactId, )
+                self.cursor.execute(sql, data)
+                temp = self.cursor.fetchall()
+                version = int(temp[0][0])
+            else:
+                version = (int(content["version"]))
+
+            sql = "SELECT * FROM artifact_change_record WHERE artifact_id = %s && version = %s"
+            data = (artifactId, version)
             self.cursor.execute(sql, data)
             temp = self.cursor.fetchall()
-            version = int(temp[0][0])
-        else:
-            version = (int(content["version"]))
+            artifactChange = temp[0]
+            
+            filename = str(artifactData[4]) + '.'
+            fullfilename = filename + str(artifactData[6])
+            filenameMD = filename + 'md'
 
-        sql = "SELECT * FROM artifact_change_record WHERE artifact_id = %s && version = %s"
-        data = (artifactId, version)
-        self.cursor.execute(sql, data)
-        temp = self.cursor.fetchall()
-        artifactChange = temp[0]
-        
-        filename = str(artifactData[4]) + '.'
-        fullfilename = filename + str(artifactData[6])
-        filenameMD = filename + 'md'
+            blobfile = artifactChange[4]
+            
+            if str(artifactData[6]) in CONVERTIBLE_EXTENSIONS:
+                with open(filenameMD, 'wb') as file:
+                    file.write(blobfile)
 
-        blobfile = artifactChange[4]
-        
-        if str(artifactData[6]) in CONVERTIBLE_EXTENSIONS:
-            with open(filenameMD, 'wb') as file:
-                file.write(blobfile)
-
-            if str(content["new_file_type"]) == "":
-                convertedfile = self.convertFromMD(filenameMD, str(artifactData[6]))
-            else:
-                if (str(content["new_file_type"]) in CONVERTIBLE_EXTENSIONS):
-                    convertedfile = self.convertFromMD(filenameMD, str(content["new_file_type"]))
-                    fullfilename = filename + str(content["new_file_type"])
+                if str(content["new_file_type"]) == "":
+                    convertedfile = self.convertFromMD(filenameMD, str(artifactData[6]))
                 else:
-                    payload = {
-                        "err_message": "Failure: We cannot convert to that type."
-                    }
-            return (send_file(convertedfile, attachment_filename=fullfilename))
+                    if (str(content["new_file_type"]) in CONVERTIBLE_EXTENSIONS):
+                        convertedfile = self.convertFromMD(filenameMD, str(content["new_file_type"]))
+                        fullfilename = filename + str(content["new_file_type"])
+                    else:
+                        payload = {
+                            "err_message": "Failure: We cannot convert to that type."
+                        }
+                return (send_file(convertedfile, attachment_filename=fullfilename))
 
-        else:
-            with open(fullfilename, 'wb') as file:
-                file.write(blobfile)
+            else:
+                with open(fullfilename, 'wb') as file:
+                    file.write(blobfile)
 
-            #payload = {
-            #    "artifact_id": str(artifactData[0]),
-            #    "owner_id": str(artifactData[1]),
-            #    "artifact_name": str(artifactData[4]),
-            #    "artifact_original_filetype": str(artifactData[6]),
-            #    "artifact_size": str(artifactChange[3]),
-            #    "version": str(artifactChange[5])
-            #}
-            return (send_file(fullfilename, attachment_filename=fullfilename))
+                #payload = {
+                #    "artifact_id": str(artifactData[0]),
+                #    "owner_id": str(artifactData[1]),
+                #    "artifact_name": str(artifactData[4]),
+                #    "artifact_original_filetype": str(artifactData[6]),
+                #    "artifact_size": str(artifactChange[3]),
+                #    "version": str(artifactChange[5])
+                #}
+                return (send_file(fullfilename, attachment_filename=fullfilename))
     
     '''
     def addTag(self, content):
