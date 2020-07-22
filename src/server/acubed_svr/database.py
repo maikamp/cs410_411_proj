@@ -163,7 +163,7 @@ class Database():
         if extension in CONVERTIBLE_EXTENSIONS:
             check = 2
         return (extension, check)
-
+    
     #Uploads original file  content = request.files['file']
     def artifactUpload(self, file, content):
         self.ensureConnected()
@@ -233,9 +233,11 @@ class Database():
             }
             return (json.dumps(payload), 404)
         if file and self.allowed_file(file.filename):
-            filename = secure_filename(file.filename)
+            #changed file.filename to file.filename.md to test conversion?
+            filename = secure_filename(file.filename.md)
             file.save(os.path.join(UPLOAD_FOLDER, filename))
-              
+            
+        
         #split into new function, artifact upload?
         sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_id, artifact_blob, version) VALUES (%s, %s, %s, %s, %s)"
         #datetime from artifact_creation_date, changer_id from owner_id, artifact_size get file size, convert to blob
