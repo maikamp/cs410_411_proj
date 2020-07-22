@@ -181,19 +181,8 @@ class Database():
             userId = int(temp)
         else:
             userId = int(content["user_id"])
-        
-        permissionLevel = self.getPermissionLevel(userId)
 
-        if str(content["repository_id"]) == "":
-            temp = self.getRepoId(str(content["repo_name"]), permissionLevel)
-            if temp == "":
-                payload = {
-                    "err_message": "Failure: That repository does not exist."
-                }
-                return (json.dumps(payload), 401)
-            repoId = int(temp)
-        else:
-            repoId = int(content["repository_id"])
+        repoId = int(content["artifact_repo"])
          
         sql = "SELECT artifact_id FROM artifact WHERE owner_id = %s && artifact_repo = %s && artifact_name = %s"
         val = (userId, repoId, str(content["artifact_name"]))
@@ -201,7 +190,7 @@ class Database():
         temp = self.cursor.fetchall()
         if len(temp) == 0:
             if str(content["version"]) == "":
-                verison = 1
+                version = 1
             else:
                 version = int(content["version"])
             extension = file.filename.rsplit('.', 1)[1].lower()
