@@ -188,6 +188,8 @@ class Database():
         val = (userId, repoId, str(content["artifact_name"]))
         self.cursor.execute(sql, val)
         temp = self.cursor.fetchall()
+        datecreated = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
         if len(temp) == 0:
             if str(content["version"]) == "":
                 version = 1
@@ -197,7 +199,6 @@ class Database():
             sqlUp = "INSERT INTO artifact (owner_id, artifact_repo, artifact_access_level, artifact_name, artifact_original_filetype, artifact_creation_date) VALUES (%s, %s, %s, %s, %s, %s)"
             #can UI send us repository_id or do we need to query for it?
             #creation date, we need to pull current datetime
-            datecreated = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             #pull extension from filename
             #exten = self.allowed_file(filename)
             dataUp = (int(results[0]), int(content["artifact_repo"]), int(content["artifact_access_level"]), str(content["artifact_name"]), extension, datecreated)
