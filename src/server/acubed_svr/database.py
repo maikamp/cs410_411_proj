@@ -689,7 +689,7 @@ class Database():
         
         #convert file to md
         tempname = "./uploads/temp." + ext
-        converted_file = pypandoc.convert_file(filename, ext, tempname)
+        converted_file = pypandoc.convert_file(filename, ext, ouputfile=tempname)
 
         return converted_file
     
