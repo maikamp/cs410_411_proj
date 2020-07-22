@@ -236,9 +236,10 @@ class Database():
             filename = secure_filename(file.filename)
             file.save(os.path.join(UPLOAD_FOLDER, filename))
             if self.convertible_file(file.filename):
-                tempname = UPLOAD_FOLDER + '/' +filename
+                tempname = str(content["artifact_name"])
+                extension = file.filename.rsplit('.', 1)[1].lower()
                 print(filename, file = sys.stderr, end='')
-                file.save(self.convertToMD(tempname))
+                filename = self.convertToMD(tempname, extension)
 
             #split into new function, artifact upload?
             sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_id, artifact_blob, version) VALUES (%s, %s, %s, %s, %s)"
@@ -649,7 +650,7 @@ class Database():
     '''
 
     #receives string filename, returns converted file in MD
-    def convertToMD(self, filename):
+    def convertToMD(self, filename, ext):
         #file = open(str(content("filename")), "r")
         '''
         sql = "SELECT artifact_id FROM artifact WHERE artifact_name = %s"
@@ -660,7 +661,10 @@ class Database():
         while (self.cursor.fetchone() != None):
             tempTrash = self.cursor.fetchone()
         '''
-        fileMD = pypandoc.convert_file(filename, 'md')
+        
+        mdfilename = './uploads/' + filename + '.md'
+        mdfilename = './uploads/' + filename + ext
+        fileMD = pypandoc.convert_file(filename, 'md', outputfile=mdfilename)
         
         return fileMD
 
