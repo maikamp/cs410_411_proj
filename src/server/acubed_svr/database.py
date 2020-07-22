@@ -170,35 +170,57 @@ class Database():
         
         content = json.loads(content.read().decode('utf-8'))
 
+  
         if str(content["user_id"]) == "":
-            sql = "SELECT user_id FROM user WHERE username = %s && password = %s"
-            data = (str(content["username"]), str(content["password"]))
-            self.cursor.execute(sql, data)
-            temp = self.cursor.fetchall()
-            if len(temp) == 0:
+            temp = self.getUserId(str(content["username"]), str(content["password"]))        
+            if temp == "":
                 payload = {
-                    "err_message": "Failure: You do not have permission for that."
+                    "err_message": "Failure: That username or password does not exist."
+                }
+                return (json.dumps(payload), 401)   
+            userId = int(temp)
+        else:
+            userId = int(content["user_id"])
+        
+        permissionLevel = self.getPermissionLevel(userId)
+
+        if str(content["repository_id"]) == "":
+            temp = self.getRepoId(str(content["repo_name"]), permissionLevel)
+            if temp == "":
+                payload = {
+                    "err_message": "Failure: That repository does not exist."
                 }
                 return (json.dumps(payload), 401)
-            results = (temp[0])
+            repoId = int(temp)
         else:
-            results = (content["user_id"], )   
-
-        #fileUpload = request.files['inputFile']
-        #file location in json, either "local file": "file location" OR "web file": url
-        #if local file, use fileupload
-        #if web file, use webscraper
-        extension = file.filename.rsplit('.', 1)[1].lower()
-        sqlUp = "INSERT INTO artifact (owner_id, artifact_repo, artifact_access_level, artifact_name, artifact_original_filetype, artifact_creation_date ) VALUES (%s, %s, %s, %s, %s, %s)"
-        #can UI send us repository_id or do we need to query for it?
-        #creation date, we need to pull current datetime
-        datecreated = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        #pull extension from filename
-        #exten = self.allowed_file(filename)
-        dataUp = (int(results[0]), int(content["artifact_repo"]), int(content["artifact_access_level"]), str(content["artifact_name"]), extension, datecreated)
+            repoId = int(content["repository_id"])
+         
+        sql = "SELECT artifact_id FROM artifact WHERE owner_id = %s && artifact_repo = %s && artifact_name = %s"
+        val = (userId, repoId, str(content["artifact_name"]))
+        self.cursor.execute(sql, val)
+        temp = self.cursor.fetchall()
+        if len(temp) == 0:
+            if str(content["version"]) == "":
+                verison = 1
+            else:
+                version = int(content["version"])
+            extension = file.filename.rsplit('.', 1)[1].lower()
+            sqlUp = "INSERT INTO artifact (owner_id, artifact_repo, artifact_access_level, artifact_name, artifact_original_filetype, artifact_creation_date) VALUES (%s, %s, %s, %s, %s, %s)"
+            #can UI send us repository_id or do we need to query for it?
+            #creation date, we need to pull current datetime
+            datecreated = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            #pull extension from filename
+            #exten = self.allowed_file(filename)
+            dataUp = (int(results[0]), int(content["artifact_repo"]), int(content["artifact_access_level"]), str(content["artifact_name"]), extension, datecreated)
         
-        self.cursor.execute(sqlUp, dataUp)
-        self.connector.commit()
+            self.cursor.execute(sqlUp, dataUp)
+            self.connector.commit()
+        else:
+            sql = "SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s"
+            val = (temp[0][0], )
+            self.cursor.execute(sql, val)
+            results = self.cursor.fetchall()
+            version = results[0][0] + 1
         
         #artifact_file = open("simplemd.md", "r")
         #fileupload steps
@@ -223,22 +245,7 @@ class Database():
         if file and self.allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(UPLOAD_FOLDER, filename))
-        #print("you are here.")
-        #TODO return json dump here
-            '''
-            payload = {
-                "err_message": "Success: Artifact uploaded."
-            }
-            return (json.dumps(payload), 200)
-            '''
-        
-        #TODO check extension, then convert to MD step for appropriate file types
-        #extTuple = self.allowed_file("simplemd.md")
-        sqlId = "SELECT artifact_id FROM artifact WHERE artifact_name = %s"
-        val = (str(content["artifact_name"]), )
-        self.cursor.execute(sqlId, val)
-        temp = self.cursor.fetchall()
-                
+              
         #split into new function, artifact upload?
         sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_id, artifact_blob, version) VALUES (%s, %s, %s, %s, %s)"
         #datetime from artifact_creation_date, changer_id from owner_id, artifact_size get file size, convert to blob
@@ -247,7 +254,7 @@ class Database():
         artifact_blob = open(os.path.join(UPLOAD_FOLDER, filename), "rb").read()
         #temp_filename = UPLOAD_FOLDER + '/'
         #temp_blob = temp_filename + file.filename
-        dataTwo = (datecreated, int(results[0]), temp[0][0], artifact_blob, 1)
+        dataTwo = (datecreated, int(results[0]), temp[0][0], artifact_blob, version)
         
         self.cursor.execute(sqlTwo, dataTwo)
         self.connector.commit()
@@ -256,32 +263,6 @@ class Database():
                 "err_message": "Success: Artifact uploaded."
             }
         return (json.dumps(payload), 200)
-        
-        #return fileUpload.filename 
-        #check if artifact exists in db, by artifact_name
-        #if exists, prompt "would you like to update?"
-        #if not exists, original upload
-
-    #def addUser(self,content):
-    #   self.ensureConnected()
-    #    if  (str(content["accessLevel"]) == ""):
-    #        sql = "INSERT INTO user (access_level, username, password, user_email) VALUES (3, %s, %s, %s)"
-    #        data = (str(content["username"]), str(content["password"]), str(content["email"]))
-    #        self.cursor.execute(sql, data)
-    #        self.connector.commit()
-    #        payload = {
-    #            "err_message": "Success: User added."
-    #        }
-    #        return (json.dumps(payload), 200)
-    #    else:    
-    #        sql = "INSERT INTO user (access_level, username, password, user_email) VALUES (%s, %s, %s, %s)"
-    #        data = (content["accessLevel"],str(content["username"]), str(content["password"]), str(content["email"]))
-    #        self.cursor.execute(sql, data)
-    #        self.connector.commit()
-    #        payload = {
-    #            "err_message": "Success: User added."
-    #        }
-    #        return (json.dumps(payload), 200)
 
     def createRepo(self,content):
         self.ensureConnected()
