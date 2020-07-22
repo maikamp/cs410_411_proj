@@ -233,9 +233,8 @@ class Database():
             }
             return (json.dumps(payload), 404)
         if file and self.allowed_file(file.filename):
-            #changed file.filename to file.filename.md to test conversion?
             filename = secure_filename(file.filename)
-            file.save(os.path.join(UPLOAD_FOLDER, filename.md))
+            file.save(os.path.join(UPLOAD_FOLDER, filename))
             
         
         #split into new function, artifact upload?
