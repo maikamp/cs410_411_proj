@@ -624,7 +624,7 @@ class Database():
         data = (artifactId, version)
         self.cursor.execute(sql, data)
         temp = self.cursor.fetchall()
-        artifactChange = "change datettime: " + str(temp[0][0]) + ", changer id: " + str(temp[0][1]) + ", artifact_id: " + str(temp[0][2]) + ", artifact size: " + str(temp[0][3]) + ", version: " + str(temp[0][4])
+        artifactChange = "change datettime: " + str(temp[0][0]) + ",\nchanger id: " + str(temp[0][1]) + ",\nartifact_id: " + str(temp[0][2]) + ",\nartifact size: " + str(temp[0][3]) + ",\nversion: " + str(temp[0][4]) + '\n'
 
 
         if str(content["previous_version"]) == "":
@@ -640,10 +640,10 @@ class Database():
         data = (artifactId, version)
         self.cursor.execute(sql, data)
         temp = self.cursor.fetchall()
-        artifactChangePrevious = artifactChange = "change datettime: " + str(temp[0][0]) + ", changer id: " + str(temp[0][1]) + ", artifact_id: " + str(temp[0][2]) + ", artifact size: " + str(temp[0][3]) + ", version: " + str(temp[0][4])
+        artifactChangePrevious = "change datettime: " + str(temp[0][0]) + ",\nchanger id: " + str(temp[0][1]) + ",\nartifact_id: " + str(temp[0][2]) + ",\nartifact size: " + str(temp[0][3]) + ",\nversion: " + str(temp[0][4]) + '\n'
 
         d = difflib.HtmlDiff()
-        return  (d.make_file(str(artifactChange), str(artifactChangePrevious)), 200)
+        return  (d.make_file(artifactChange.split('\n'), artifactChangePrevious.split('\n')), 200)
     
     '''
     def removeRepo(self,content):
