@@ -741,13 +741,13 @@ class Database():
     def add_tag(self, content):
         #receive user id ?
         #permission check from user id?
-        
+
         tempRepoID = 0
         tempArtifactID = 0
         #if the json passed in has repo name or id, hold repository_id in tempRepoID
-        if str(content["repository_id"]) is not "":
+        if str(content["repository_id"]) != "":
             tempRepoID = int(content["repository_id"])
-        elif str(content["repository_id"] is "" and str(content["repo_name"]) is not ""):
+        elif str(content["repository_id"] == "" and str(content["repo_name"]) != ""):
             #query for repo id
             sql = "SELECT repository_id FROM repository WHERE repo_name = %s"
             val = (str(content["repo_name"]), )
@@ -755,9 +755,9 @@ class Database():
             result = self.cursor.fetchall()
             tempRepoID = result[0][0]
         #if the json passed in has artifact name or id, hold artifact_id in tempArtifactID
-        elif str(content["artifact_id"]) is not "":
+        elif str(content["artifact_id"]) != "":
             tempArtifactID = int(content["artifact_id"])
-        elif str(content["artifact_id"] is "") and str(content["artifact_name"]) is not "":
+        elif str(content["artifact_id"] == "") and str(content["artifact_name"]) != "":
             #query for artifact id
             sql = "SELECT artifact_id FROM artifact WHERE artifact_name = %s"
             val = (str(content["artifact_name"]), )
