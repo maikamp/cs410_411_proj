@@ -78,38 +78,38 @@ def artifactupload():
 
 @app.route('/createrepo', methods = ['GET', 'POST'])
 def createrepo():
-    return db.createRepo(request.get_json(force=True))
+    return db.create_repo(request.get_json(force=True))
 
 @app.route('/changepw', methods = ['GET', 'POST'])
 def changepw():
-    return db.changePw(request.get_json(force=True))
+    return db.change_pw(request.get_json(force=True))
 
 @app.route('/changeusername' ,methods = ['GET', 'POST'])
 def changeusername():
-    return db.changeUsername(request.get_json(force=True))
+    return db.change_username(request.get_json(force=True))
 
 @app.route('/updaterepoattrib' ,methods = ['GET', 'POST'])
 def updaterepoattrib():
-    return db.updateRepoAttrib(request.get_json(force=True))
+    return db.update_repo_attrib(request.get_json(force=True))
 
 @app.route('/updateartifactattrib' ,methods = ['GET', 'POST'])
 def updateartifactattrib():
-    return db.updateArtifactAttrib(request.get_json(force=True))
+    return db.update_artifact_attrib(request.get_json(force=True))
 
 #@app.route('/updateartifact' ,methods = ['GET', 'POST'])
 #def updateartifact():
 
 @app.route('/returnartifactinfo' ,methods = ['GET', 'POST'])
 def returnartifactinfo():
-    return db.artifactInfo(request.get_json(force=True))
+    return db.artifact_info(request.get_json(force=True))
 
 @app.route('/returnrepoinfo' ,methods = ['GET', 'POST'])
 def returnrepoinfo():
-    return db.repoInfo(request.get_json(force=True))
+    return db.repo_info(request.get_json(force=True))
 
 @app.route('/simplecompare' ,methods = ['GET', 'POST'])
 def simplecompare():
-    return db.simpleCompare(request.get_json(force=True))
+    return db.simple_compare(request.get_json(force=True))
 '''
 @app.route('/removerepo' ,methods = ['GET', 'POST'])
 def removerepo():
@@ -125,11 +125,11 @@ def removeartifact():
 '''
 @app.route('/exportartifact' ,methods = ['GET', 'POST'])
 def exportartifact():
-    return db.exportArtifact(request.get_json(force=True))
+    return db.export_artifact(request.get_json(force=True))
 
 @app.route('/addtag' ,methods = ['GET', 'POST'])
 def addtag():
-    return db.addTag(request.get_json(force=True))
+    return db.add_tag(request.get_json(force=True))
 '''
 @app.route('/returnlistrepos' ,methods = ['GET', 'POST'])
 def returnlistrepos():

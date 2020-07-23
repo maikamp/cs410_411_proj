@@ -15,7 +15,13 @@ DATABASE_NAME = 'Acubed'
 UPLOAD_FOLDER = './uploads'
 ALLOWED_EXTENSIONS = {'txt', 'docx', 'doc', 'odt', 'htm', 'html', 'md', 'py', 'java', 'cpp'}
 CONVERTIBLE_EXTENSIONS = {'doc', 'docx', 'odt', 'htm', 'html'}
-
+#create the default payload for no username/password combination
+AUTHENTICATE_FAIL = {
+                "err_message": "Failure: That username or password does not exist."
+            }
+NO_REPO = {
+        "err_message": "Failure: That repository does not exist."
+}
 class Database():
     # Initialize the MySQL-connector connection at the begining of of the script to ensure 
     # we are working from the correct database. Defines self.
@@ -44,38 +50,72 @@ class Database():
             self.cursor = self.connector.cursor()
 
     #get user id when you have a username and password
-    def getUserId(self, username, password):
+    def get_user_id(self, username, password):
         sql = "SELECT user_id FROM user WHERE username = %s && password = %s"
         data = (username, password)
         self.cursor.execute(sql, data)
         temp = self.cursor.fetchall()
-        result = temp[0]
         if len(temp) == 0:
             #set to an empty string for no users
-            userId = ""
+            user_id = ""
         else:
-            userId = result[0]
-        return userId
+            user_id = int(temp[0][0])
+        return user_id
 
     #get repo id when you only have the repo name
-    def getRepoId(self, reponame, permissionLevel):
+    def get_repo_id(self, reponame, permission_level):
         sql = "SELECT repository_id FROM repository WHERE repo_name = %s && permission_req = %s"
-        data = (reponame, permissionLevel)
+        data = (reponame, permission_level)
         self.cursor.execute(sql, data)
         temp = self.cursor.fetchall()
         if len(temp) == 0:
             #set an empty string for no repository
-            repoId = ""
+            repo_id = ""
         else:
-            repoId = temp[0][0]
-        return repoId
+            repo_id = int(temp[0][0])
+        return repo_id
 
-    def getPermissionLevel(self, userId):
+    #get permission level of the user
+    def get_permission_level(self, user_id):
         sql = "SELECT access_level FROM user WHERE user_id = %s"
-        data = (userId, )
+        data = (user_id, )
         self.cursor.execute(sql, data)
         temp = self.cursor.fetchall()
         return temp[0][0]
+    
+    #check file type for defined set of allowed extensions 
+    def allowed_file(self, filename):
+        return '.' in filename and \
+            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    
+    #check file type for defined set of convertible extensions
+    def convertible_file(self, filename):
+        return '.' in filename and \
+            filename.rsplit('.', 1)[1].lower() in CONVERTIBLE_EXTENSIONS
+    
+    #receives string filename and original extension, returns converted filename in MD
+    def convertToMD(self, filename, ext):
+        #create the output path + filename with the .md extension         
+        md_filename = './uploads/' + filename + '.md'
+        #create the input path + filename witht the original extension
+        temp_filename = './uploads/' + filename + '.' + ext
+        #run pandoc and as far as I can tell it must have a variable which will be empty 
+        file_MD = pypandoc.convert_file(temp_filename, 'md', outputfile = md_filename)
+        #assert the variable is empty
+        assert file_MD == ""
+        #return the created filename without the path
+        return filename + '.md'
+
+    #recieves string filename.md, returns converted filename in new extension
+    def convertFromMD(self, filename, ext):
+        #create a temporary file with the correct extension
+        tempname = "./uploads/temp." + ext
+        #run pandoc, the variable will be empty but the file will be saved in the uploads folder
+        converted_file = pypandoc.convert_file(filename, ext, outputfile=tempname)
+        #assert the variable is empty
+        assert converted_file == ""
+        #return the temp.extension filepath so we can send the file to the user
+        return tempname
     
     #get the user id and access level for a user 
     def login(self, content):
@@ -86,10 +126,7 @@ class Database():
         temp = self.cursor.fetchall()
         results = temp[0]
         if len(temp) == 0:
-            payload = {
-                "err_message" : "Failure: Invalid username or password."
-            }
-            return (json.dumps(payload), 401)
+            return (json.dumps(AUTHENTICATE_FAIL), 401)
         else:
             if len(temp) == 1:
                 payload = {
@@ -109,18 +146,18 @@ class Database():
         self.ensureConnected()
         sql_unique_user = "SELECT * FROM user WHERE username = %s OR user_email = %s"
         self.cursor.execute(sql_unique_user, (content["username"], content["email"]))
-
         result = self.cursor.fetchall()
-        if content["access_level"] == "":
+
+        if content.get("access_level", "") == "":
             access_level = "3"
         else: 
             access_level = content["access_level"]
 
         #checking to see if account/email exists within the database, if it does, throw an error, if not, create account.
         if len(result) == 0:
-            sqlUserInsert = "INSERT INTO user (access_level, username, password, user_email) VALUES (%s, %s, %s, %s)"
+            sql_user_insert = "INSERT INTO user (access_level, username, password, user_email) VALUES (%s, %s, %s, %s)"
             val = (access_level, content["username"], content["password"], content["email"])
-            self.cursor.execute(sqlUserInsert, val)
+            self.cursor.execute(sql_user_insert, val)
             self.connector.commit()
             payload = {
                 "err_message" : "Success: Account created."
@@ -133,35 +170,24 @@ class Database():
             return(json.dumps(payload), 401)
 
     #Update a user's password
-    def changePw(self, content):
+    def change_pw(self, content):
         self.ensureConnected()
 
-        temp = self.getUserId(str(content["username"]), str(content["password"]))        
-        if temp == "":
-            payload = {
-                "err_message": "Failure: That username or password does not exist."
-            }
-            return (json.dumps(payload), 401)
-
-        userId = int(temp)
+        if content.get("user_id", "") == "":
+            user_id = self.get_user_id(str(content["username"]), str(content["password"]))        
+            if user_id == "":
+                return (json.dumps(AUTHENTICATE_FAIL), 401)
+        else:
+            user_id = int(content["user_id"])
+        
         sql = "UPDATE user SET password = %s WHERE user_id = %s"
-        val = (str(content["new_password"]), userId)
+        val = (str(content["new_password"]), user_id)
         self.cursor.execute(sql, val)
         self.connector.commit()
         payload = {
             "err_message": "Success: Password changed."
         }
         return (json.dumps(payload), 200)
-
-    #check file type for defined set of allowed extensions AND check for convertible extensions
-    #returns tuple = ('extension', 0 OR 1 OR 2) where 0 = not allowed, 1 = allowed, 2 = convertible
-    def allowed_file(self, filename):
-        return '.' in filename and \
-            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-    def convertible_file(self, filename):
-        return '.' in filename and \
-            filename.rsplit('.', 1)[1].lower() in CONVERTIBLE_EXTENSIONS
     
     #Uploads original file  content = request.files['file']
     def artifactUpload(self, file, content):
@@ -171,20 +197,20 @@ class Database():
 
   
         if str(content["user_id"]) == "":
-            temp = self.getUserId(str(content["username"]), str(content["password"]))        
+            temp = self.get_user_id(str(content["username"]), str(content["password"]))        
             if temp == "":
                 payload = {
                     "err_message": "Failure: That username or password does not exist."
                 }
                 return (json.dumps(payload), 401)   
-            userId = int(temp)
+            user_id = int(temp)
         else:
-            userId = int(content["user_id"])
+            user_id = int(content["user_id"])
 
-        repoId = int(content["artifact_repo"])
+        repo_id = int(content["artifact_repo"])
          
         sql = "SELECT artifact_id FROM artifact WHERE owner_id = %s && artifact_repo = %s && artifact_name = %s"
-        val = (userId, repoId, str(content["artifact_name"]))
+        val = (user_id, repo_id, str(content["artifact_name"]))
         self.cursor.execute(sql, val)
         temp = self.cursor.fetchall()
         datecreated = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -200,7 +226,7 @@ class Database():
             #creation date, we need to pull current datetime
             #pull extension from filename
             #exten = self.allowed_file(filename)
-            dataUp = (userId, int(content["artifact_repo"]), int(content["artifact_access_level"]), str(content["artifact_name"]), extension, datecreated)
+            dataUp = (user_id, int(content["artifact_repo"]), int(content["artifact_access_level"]), str(content["artifact_name"]), extension, datecreated)
         
             self.cursor.execute(sqlUp, dataUp)
             self.connector.commit()
@@ -241,7 +267,7 @@ class Database():
                 filename = self.convertToMD(tempname, extension)
 
             sql = "SELECT artifact_id FROM artifact WHERE owner_id = %s && artifact_repo = %s && artifact_name = %s"
-            val = (userId, repoId, str(content["artifact_name"]))
+            val = (user_id, repo_id, str(content["artifact_name"]))
             self.cursor.execute(sql, val)
             temp = self.cursor.fetchall()
             sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_id, artifact_blob, version) VALUES (%s, %s, %s, %s, %s)"
@@ -250,7 +276,7 @@ class Database():
             artifact_blob = open(os.path.join(UPLOAD_FOLDER, filename), "rb").read()
             #temp_filename = UPLOAD_FOLDER + '/'
             #temp_blob = temp_filename + file.filename
-            dataTwo = (datecreated, userId, temp[0][0], artifact_blob, version)
+            dataTwo = (datecreated, user_id, temp[0][0], artifact_blob, version)
             
             self.cursor.execute(sqlTwo, dataTwo)
             self.connector.commit()
@@ -261,7 +287,7 @@ class Database():
             return (json.dumps(payload), 200)
         else:
             sql = "SELECT artifact_id FROM artifact WHERE owner_id = %s && artifact_repo = %s && artifact_name = %s"
-            val = (userId, repoId, str(content["artifact_name"]))
+            val = (user_id, repo_id, str(content["artifact_name"]))
             self.cursor.execute(sql, val)
             temp = self.cursor.fetchall()
             temp = UPLOAD_FOLDER + file.filename
@@ -271,7 +297,7 @@ class Database():
 
             #temp_filename = UPLOAD_FOLDER + '/'
             #temp_blob = temp_filename + file.filename
-            dataTwo = (datecreated, userId, temp[0][0], version)
+            dataTwo = (datecreated, user_id, temp[0][0], version)
             
             self.cursor.execute(sqlTwo, dataTwo)
             self.connector.commit()
@@ -281,30 +307,27 @@ class Database():
                 }
             return (json.dumps(payload), 200)
 
-
-    def createRepo(self,content):
+    #create a repository as long as the user has permission and no repository they own has the same name
+    def create_repo(self,content):
         self.ensureConnected()
         #authenticate
-        if str(content["user_id"]) == "":
-            temp = self.getUserId(str(content["username"]), str(content["password"]))        
-            if temp == "":
-                payload = {
-                    "err_message": "Failure: That username or password does not exist."
-                }
-                return (json.dumps(payload), 401)   
-            userId = int(temp)
+        if content.get("user_id", "") == "":
+            user_id = self.get_user_id(str(content["username"]), str(content["password"]))        
+            if user_id == "":
+                return (json.dumps(AUTHENTICATE_FAIL), 401) 
         else:
-            userId = int(content["user_id"])
+            user_id = int(content["user_id"])  
         
-        if self.getPermissionLevel(userId) >= 3:
+        if self.get_permission_level(user_id) >= 3:
             sql = "SELECT * FROM repository WHERE repo_creator = %s && repo_name = %s"
-            val = (userId, str(content["repo_name"]))
+            val = (user_id, str(content["repo_name"]))
             self.cursor.execute(sql, val)
             temp = self.cursor.fetchall()
+            #make sure no other repositories you own have the same name
             if len(temp) == 0:
                 #create the repository
                 sql = "INSERT INTO repository (repo_creator, permission_req, repo_name) VALUES (%s, %s, %s)"
-                data = (userId, int(content["permission_req"]), str(content["repo_name"]))
+                data = (user_id, int(content["permission_req"]), str(content["repo_name"]))
                 #repo_creator pulled from user_id from current user, the user creating the repo
                 self.cursor.execute(sql, data)
                 self.connector.commit()
@@ -312,7 +335,6 @@ class Database():
                 #get the repository information to return the info to the user
                 sql2 = "SELECT * FROM repository WHERE repo_name = %s"
                 self.ensureConnected()
-                print (str(content["repo_name"]), file = sys.stderr)
                 self.cursor.execute(sql2, (str(content["repo_name"]), ))
                 temp = self.cursor.fetchall()
                 payload = {
@@ -330,68 +352,67 @@ class Database():
                 "err_message: Failure you do not have permission to create a repository."
             }
 
-    def changeUsername(self,content):
+    #change a users username (not implemented in the ui)
+    def change_username(self,content):
         self.ensureConnected()
 
-        sqlpw = "SELECT username FROM user WHERE username = %s && password = %s"
-        val = (str(content["username"]),str(content["password"])) 
-        self.cursor.execute(sqlpw, val)
-        result = self.cursor.fetchall()
-        if len(result) == 0:
-            payload = {
-                "err_message": "Failure: Username or password does not exist."
-            }
-            return (json.dumps(payload), 404)
-        
-        sql = "UPDATE user SET username = %s WHERE username = %s && password = %s "
-        val = (str(content["new_username"]), str(content["username"]), str(content["password"]))
+        if content.get("user_id", "") == "":
+            user_id = self.get_user_id(str(content["username"]), str(content["password"]))        
+            if user_id == "":
+                return (json.dumps(AUTHENTICATE_FAIL), 401)   
+        else:
+            user_id = int(content["user_id"])
+       
+        sql = "UPDATE user SET username = %s WHERE user_id = %s"
+        val = (str(content["new_username"]), user_id)
         self.cursor.execute(sql, val)
         self.connector.commit()
         payload = {
             "err_message": "Success: Username changed."
         }
         return (json.dumps(payload), 200)
-    '''
-    this needs work
-    '''
-    def updateRepoAttrib(self,content):
+    
+    #update the repositories attributes (still in progress)
+    def update_repo_attrib(self,content):
         self.ensureConnected()
 
-        if str(content["user_id"]) == "":
-            temp = self.getUserId(str(content["username"]), str(content["password"]))        
-            if temp == "":
-                payload = {
-                    "err_message": "Failure: That username or password does not exist."
-                }
-                return (json.dumps(payload), 401)   
-            userId = int(temp)
+        if content.get("user_id", "") == "":
+            user_id = self.get_user_id(str(content["username"]), str(content["password"]))        
+            if user_id == "":
+                return (json.dumps(AUTHENTICATE_FAIL), 401)   
         else:
-            userId = int(content["user_id"])
+            user_id = int(content["user_id"])
         
-        permissionLevel = self.getPermissionLevel(userId)
-        
-        repo_id = self.getRepoId(str(content["repo_name"]), userId)
+        if content.get("repository_id", "") == "":
+            repo_id = self.get_repo_id(str(content["repo_name"]), user_id)
+            if repo_id == "":
+                return (json.dumps(NO_REPO), 401)
+        else:
+            repo_id = int(content["repository_id"])
 
-        if int(permissionLevel) >= 3:
+        if self.get_permission_level(user_id) >= 3:
             sql = "SELECT repo_creator FROM repository WHERE repository_id = %s"
             self.cursor.execute(sql, (repo_id, ))
             temp = self.cursor.fetchall()
-            if int(temp[0][0]) == userId or int(permissionLevel)==5:
-                if not str(content["new_repo_creator"]):
+            if int(temp[0][0]) == user_id or (int(self.get_permission_level(user_id)) == 5):
+                if content.get("new_repo_creator", "") != "":
                     sql = "UPDATE repository WHERE repository_id = %s SET repo_creator = %s"
                     val = (repo_id, str(content["new_repo_creator"]))
                     self.cursor.execute(sql, val)
                     self.cursor.commit()
-                if not str(content["new_permission_req"]):
+                if content.get("new_permission_req", "") != "":
                     sql = "UPDATE repository WHERE repository_id = %s SET permission_req = %s"
                     val = (repo_id, str(content["new_permission_req"]))
                     self.cursor.execute(sql, val)
                     self.cursor.commit()
-                if not str(content["new_repo_name"]):
+                if content.get("new_repo_name", "") != "":
                     sql = "UPDATE repository WHERE repository_id = %s SET repo_name = %s"
                     val = (repo_id, str(content["new_repo_name"]))
                     self.cursor.execute(sql, val)
                     self.cursor.commit()
+                if content.get("tag", "" != ""):
+                    #tagging info will go here i think
+                    sql = "UPDATE"
                 payload = {
                     "err_message": "Success: Repo attributes changes."
                 }
@@ -407,21 +428,25 @@ class Database():
             }
             return (json.dumps(payload), 401)
     
-    def updateArtifactAttrib(self,content):
+    #This on needs a lot of attention
+    def update_artifact_attrib(self,content):
         self.ensureConnected()
 
-        if str(content["user_id"]) == "":
-            temp = self.getUserId(str(content["username"]), str(content["password"]))        
-            if temp == "":
-                payload = {
-                    "err_message": "Failure: That username or password does not exist."
-                }
-                return (json.dumps(payload), 401)   
-            userId = int(temp)
+        if content.get("user_id", "") == "":
+            user_id = self.get_user_id(str(content["username"]), str(content["password"]))        
+            if user_id == "":
+                return (json.dumps(AUTHENTICATE_FAIL), 401)   
         else:
-            userId = int(content["user_id"])
+            user_id = int(content["user_id"])
         
-        permissionLevel = self.getPermissionLevel(userId)
+        if content.get("repository_id", "") == "":
+            repo_id = self.get_repo_id(str(content["repo_name"]), user_id)
+            if repo_id == "":
+                return (json.dumps(NO_REPO), 401)
+        else:
+            repo_id = int(content["repository_id"])
+
+        permission_level = self.get_permission_level(user_id)
 
         sql = "UPDATE artifact WHERE artifact_name = %s && repo_name = %s SET owner_id = %s && artifact_access_level = %s && artifact_name = %s && artifact_original_source = %s"
         val = (str(content["artifact_name"]), str(content["repo_name"]), str(content["attribute": ["owner_id"]]), 
@@ -437,37 +462,29 @@ class Database():
     '''
     def updateArtifact(self,content): ?
     '''
-     
-    def artifactInfo(self, content):
+    #Get information on an artifact 
+    def artifact_info(self, content):
         self.ensureConnected()
 
-        if str(content["user_id"]) == "":
-            temp = self.getUserId(str(content["username"]), str(content["password"]))        
-            if temp == "":
-                payload = {
-                    "err_message": "Failure: That username or password does not exist."
-                }
-                return (json.dumps(payload), 401)   
-            userId = int(temp)
+        if content.get("user_id", "") == "":
+            user_id = self.get_user_id(str(content["username"]), str(content["password"]))        
+            if user_id == "":
+                return (json.dumps(AUTHENTICATE_FAIL), 401)   
         else:
-            userId = int(content["user_id"])
+            user_id = int(content["user_id"])
         
-        permissionLevel = self.getPermissionLevel(userId)
+        permission_level = self.get_permission_level(user_id)
 
-        if str(content["repository_id"]) == "":
-            temp = self.getRepoId(str(content["repo_name"]), permissionLevel)
-            if temp == "":
-                payload = {
-                    "err_message": "Failure: That repository does not exist."
-                }
-                return (json.dumps(payload), 401)
-            repoId = int(temp)
+        if content.get("repository_id", "") == "":
+            repo_id = self.get_repo_id(str(content["repo_name"]), permission_level)
+            if repo_id == "":
+                return (json.dumps(NO_REPO), 401)
         else:
-            repoId = int(content["repository_id"])
+            repo_id = int(content["repository_id"])
         
-        if str(content["artifact_id"]) == "":
+        if content.get("artifact_id", "") == "":
             sql = "SELECT artifact_id FROM artifact WHERE artifact_repo = %s && artifact_name = %s"
-            data = (repoId, str(content["artifact_name"]))
+            data = (repo_id, str(content["artifact_name"]))
             self.cursor.execute(sql, data)
             temp = self.cursor.fetchall()
             if len(temp) == 0:
@@ -475,19 +492,18 @@ class Database():
                     "err_message": "Failure: That artifact does not exist."
                 }
                 return (json.dumps(payload), 401)
-            artifactId = int(temp[0][0])
+            artifact_id = int(temp[0][0])
         else:
-            artifactId = int(content["artifact_id"])
+            artifact_id = int(content["artifact_id"])
 
         sql = "SELECT * FROM artifact WHERE artifact_repo = %s && artifact_id = %s"
-        data = (repoId, artifactId)
+        data = (repo_id, artifact_id)
         self.cursor.execute(sql, data)
-        temp = self.cursor.fetchall()
-        artifactData = temp[0]
+        artifact_data = self.cursor.fetchall()
 
-        if str(content["version"]) == "":
+        if content.get("version", "") == "":
             sql = "SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s"
-            data = (artifactId, )
+            data = (artifact_id, )
             self.cursor.execute(sql, data)
             temp = self.cursor.fetchall()
             version = int(temp[0][0])
@@ -495,66 +511,57 @@ class Database():
             version = (int(content["version"]))
         
         sql = "SELECT * FROM artifact_change_record WHERE artifact_id = %s && version = %s"
-        data = (artifactId, version)
+        data = (artifact_id, version)
         self.cursor.execute(sql, data)
-        temp = self.cursor.fetchall()
-        artifactChange = temp[0]
+        artifact_change = self.cursor.fetchall()
     
         payload = {
-            "artifact_id": str(artifactData[0]),
-            "owner_id": str(artifactData[1]),
-            "artifact_repo": str(artifactData[2]),
-            "artifact_access_level": str(artifactData[3]),
-            "artifact_name": str(artifactData[4]),
-            "artifact_original_source": str(artifactData[5]),
-            "artifact_original_filetype": str(artifactData[6]),
-            "artifact_creation_date": str(artifactData[7]),
-            "artifact_last_accessed": str(artifactData[8]),
-            "artifact_access_count": str(artifactData[9]),
-            "change_datetime": str(artifactChange[0]),
-            "artifact_size": str(artifactChange[3]),
-            "version": str(artifactChange[5])
+            "artifact_id": str(artifact_data[0][0]),
+            "owner_id": str(artifact_data[0][1]),
+            "artifact_repo": str(artifact_data[0][2]),
+            "artifact_access_level": str(artifact_data[0][3]),
+            "artifact_name": str(artifact_data[0][4]),
+            "artifact_original_source": str(artifact_data[0][5]),
+            "artifact_original_filetype": str(artifact_data[0][6]),
+            "artifact_creation_date": str(artifact_data[0][7]),
+            "artifact_last_accessed": str(artifact_data[0][8]),
+            "artifact_access_count": str(artifact_data[0][9]),
+            "change_datetime": str(artifact_change[0][0]),
+            "artifact_size": str(artifact_change[0][3]),
+            "version": str(artifact_change[0][5])
         }
         return (json.dumps(payload), 200)
     
-    def repoInfo(self,content):
+    #Get information on a repo
+    def repo_info(self,content):
         self.ensureConnected()
         
-        if str(content["user_id"]) == "":
-            temp = self.getUserId(str(content["username"]), str(content["password"]))        
-            if temp == "":
-                payload = {
-                    "err_message": "Failure: That username or password does not exist."
-                }
-                return (json.dumps(payload), 401)   
-            userId = int(temp)
+        if content.get("user_id", "") == "":
+            user_id = self.get_user_id(str(content["username"]), str(content["password"]))        
+            if user_id == "":
+                return (json.dumps(AUTHENTICATE_FAIL), 401)   
         else:
-            userId = int(content["user_id"])
+            user_id = int(content["user_id"])
         
-        permissionLevel = self.getPermissionLevel(userId)
+        permission_level = self.get_permission_level(user_id)
 
-        if str(content["repository_id"]) == "":
-            temp = self.getRepoId(str(content["repo_name"]), permissionLevel)
-            if temp == "":
-                payload = {
-                    "err_message": "Failure: That repository does not exist."
-                }
-                return (json.dumps(payload), 401)
-            repoId = int(temp)
+        if content.get("repository_id", "") == "":
+            repo_id = self.get_repo_id(str(content["repo_name"]), permission_level)
+            if repo_id == "":
+                return (json.dumps(NO_REPO), 401)
         else:
-            repoId = int(content["repository_id"])
+            repo_id = int(content["repository_id"])
 
         sql = "SELECT * FROM repository WHERE repository_id = %s"
-        data = (repoId, )
+        data = (repo_id, )
         self.cursor.execute(sql, data)
-        temp = self.cursor.fetchall()
-        repoData = temp[0]
+        repo_data = self.cursor.fetchall()
 
         payload = {
-            "repository_id": str(repoData[0]),
-            "repo_name": str(repoData[3]),
-            "repo_creator": str(repoData[1]),
-            "permission_req": str(repoData[2])
+            "repository_id": str(repo_data[0][0]),
+            "repo_name": str(repo_data[0][3]),
+            "repo_creator": str(repo_data[0][1]),
+            "permission_req": str(repo_data[0][2])
         }
         return (json.dumps(payload), 200)
 
@@ -569,36 +576,29 @@ class Database():
         #can't be diff'd, simple compare
     
     '''
-    def simpleCompare (self, content):
+    #html file which shows a side by side difference of the attributes of an artifact
+    def simple_compare (self, content):
         self.ensureConnected()
 
-        if str(content["user_id"]) == "":
-            temp = self.getUserId(str(content["username"]), str(content["password"]))        
-            if temp == "":
-                payload = {
-                    "err_message": "Failure: That username or password does not exist."
-                }
-                return (json.dumps(payload), 401)   
-            userId = int(temp)
+        if content.get("user_id", "") == "":
+            user_id = self.get_user_id(str(content["username"]), str(content["password"]))        
+            if user_id == "":
+                return (json.dumps(AUTHENTICATE_FAIL), 401)   
         else:
-            userId = int(content["user_id"])
+            user_id = int(content["user_id"])
         
-        permissionLevel = self.getPermissionLevel(userId)
+        permission_level = self.get_permission_level(user_id)
 
-        if str(content["repository_id"]) == "":
-            temp = self.getRepoId(str(content["repo_name"]), permissionLevel)
-            if temp == "":
-                payload = {
-                    "err_message": "Failure: That repository does not exist."
-                }
-                return (json.dumps(payload), 401)
-            repoId = int(temp)
+        if content.get("repository_id", "") == "":
+            repo_id = self.get_repo_id(str(content["repo_name"]), permission_level)
+            if repo_id == "":
+                return (json.dumps(NO_REPO), 401)
         else:
-            repoId = int(content["repository_id"])
+            repo_id = int(content["repository_id"])
         
-        if str(content["artifact_id"]) == "":
+        if content.get("artifact_id", "") == "":
             sql = "SELECT artifact_id FROM artifact WHERE artifact_repo = %s && artifact_name = %s"
-            data = (repoId, str(content["artifact_name"]))
+            data = (repo_id, str(content["artifact_name"]))
             self.cursor.execute(sql, data)
             temp = self.cursor.fetchall()
             if len(temp) == 0:
@@ -606,13 +606,13 @@ class Database():
                     "err_message": "Failure: That artifact does not exist."
                 }
                 return (json.dumps(payload), 401)
-            artifactId = int(temp[0][0])
+            artifact_id = int(temp[0][0])
         else:
-            artifactId = int(content["artifact_id"])
+            artifact_id = int(content["artifact_id"])
 
-        if str(content["version"]) == "":
+        if content.get("version", "") == "":
             sql = "SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s"
-            data = (artifactId, )
+            data = (artifact_id, )
             self.cursor.execute(sql, data)
             temp = self.cursor.fetchall()
             version = int(temp[0][0])
@@ -620,15 +620,15 @@ class Database():
             version = (int(content["version"]))
         
         sql = "SELECT change_datetime, changer_id, artifact_id, artifact_size, version FROM artifact_change_record WHERE artifact_id = %s && version = %s"
-        data = (artifactId, version)
+        data = (artifact_id, version)
         self.cursor.execute(sql, data)
         temp = self.cursor.fetchall()
-        artifactChange = "change datettime: " + str(temp[0][0]) + ",\nchanger id: " + str(temp[0][1]) + ",\nartifact_id: " + str(temp[0][2]) + ",\nartifact size: " + str(temp[0][3]) + ",\nversion: " + str(temp[0][4]) + '\n'
+        artifact_change = "change datettime: " + str(temp[0][0]) + ",\nchanger id: " + str(temp[0][1]) + ",\nartifact_id: " + str(temp[0][2]) + ",\nartifact size: " + str(temp[0][3]) + ",\nversion: " + str(temp[0][4]) + '\n'
 
 
-        if str(content["previous_version"]) == "":
+        if content.get("previous_version", "") == "":
             sql = "SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s"
-            data = (artifactId, )
+            data = (artifact_id, )
             self.cursor.execute(sql, data)
             temp = self.cursor.fetchall()
             version = int(temp[0][0])
@@ -636,15 +636,15 @@ class Database():
             version = (int(content["previous_version"]))
 
         sql = "SELECT change_datetime, changer_id, artifact_id, artifact_size, version FROM artifact_change_record WHERE artifact_id = %s && version = %s"
-        data = (artifactId, version)
+        data = (artifact_id, version)
         self.cursor.execute(sql, data)
         temp = self.cursor.fetchall()
-        artifactChangePrevious = "change datettime: " + str(temp[0][0]) + ",\nchanger id: " + str(temp[0][1]) + ",\nartifact_id: " + str(temp[0][2]) + ",\nartifact size: " + str(temp[0][3]) + ",\nversion: " + str(temp[0][4]) + '\n'
+        artifact_change_previous = "change datettime: " + str(temp[0][0]) + ",\nchanger id: " + str(temp[0][1]) + ",\nartifact_id: " + str(temp[0][2]) + ",\nartifact size: " + str(temp[0][3]) + ",\nversion: " + str(temp[0][4]) + '\n'
 
         d = difflib.HtmlDiff()
-        return  (d.make_file(artifactChange.split('\n'), artifactChangePrevious.split('\n')), 200)
+        return  (d.make_file(artifact_change.split('\n'), artifact_change_previous.split('\n')), 200)
         #to only return a HTML table for ui to use if they need it
-        #return  (d.make_table(artifactChange.split('\n'), artifactChangePrevious.split('\n')), 200)
+        #return  (d.make_table(artifact_change.split('\n'), artifact_change_previous.split('\n')), 200)
     '''
     def removeRepo(self,content):
 
@@ -652,81 +652,29 @@ class Database():
 
     def removeUser(self, content): 
     '''
-
-    #receives string filename, returns converted file in MD
-    def convertToMD(self, filename, ext):
-        #file = open(str(content("filename")), "r")
-        '''
-        sql = "SELECT artifact_id FROM artifact WHERE artifact_name = %s"
-        data = (str(content("artifact_name")),)
-
-        self.cursor.execute(sql, data)
-        temp = self.cursor.fetchone()
-        while (self.cursor.fetchone() != None):
-            tempTrash = self.cursor.fetchone()
-        '''
-        
-        mdfilename = './uploads/' + filename + '.md'
-        tempfilename = './uploads/' + filename + '.' + ext
-        print(tempfilename, file = sys.stderr)
-        print(mdfilename, file = sys.stderr)
-        fileMD = pypandoc.convert_file(tempfilename, 'md', outputfile = mdfilename)
-        
-        return filename + '.md'
-
-    def convertFromMD(self, filename, ext):
-        '''
-        #if version not selected, select highest version, else select specified version
-        if str(content["version"]) == "":
-            sql = "SELECT artifact_blob FROM artifact_change_record WHERE artifact_id = %s && version = (SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s)"
-            data = (str(content("artifact_id")), str(content("artifact_id")))
-        else:
-            sql = "SELECT artifact_blob FROM artifact_change_record WHERE artifact_id = %s && version = %s"
-            data = (str(content("artifact_id")), str(content("version")))
-
-        self.cursor.execute(sql, data)
-        temp = self.cursor.fetchone()
-        while (self.cursor.fetchone() != None):
-            tempTrash = self.cursor.fetchone()
-        '''
-        
-        
-        #convert file to md
-        tempname = "./uploads/temp." + ext
-        converted_file = pypandoc.convert_file(filename, ext, outputfile=tempname)
-
-        return tempname
-    
-    def exportArtifact(self, content):
+    #returns an artifact from the database
+    def export_artifact(self, content):
         self.ensureConnected()
 
-        if str(content["user_id"]) == "":
-            temp = self.getUserId(str(content["username"]), str(content["password"]))        
-            if temp == "":
-                payload = {
-                    "err_message": "Failure: That username or password does not exist."
-                }
-                return (json.dumps(payload), 401)   
-            userId = int(temp)
+        if content.get("user_id", "") == "":
+            user_id = self.get_user_id(str(content["username"]), str(content["password"]))        
+            if user_id == "":
+                return (json.dumps(AUTHENTICATE_FAIL), 401)   
         else:
-            userId = int(content["user_id"])
+            user_id = int(content["user_id"])
         
-        permissionLevel = self.getPermissionLevel(userId)
+        permission_level = self.get_permission_level(user_id)
 
-        if str(content["repository_id"]) == "":
-            temp = self.getRepoId(str(content["repo_name"]), permissionLevel)
-            if temp == "":
-                payload = {
-                    "err_message": "Failure: That repository does not exist."
-                }
-                return (json.dumps(payload), 401)
-            repoId = int(temp)
+        if content.get("repository_id", "") == "":
+            repo_id = self.get_repo_id(str(content["repo_name"]), permission_level)
+            if repo_id == "":
+                return (json.dumps(NO_REPO), 401)
         else:
-            repoId = int(content["repository_id"])
+            repo_id = int(content["repository_id"])
         
-        if str(content["artifact_id"]) == "":
+        if content.get("artifact_id", "") == "":
             sql = "SELECT artifact_id FROM artifact WHERE artifact_repo = %s && artifact_name = %s"
-            data = (repoId, str(content["artifact_name"]))
+            data = (repo_id, str(content["artifact_name"]))
             self.cursor.execute(sql, data)
             temp = self.cursor.fetchall()
             if len(temp) == 0:
@@ -734,75 +682,63 @@ class Database():
                     "err_message": "Failure: That artifact does not exist."
                 }
                 return (json.dumps(payload), 401)
-            artifactId = int(temp[0][0])
+            artifact_id = int(temp[0][0])
         else:
-            artifactId = int(content["artifact_id"])
+            artifact_id = int(content["artifact_id"])
 
+        #get the information on the artifact we want to send
         sql = "SELECT * FROM artifact WHERE artifact_repo = %s && artifact_id = %s"
-        data = (repoId, artifactId)
+        data = (repo_id, artifact_id)
         self.cursor.execute(sql, data)
-        temp = self.cursor.fetchall()
-        if len(temp) == 0:
-            payload = {
-                "err_message": "Failure there is no artifact here."
-            }
-            return (json.dumps(payload), 401)
-        else:
-            artifactData = temp[0]
-
-            if str(content["version"]) == "":
-                sql = "SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s"
-                data = (artifactId, )
-                self.cursor.execute(sql, data)
-                temp = self.cursor.fetchall()
-                version = int(temp[0][0])
-            else:
-                version = (int(content["version"]))
-
-            sql = "SELECT * FROM artifact_change_record WHERE artifact_id = %s && version = %s"
-            data = (artifactId, version)
+        artifact_data = self.cursor.fetchall()
+        
+        #check to see if the user specified a version if not then use the highest version
+        if content.get("version", "") == "":
+            sql = "SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s"
+            data = (artifact_id, )
             self.cursor.execute(sql, data)
             temp = self.cursor.fetchall()
-            artifactChange = temp[0]
-            
-            filename = str(artifactData[4]) + '.'
-            fullfilename = filename + str(artifactData[6])
+            version = int(temp[0][0])
+        else:
+            version = (int(content["version"]))
+
+        #get the artifact change record of the artifact with the version which has the blob in it
+        sql = "SELECT * FROM artifact_change_record WHERE artifact_id = %s && version = %s"
+        data = (artifact_id, version)
+        self.cursor.execute(sql, data)
+        artifact_change = self.cursor.fetchall()
+        
+        #create the names which will be used for the conversion if needed
+        filename = str(artifact_data[0][4]) + '.'
+        fullfilename = filename + str(artifact_data[0][6])
+
+        blobfile = artifact_change[0][4]
+        
+        if str(artifact_data[0][6]) in CONVERTIBLE_EXTENSIONS:
             filenameMD = filename + 'md'
+            with open(filenameMD, 'wb') as file:
+                file.write(blobfile)
 
-            blobfile = artifactChange[4]
-            
-            if str(artifactData[6]) in CONVERTIBLE_EXTENSIONS:
-                with open(filenameMD, 'wb') as file:
-                    file.write(blobfile)
-
-                if str(content["new_file_type"]) == "":
-                    convertedfile = self.convertFromMD(filenameMD, str(artifactData[6]))
-                else:
-                    if (str(content["new_file_type"]) in CONVERTIBLE_EXTENSIONS):
-                        fullfilename = filename + str(content["new_file_type"])
-                        convertedfile = self.convertFromMD(filenameMD, str(content["new_file_type"]))
-                    else:
-                        payload = {
-                            "err_message": "Failure: We cannot convert to that type."
-                        }
-                return (send_file(convertedfile, attachment_filename=fullfilename))
-
+            if content.get("new_file_type", "") == "":
+                convertedfile = self.convertFromMD(filenameMD, str(artifact_data[0][6]))
             else:
-                with open(fullfilename, 'wb') as file:
-                    file.write(blobfile)
+                if (str(content["new_file_type"]) in CONVERTIBLE_EXTENSIONS):
+                    fullfilename = filename + str(content["new_file_type"])
+                    convertedfile = self.convertFromMD(filenameMD, str(content["new_file_type"]))
+                else:
+                    payload = {
+                        "err_message": "Failure: We cannot convert to that type."
+                    }
+            return (send_file(convertedfile, attachment_filename=fullfilename))
 
-                #payload = {
-                #    "artifact_id": str(artifactData[0]),
-                #    "owner_id": str(artifactData[1]),
-                #    "artifact_name": str(artifactData[4]),
-                #    "artifact_original_filetype": str(artifactData[6]),
-                #    "artifact_size": str(artifactChange[3]),
-                #    "version": str(artifactChange[5])
-                #}
-                return (send_file(fullfilename, attachment_filename=fullfilename))
-    
-    
-    def addTag(self, content):
+        else:
+            with open(fullfilename, 'wb') as file:
+                file.write(blobfile)
+
+            return (send_file(fullfilename, attachment_filename=fullfilename))
+
+    #add atag to a repository or a artifact
+    def add_tag(self, content):
         #receive user id ?
         #permission check from user id?
         
