@@ -804,7 +804,8 @@ class Database():
     
     def addTag(self, content):
         #receive user id ?
-
+        #permission check from user id?
+        
         tempRepoID = 0
         tempArtifactID = 0
         #if the json passed in has repo name or id, hold repository_id in tempRepoID
