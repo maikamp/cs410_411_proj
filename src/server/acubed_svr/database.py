@@ -801,9 +801,64 @@ class Database():
                 #}
                 return (send_file(fullfilename, attachment_filename=fullfilename))
     
-    '''
+    
     def addTag(self, content):
+        pass
+        #receive user id
+        #receive artifact or repo id
+        #receive tag input(s)
+        for x in content["tag"]:
+            #check to tag table to find match for input tag(s)
+            sql = "SELECT tag_name FROM tag WHERE tag_name = %s"
+            val = (x, )
+            self.cursor.execute(sql, val)
+            result = self.cursor.fetchall()
+            if len(result) == 0:
+                if str(content["artifact_id"] is ""):
+                    sql = "SELECT repository_id FROM repository WHERE repo_name = %s"
+                    val = (str(content["repo_name"]), )
+                    self.cursor.execute(sql, val)
+                    result = self.cursor.fetchall()
 
+                    sql = "INSERT INTO tag (tag_name, repository_id) VALUES(%s, %s)"
+                    val = (x, result[0][0])
+                    self.cursor.execute(sql, val)
+                    self.connector.commit()
+                elif str(content["repository_id"] is ""):
+                    sql = "SELECT artifact_id FROM artifact WHERE artifact_name = %s"
+                    val = (str(content["artifact_name"]), )
+                    self.cursor.execute(sql, val)
+                    result = self.cursor.fetchall()
+                    
+                    sql = "INSERT INTO tag (tag_name, artifact_id) VALUES(%s, %s)"
+                    val = (x, result[0][0])
+                    self.cursor.execute(sql, val)
+                    self.connector.commit()
+                '''
+                else:
+                    sql = "INSERT INTO tag (tag_name, repository_id, artifact_id) VALUES(%s, %s, %s)"
+                    val = (x, str(content["repository_id"]), str(content["artifact_id"]))
+                    self.cursor.execute(sql, val)
+                    self.connector.commit()
+                '''
+            else:
+                if str(content["artifact_id"] is ""):
+                    sql = "INSERT INTO tag (repository_id) VALUES(%s) WHERE tag_name = %s"
+                    val = (str(content["repository_id"]), x)
+                    self.cursor.execute(sql, val)
+                    self.connector.commit()
+                elif str(content["repository_id"] is ""):
+                    sql = "INSERT INTO tag (tag_name, artifact_id) VALUES(%s, %s)"
+                    val = (x, str(content["artifact_id"]))
+                    self.cursor.execute(sql, val)
+                    self.connector.commit()
+                else:
+                    sql = "INSERT INTO tag (tag_name, repository_id, artifact_id) VALUES(%s, %s, %s)"
+                    val = (x, str(content["repository_id"]), str(content["artifact_id"]))
+                    self.cursor.execute(sql, val)
+                    self.connector.commit()
+            
+    '''
     def addBookmark(self,content):
 
     def changeTag(self, content):

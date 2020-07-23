@@ -126,10 +126,11 @@ def removeartifact():
 @app.route('/exportartifact' ,methods = ['GET', 'POST'])
 def exportartifact():
     return db.exportArtifact(request.get_json(force=True))
-'''
+
 @app.route('/addtag' ,methods = ['GET', 'POST'])
 def addtag():
-
+    return db.addTag(request.get_json(force=True))
+'''
 @app.route('/returnlistrepos' ,methods = ['GET', 'POST'])
 def returnlistrepos():
 
