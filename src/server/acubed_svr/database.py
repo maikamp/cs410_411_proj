@@ -803,60 +803,95 @@ class Database():
     
     
     def addTag(self, content):
-        pass
-        #receive user id
-        #receive artifact or repo id
-        #receive tag input(s)
+        #receive user id ?
+
+        tempRepoID = 0
+        tempArtifactID = 0
+        #if the json passed in has repo name or id, hold repository_id in tempRepoID
+        if str(content["repository_id"]) is not "":
+            tempRepoID = int(content["repository_id"])
+        elif str(content["repository_id"] is "" and str(content["repo_name"]) is not ""):
+            #query for repo id
+            sql = "SELECT repository_id FROM repository WHERE repo_name = %s"
+            val = (str(content["repo_name"]), )
+            self.cursor.execute(sql, val)
+            result = self.cursor.fetchall()
+            tempRepoID = result[0][0]
+        #if the json passed in has artifact name or id, hold artifact_id in tempArtifactID
+        elif str(content["artifact_id"]) is not "":
+            tempArtifactID = int(content["artifact_id"])
+        elif str(content["artifact_id"] is "") and str(content["artifact_name"]) is not "":
+            #query for artifact id
+            sql = "SELECT artifact_id FROM artifact WHERE artifact_name = %s"
+            val = (str(content["artifact_name"]), )
+            self.cursor.execute(sql, val)
+            result = self.cursor.fetchall()
+            tempArtifactID = result[0][0]
+        #if the json passed in has neither artifact nor repo stuff, return error
+        else:
+            payload = {
+                "err_message": "No artifact or repository specified."
+            }
+            return (json.dumps(payload), 401)
+
+        #process tag input(s)
         for x in content["tag"]:
             #check to tag table to find match for input tag(s)
             sql = "SELECT tag_name FROM tag WHERE tag_name = %s"
             val = (x, )
             self.cursor.execute(sql, val)
             result = self.cursor.fetchall()
+            #if tag doesnt yet exist
             if len(result) == 0:
-                if str(content["artifact_id"] is ""):
-                    sql = "SELECT repository_id FROM repository WHERE repo_name = %s"
-                    val = (str(content["repo_name"]), )
-                    self.cursor.execute(sql, val)
-                    result = self.cursor.fetchall()
-
+                #if user is tagging a repo
+                if tempArtifactID == 0:
+                    #add new row to tag table with repo id and specified tag
                     sql = "INSERT INTO tag (tag_name, repository_id) VALUES(%s, %s)"
-                    val = (x, result[0][0])
+                    val = (x, tempRepoID)
                     self.cursor.execute(sql, val)
                     self.connector.commit()
-                elif str(content["repository_id"] is ""):
-                    sql = "SELECT artifact_id FROM artifact WHERE artifact_name = %s"
-                    val = (str(content["artifact_name"]), )
-                    self.cursor.execute(sql, val)
-                    result = self.cursor.fetchall()
-                    
+                    payload = {
+                        "err_message": "Repository successfully tagged."
+                    }
+                    return (json.dumps(payload), 200)
+
+                #if user is tagging an artifact
+                elif tempRepoID == 0:    
+                    #add new row to tag table with artifact id and specified tag
                     sql = "INSERT INTO tag (tag_name, artifact_id) VALUES(%s, %s)"
-                    val = (x, result[0][0])
+                    val = (x, tempArtifactID)
                     self.cursor.execute(sql, val)
                     self.connector.commit()
-                '''
-                else:
-                    sql = "INSERT INTO tag (tag_name, repository_id, artifact_id) VALUES(%s, %s, %s)"
-                    val = (x, str(content["repository_id"]), str(content["artifact_id"]))
-                    self.cursor.execute(sql, val)
-                    self.connector.commit()
-                '''
+                    payload = {
+                        "err_message": "Artifact successfully tagged."
+                    }
+                    return (json.dumps(payload), 200)
+
+            #if the tag already exists
             else:
-                if str(content["artifact_id"] is ""):
-                    sql = "INSERT INTO tag (repository_id) VALUES(%s) WHERE tag_name = %s"
-                    val = (str(content["repository_id"]), x)
+                #if user is tagging a repo
+                if tempArtifactID == 0:
+                    #add new row to tag table with repo id and specified tag
+                    sql = "INSERT INTO tag (tag_name, repository_id) VALUES(%s, %s)"
+                    val = (x, tempRepoID)
                     self.cursor.execute(sql, val)
                     self.connector.commit()
-                elif str(content["repository_id"] is ""):
+                    payload = {
+                        "err_message": "Repository successfully tagged."
+                    }
+                    return (json.dumps(payload), 200)
+
+                #if user is tagging an artifact
+                elif tempRepoID == 0:                  
+                    #add new row to tag table with artifact id and specified tag
                     sql = "INSERT INTO tag (tag_name, artifact_id) VALUES(%s, %s)"
-                    val = (x, str(content["artifact_id"]))
+                    val = (x, tempArtifactID)
                     self.cursor.execute(sql, val)
                     self.connector.commit()
-                else:
-                    sql = "INSERT INTO tag (tag_name, repository_id, artifact_id) VALUES(%s, %s, %s)"
-                    val = (x, str(content["repository_id"]), str(content["artifact_id"]))
-                    self.cursor.execute(sql, val)
-                    self.connector.commit()
+                    payload = {
+                        "err_message": "Artifact successfully tagged."
+                    }
+                    return (json.dumps(payload), 200)
             
     '''
     def addBookmark(self,content):
