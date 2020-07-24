@@ -2,7 +2,7 @@
     "user_id": "1",
     "username": "",
     "password": "",
-    "artifact_repo": "2",
+    "repository_id": "2",
     "artifact_access_level": "1",
     "artifact_name": "Example",
     "version": "2"

@@ -207,7 +207,7 @@ class Database():
         else:
             user_id = int(content["user_id"])
 
-        repo_id = int(content["artifact_repo"])
+        repo_id = int(content["repository_id"])
          
         sql = "SELECT artifact_id FROM artifact WHERE owner_id = %s && artifact_repo = %s && artifact_name = %s"
         val = (user_id, repo_id, str(content["artifact_name"]))
