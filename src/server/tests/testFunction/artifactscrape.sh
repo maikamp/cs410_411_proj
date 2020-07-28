@@ -1,2 +1,2 @@
-echo Test artifactscrape: curl -v -H "Content-Type:multipart/form-data" -F "meta-data=@testartifactscrape.json" -F "file=@https://www.w3.org/TR/PNG/iso_8859-1.txt" crystal.cpi.cs.odu.edu:5000/artifactscrape -o ./curlresponse/addartifactscraperesponse.txt
-curl -v -H "Content-Type:multipart/form-data" -H "Content-Type: application/json" -F "meta-data=@testartifactscrape.json" -H "Content-Type: application/octet-stream" -F "file=@https://www.w3.org/TR/PNG/iso_8859-1.txt" crystal.cpi.cs.odu.edu:5000/artifactscrape -o ./curlresponse/addartifactscraperesponse.txt
+echo Test artifactscrape: curl -X POST -d @testartifactscrape.json crystal.cpi.cs.odu.edu:5000/artifactscrape -o ./curlresponse/addartifactscraperesponse.txt
+curl -X POST -d @testartifactscrape.json crystal.cpi.cs.odu.edu:5000/artifactscrape -o ./curlresponse/addartifactscraperesponse.txt
