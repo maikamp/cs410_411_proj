@@ -310,7 +310,8 @@ class Database():
 
     def artifact_scrape(self, content, file):
         self.ensureConnected()
-        
+
+        content = json.loads(content.read().decode('utf-8'))
 
         if str(content["user_id"]) == "":
             temp = self.get_user_id(str(content["username"]), str(content["password"]))        

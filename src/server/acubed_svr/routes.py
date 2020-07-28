@@ -74,7 +74,7 @@ def artifactupload():
 
 @app.route('/artifactscrape', methods = ['GET', 'POST'])
 def artifactscrape():
-    return db.artifact_scrape(request.get_json(force=True))
+    return db.artifact_scrape(request.files['file'], request.files["meta-data"]
 
 #@app.route('/adduser', methods = ['GET', 'POST'])
 #def adduser():
