@@ -356,7 +356,11 @@ class Database():
         
         self.cursor.execute(sqlTwo, dataTwo)
         self.connector.commit()
-        
+
+        payload = {
+            "err_message": "Success: Artifact uploaded."
+        }
+        return (json.dumps(payload), 201)
 
     #create a repository as long as the user has permission and no repository they own has the same name
     def create_repo(self,content):
