@@ -344,7 +344,7 @@ class Database():
             #pull extension from filename
             #exten = self.allowed_file(filename)
             ext = ".txt"
-            dataUp = (user_id, int(content["artifact_repo"]), int(content["artifact_access_level"]), str(content["artifact_name"]), ext, datecreated)
+            dataUp = (user_id, int(content["repository_id"]), int(content["artifact_access_level"]), str(content["artifact_name"]), ext, datecreated)
         
             self.cursor.execute(sqlUp, dataUp)
             self.connector.commit()
