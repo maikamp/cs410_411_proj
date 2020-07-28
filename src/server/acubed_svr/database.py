@@ -308,8 +308,9 @@ class Database():
                 }
             return (json.dumps(payload), 201)
 
-    def artifact_scrape(self, content):
+    def artifact_scrape(self, content, file):
         self.ensureConnected()
+        
 
         if str(content["user_id"]) == "":
             temp = self.get_user_id(str(content["username"]), str(content["password"]))        
@@ -337,7 +338,7 @@ class Database():
         datecreated = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         retrieved_file = urlopen(content["desired_url"]).read()
-        content.save(os.path.join(UPLOAD_FOLDER, retrieved_file))
+        file.save(os.path.join(UPLOAD_FOLDER, retrieved_file))
 
 
         sqlUp = "INSERT INTO artifact (owner_id, artifact_repo, artifact_access_level, artifact_name, artifact_original_filetype, artifact_creation_date) VALUES (%s, %s, %s, %s, %s, %s)"
