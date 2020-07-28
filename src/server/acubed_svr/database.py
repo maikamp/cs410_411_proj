@@ -7,7 +7,7 @@ import os
 import sys
 import pypandoc
 import difflib
-from urllib import urlopen
+from urllib.request import urlopen
 from flask import send_file, redirect, url_for, request, flash
 from werkzeug.utils import secure_filename
 
