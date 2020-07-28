@@ -337,7 +337,7 @@ class Database():
         datecreated = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         retrieved_file = urlopen(content["desired_url"]).read()
-        retrieved_file.save(os.path.join(UPLOAD_FOLDER, retrieved_file))
+        content.save(os.path.join(UPLOAD_FOLDER, retrieved_file))
 
 
         sqlUp = "INSERT INTO artifact (owner_id, artifact_repo, artifact_access_level, artifact_name, artifact_original_filetype, artifact_creation_date) VALUES (%s, %s, %s, %s, %s, %s)"
