@@ -646,11 +646,13 @@ class Database():
         #to only return a HTML table for ui to use if they need it
         #return  (d.make_table(artifact_change.split('\n'), artifact_change_previous.split('\n')), 200)
     '''
-    def removeRepo(self,content):
+    def remove_repo(self,content):
 
-    def removeArtifact(self, content):
+    def remove_artifact(self, content):
 
-    def removeUser(self, content): 
+    def remove_user(self, content): 
+
+    def remove_tag(self, content)
     '''
     #returns an artifact from the database
     def export_artifact(self, content):
@@ -831,17 +833,15 @@ class Database():
                     return (json.dumps(payload), 200)
             
     '''
-    def addBookmark(self,content):
+    def add_bookmark(self,content):
 
-    def changeTag(self, content):
+    def change_tag(self, content):
 
-    def removeBookmark(self, content):
+    def remove_bookmark(self, content):
+    
+    def return_artifact_list(self, content):
 
-    def makeBlob?
-
-    def addArtifactChangeRecord(self, content):
-
-    def returnArtifactChangeRecord(self, content):
+    def return_repo_list(self, content):
     '''
 
     
