@@ -793,39 +793,47 @@ class Database():
 
             return (send_file(fullfilename, attachment_filename=fullfilename))
 
-    #add atag to a repository or a artifact
+    #add one or more tags to a repository or an artifact
     def add_tag(self, content):
-        #receive user id ?
-        #permission check from user id?
-
-        tempRepoID = 0
-        tempArtifactID = 0
-        #if the json passed in has repo name or id, hold repository_id in tempRepoID
-        if str(content["repository_id"]) != "":
-            tempRepoID = int(content["repository_id"])
-        elif str(content["repository_id"] == "" and str(content["repo_name"]) != ""):
-            #query for repo id
-            sql = "SELECT repository_id FROM repository WHERE repo_name = %s"
-            val = (str(content["repo_name"]), )
-            self.cursor.execute(sql, val)
-            result = self.cursor.fetchall()
-            tempRepoID = result[0][0]
-        #if the json passed in has artifact name or id, hold artifact_id in tempArtifactID
-        elif str(content["artifact_id"]) != "":
-            tempArtifactID = int(content["artifact_id"])
-        elif str(content["artifact_id"] == "") and str(content["artifact_name"]) != "":
-            #query for artifact id
-            sql = "SELECT artifact_id FROM artifact WHERE artifact_name = %s"
-            val = (str(content["artifact_name"]), )
-            self.cursor.execute(sql, val)
-            result = self.cursor.fetchall()
-            tempArtifactID = result[0][0]
+        #if the tag field is missing or no tags are in the json
+        if content.get("tag", "") == "":
+            payload = {
+                "err_message": "No tags specified."
+            }
+            return (json.dumps(payload), 400)
+        #option 0 is intitial value (empty), 1 is repo, 2 is artifact
+        option = 0
+        if content.get("repo_name", "") != "":
+            option = 1
+        elif content.get("artifact_name", "") != "":
+            option = 2
+        
         #if the json passed in has neither artifact nor repo stuff, return error
         else:
             payload = {
                 "err_message": "No artifact or repository specified."
             }
             return (json.dumps(payload), 400)
+        
+        tempRepoID = 0
+        tempArtifactID = 0
+        
+        #if tagging a repo
+        if option == 1:
+            #query for repo id
+            sql = "SELECT repository_id FROM repository WHERE repo_name = %s"
+            val = (str(content["repo_name"]), )
+            self.cursor.execute(sql, val)
+            result = self.cursor.fetchall()
+            tempRepoID = result[0][0]
+        #if tagging an artifact
+        if option == 2:
+            #query for artifact id
+            sql = "SELECT artifact_id FROM artifact WHERE artifact_name = %s"
+            val = (str(content["artifact_name"]), )
+            self.cursor.execute(sql, val)
+            result = self.cursor.fetchall()
+            tempArtifactID = result[0][0]
 
         #process tag input(s)
         for x in content["tag"]:

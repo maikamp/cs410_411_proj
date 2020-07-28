@@ -1,7 +1,12 @@
 {
-    "repository_id": "",
-    "artifact_id": "1",
+    "user_id": "",
+    "username": "aberm002",
+    "password": "guest1337",
+    "repository_id": "1",
+    "artifact_access_level": "3",
+    "artifact_name": "dope artifact",
+    "version": "",
     "tag": [
-        "CS411W"
+        "CS411W_2"
     ]
 }
