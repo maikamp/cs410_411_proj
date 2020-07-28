@@ -337,7 +337,7 @@ class Database():
                 version = 1
             else:
                 version = int(content["version"])
-            extension = content.retrieved_file.rsplit('.', 1)[1].lower()
+            #extension = content.retrieved_file.rsplit('.', 1)[1].lower()
             sqlUp = "INSERT INTO artifact (owner_id, artifact_repo, artifact_access_level, artifact_name, artifact_original_filetype, artifact_creation_date) VALUES (%s, %s, %s, %s, %s, %s)"
             #can UI send us repository_id or do we need to query for it?
             #creation date, we need to pull current datetime
@@ -375,14 +375,15 @@ class Database():
             }
             return (json.dumps(payload), 404)
         #filename = secure_filename(file.filename)
+        
         content.save(os.path.join(UPLOAD_FOLDER, retrieved_file))
         if content and self.allowed_file(content.retrieved_file):
             if self.convertible_file(content.retrieved_file):
                 tempname = str(content["artifact_name"])
-                extension = content.retrieved_file.rsplit('.', 1)[1].lower()
+                #extension = content.retrieved_file.rsplit('.', 1)[1].lower()
                 print(retrieved_file, content = sys.stderr, end='')
                 retrieved_file = self.convertToMD(tempname, extension)
-
+        
             sql = "SELECT artifact_id FROM artifact WHERE owner_id = %s && artifact_repo = %s && artifact_name = %s"
             val = (user_id, repo_id, str(content["artifact_name"]))
             self.cursor.execute(sql, val)
@@ -423,14 +424,6 @@ class Database():
                     "err_message": "Success: Artifact uploaded."
                 }
             return (json.dumps(payload), 200)
-
-
-
-
-
-
-
-
 
     #create a repository as long as the user has permission and no repository they own has the same name
     def create_repo(self,content):
