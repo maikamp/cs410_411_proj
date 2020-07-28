@@ -7,7 +7,7 @@ import os
 import sys
 import pypandoc
 import difflib
-from urllib.request import urlopen
+from bs4 import BeautifulSoup
 from flask import send_file, redirect, url_for, request, flash
 from werkzeug.utils import secure_filename
 
@@ -308,10 +308,9 @@ class Database():
                 }
             return (json.dumps(payload), 201)
 
-    def artifact_scrape(self, content, file):
+    def artifact_scrape(self, content):
         self.ensureConnected()
 
-        content = json.loads(content.read().decode('utf-8'))
 
         if str(content["user_id"]) == "":
             temp = self.get_user_id(str(content["username"]), str(content["password"]))        
@@ -326,27 +325,25 @@ class Database():
 
         repo_id = int(content["repository_id"])
 
-        sql = "SELECT artifact_id FROM artifact WHERE owner_id = %s && artifact_repo = %s && artifact_name = %s"
-        val = (user_id, repo_id, str(content["artifact_name"]))
-        self.cursor.execute(sql, val)
-        temp = self.cursor.fetchall()
+        #retrieved_file = urlopen(content["desired_url"]).read().decode('utf-8')
+        #retrieved_file.save(os.path.join(UPLOAD_FOLDER, retrieved_file))
+
+        retrieved_file = requests.get("desired_url")
+        soup = BeautifulSoup(retrieved_file.content, 'html_parser')
+
+        soup.save(os.path.join(UPLOAD_FOLDER, retrieved_file))
         datecreated = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-         
-        sql = "SELECT artifact_id FROM artifact WHERE owner_id = %s && artifact_repo = %s && artifact_name = %s"
-        val = (user_id, repo_id, str(content["artifact_name"]))
-        self.cursor.execute(sql, val)
-        temp = self.cursor.fetchall()
-        datecreated = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-        retrieved_file = urlopen(content["desired_url"]).read()
-        file.save(os.path.join(UPLOAD_FOLDER, retrieved_file))
-
-
         sqlUp = "INSERT INTO artifact (owner_id, artifact_repo, artifact_access_level, artifact_name, artifact_original_filetype, artifact_creation_date) VALUES (%s, %s, %s, %s, %s, %s)"
         dataUp = (user_id, int(content["artifact_repo"]), int(content["artifact_access_level"]), str(content["artifact_name"]), ".txt", datecreated)
 
         self.cursor.execute(sqlUp, dataUp)
         self.connector.commit()
+
+        sql = "SELECT artifact_id FROM artifact WHERE owner_id = %s && artifact_repo = %s && artifact_name = %s"
+        val = (user_id, repo_id, str(content["artifact_name"]))
+        self.cursor.execute(sql, val)
+        temp = self.cursor.fetchall()
+        
 
         sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_id, artifact_blob, version) VALUES (%s, %s, %s, %s, %s)"
 
