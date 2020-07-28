@@ -343,7 +343,8 @@ class Database():
             #creation date, we need to pull current datetime
             #pull extension from filename
             #exten = self.allowed_file(filename)
-            dataUp = (user_id, int(content["artifact_repo"]), int(content["artifact_access_level"]), str(content["artifact_name"]), extension, datecreated)
+            ext = ".txt"
+            dataUp = (user_id, int(content["artifact_repo"]), int(content["artifact_access_level"]), str(content["artifact_name"]), ext, datecreated)
         
             self.cursor.execute(sqlUp, dataUp)
             self.connector.commit()
@@ -382,7 +383,7 @@ class Database():
                 tempname = str(content["artifact_name"])
                 #extension = content.retrieved_file.rsplit('.', 1)[1].lower()
                 print(retrieved_file, content = sys.stderr, end='')
-                retrieved_file = self.convertToMD(tempname, extension)
+                retrieved_file = self.convertToMD(tempname, ext)
         
             sql = "SELECT artifact_id FROM artifact WHERE owner_id = %s && artifact_repo = %s && artifact_name = %s"
             val = (user_id, repo_id, str(content["artifact_name"]))
