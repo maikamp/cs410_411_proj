@@ -806,9 +806,9 @@ class Database():
             return (json.dumps(payload), 400)
         #option 0 is intitial value (empty), 1 is repo, 2 is artifact
         option = 0
-        if content.get("artifact_name", "") == "":
+        if content.get("repo_name", "") != "":
             option = 1
-        elif content.get("repo_name", "") == "":
+        elif content.get("artifact_name", "") != "":
             option = 2
         
         #if the json passed in has neither artifact nor repo stuff, return error
