@@ -139,7 +139,7 @@ class Database():
                 payload = {
                     "err_message" : "Failure: Multiple users exist please contact admin."
                 }
-                return (json.dumps(payload), 401)
+                return (json.dumps(payload), 400)
     
     #register a new user
     def register(self, content):
@@ -167,7 +167,7 @@ class Database():
             payload = {
                 "err_message" : "Failure: Username or email already in use."
             }
-            return(json.dumps(payload), 401)
+            return(json.dumps(payload), 400)
 
     #Update a user's password
     def change_pw(self, content):
@@ -187,7 +187,7 @@ class Database():
         payload = {
             "err_message": "Success: Password changed."
         }
-        return (json.dumps(payload), 200)
+        return (json.dumps(payload), 202)
     
     #Uploads original file  content = request.files['file']
     def artifactUpload(self, file, content):
@@ -284,7 +284,7 @@ class Database():
             payload = {
                     "err_message": "Success: Artifact uploaded."
                 }
-            return (json.dumps(payload), 200)
+            return (json.dumps(payload), 201)
         else:
             sql = "SELECT artifact_id FROM artifact WHERE owner_id = %s && artifact_repo = %s && artifact_name = %s"
             val = (user_id, repo_id, str(content["artifact_name"]))
@@ -305,7 +305,7 @@ class Database():
             payload = {
                     "err_message": "Success: Artifact uploaded."
                 }
-            return (json.dumps(payload), 200)
+            return (json.dumps(payload), 201)
 
     #create a repository as long as the user has permission and no repository they own has the same name
     def create_repo(self,content):
@@ -342,15 +342,17 @@ class Database():
                     "owner_id": str(temp[0][1]),
                     "err_message": "Success: Repository created. " 
                 }
-                return (json.dumps(payload), 200)
+                return (json.dumps(payload), 201)
             else:
                 payload = {
                     "err_message": "Failure: You already own a repository with this name."
                 }
+                return (json.dumps(payload), 400)
         else:
             payload = {
                 "err_message: Failure you do not have permission to create a repository."
             }
+        return (json.dumps(payload), 401)
 
     #change a users username (not implemented in the ui)
     def change_username(self,content):
@@ -370,7 +372,7 @@ class Database():
         payload = {
             "err_message": "Success: Username changed."
         }
-        return (json.dumps(payload), 200)
+        return (json.dumps(payload), 202)
     
     #update the repositories attributes (still in progress)
     def update_repo_attrib(self,content):
@@ -386,7 +388,7 @@ class Database():
         if content.get("repository_id", "") == "":
             repo_id = self.get_repo_id(str(content["repo_name"]), user_id)
             if repo_id == "":
-                return (json.dumps(NO_REPO), 401)
+                return (json.dumps(NO_REPO), 400)
         else:
             repo_id = int(content["repository_id"])
 
@@ -416,7 +418,7 @@ class Database():
                 payload = {
                     "err_message": "Success: Repo attributes changes."
                 }
-                return (json.dumps(payload), 200)
+                return (json.dumps(payload), 202)
             else:
                 payload = {
                     "err_message": "Failure: You do not have permission to change attributes on this repository."
@@ -442,7 +444,7 @@ class Database():
         if content.get("repository_id", "") == "":
             repo_id = self.get_repo_id(str(content["repo_name"]), user_id)
             if repo_id == "":
-                return (json.dumps(NO_REPO), 401)
+                return (json.dumps(NO_REPO), 400)
         else:
             repo_id = int(content["repository_id"])
 
@@ -457,7 +459,7 @@ class Database():
         payload = {
             "err_message": "Success: Artifact attributes changes."
         }
-        return (json.dumps(payload), 200)
+        return (json.dumps(payload), 202)
     
     '''
     def updateArtifact(self,content): ?
@@ -478,7 +480,7 @@ class Database():
         if content.get("repository_id", "") == "":
             repo_id = self.get_repo_id(str(content["repo_name"]), permission_level)
             if repo_id == "":
-                return (json.dumps(NO_REPO), 401)
+                return (json.dumps(NO_REPO), 400)
         else:
             repo_id = int(content["repository_id"])
         
@@ -491,7 +493,7 @@ class Database():
                 payload = {
                     "err_message": "Failure: That artifact does not exist."
                 }
-                return (json.dumps(payload), 401)
+                return (json.dumps(payload), 400)
             artifact_id = int(temp[0][0])
         else:
             artifact_id = int(content["artifact_id"])
@@ -548,7 +550,7 @@ class Database():
         if content.get("repository_id", "") == "":
             repo_id = self.get_repo_id(str(content["repo_name"]), permission_level)
             if repo_id == "":
-                return (json.dumps(NO_REPO), 401)
+                return (json.dumps(NO_REPO), 400)
         else:
             repo_id = int(content["repository_id"])
 
@@ -592,7 +594,7 @@ class Database():
         if content.get("repository_id", "") == "":
             repo_id = self.get_repo_id(str(content["repo_name"]), permission_level)
             if repo_id == "":
-                return (json.dumps(NO_REPO), 401)
+                return (json.dumps(NO_REPO), 400)
         else:
             repo_id = int(content["repository_id"])
         
@@ -605,7 +607,7 @@ class Database():
                 payload = {
                     "err_message": "Failure: That artifact does not exist."
                 }
-                return (json.dumps(payload), 401)
+                return (json.dumps(payload), 400)
             artifact_id = int(temp[0][0])
         else:
             artifact_id = int(content["artifact_id"])
@@ -670,7 +672,7 @@ class Database():
         if content.get("repository_id", "") == "":
             repo_id = self.get_repo_id(str(content["repo_name"]), permission_level)
             if repo_id == "":
-                return (json.dumps(NO_REPO), 401)
+                return (json.dumps(NO_REPO), 400)
         else:
             repo_id = int(content["repository_id"])
         
@@ -683,7 +685,7 @@ class Database():
                 payload = {
                     "err_message": "Failure: That artifact does not exist."
                 }
-                return (json.dumps(payload), 401)
+                return (json.dumps(payload), 400)
             artifact_id = int(temp[0][0])
         else:
             artifact_id = int(content["artifact_id"])
@@ -771,7 +773,7 @@ class Database():
             payload = {
                 "err_message": "No artifact or repository specified."
             }
-            return (json.dumps(payload), 401)
+            return (json.dumps(payload), 400)
 
         #process tag input(s)
         for x in content["tag"]:
@@ -792,7 +794,7 @@ class Database():
                     payload = {
                         "err_message": "Repository successfully tagged."
                     }
-                    return (json.dumps(payload), 200)
+                    return (json.dumps(payload), 202)
 
                 #if user is tagging an artifact
                 elif tempRepoID == 0:    
@@ -804,7 +806,7 @@ class Database():
                     payload = {
                         "err_message": "Artifact successfully tagged."
                     }
-                    return (json.dumps(payload), 200)
+                    return (json.dumps(payload), 202)
 
             #if the tag already exists
             else:
@@ -818,7 +820,7 @@ class Database():
                     payload = {
                         "err_message": "Repository successfully tagged."
                     }
-                    return (json.dumps(payload), 200)
+                    return (json.dumps(payload), 202)
 
                 #if user is tagging an artifact
                 elif tempRepoID == 0:                  
@@ -830,7 +832,7 @@ class Database():
                     payload = {
                         "err_message": "Artifact successfully tagged."
                     }
-                    return (json.dumps(payload), 200)
+                    return (json.dumps(payload), 202)
             
     '''
     def add_bookmark(self,content):
