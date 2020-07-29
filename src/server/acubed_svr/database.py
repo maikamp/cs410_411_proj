@@ -808,6 +808,7 @@ class Database():
         option = 0
         if content.get("repo_name", "") != "":
             option = 1
+        #add or content.get("artifact_id", "") != "" for update functionality
         elif content.get("artifact_name", "") != "":
             option = 2
         
