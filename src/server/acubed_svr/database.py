@@ -808,10 +808,8 @@ class Database():
         option = 0
         if content.get("repo_name", "") != "":
             option = 1
-        #add or content.get("artifact_id", "") != "" for update functionality
-        elif content.get("artifact_name", "") != "":
+        elif content.get("artifact_name", "") != "" or content.get("artifact_id", "") != "":
             option = 2
-        
         #if the json passed in has neither artifact nor repo stuff, return error
         else:
             payload = {
@@ -832,12 +830,15 @@ class Database():
             tempRepoID = result[0][0]
         #if tagging an artifact
         if option == 2:
-            #query for artifact id
-            sql = "SELECT artifact_id FROM artifact WHERE artifact_name = %s"
-            val = (str(content["artifact_name"]), )
-            self.cursor.execute(sql, val)
-            result = self.cursor.fetchall()
-            tempArtifactID = result[0][0]
+            if content.get("artifact_id", "") == "":
+                #query for artifact id
+                sql = "SELECT artifact_id FROM artifact WHERE artifact_name = %s"
+                val = (str(content["artifact_name"]), )
+                self.cursor.execute(sql, val)
+                result = self.cursor.fetchall()
+                tempArtifactID = result[0][0]
+            else:
+                tempArtifactID = int(content["artifact_id"])
 
         #process tag input(s)
         for x in content["tag"]:
