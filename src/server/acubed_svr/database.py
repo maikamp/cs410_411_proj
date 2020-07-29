@@ -503,18 +503,59 @@ class Database():
         else:
             repo_id = int(content["repository_id"])
 
-        permission_level = self.get_permission_level(user_id)
-
-        sql = "UPDATE artifact WHERE artifact_name = %s && repo_name = %s SET owner_id = %s && artifact_access_level = %s && artifact_name = %s && artifact_original_source = %s"
-        val = (str(content["artifact_name"]), str(content["repo_name"]), str(content["attribute": ["owner_id"]]), 
-                str(content["attribute": ["artifact_access_level"]]), str(content["attribute": ["artifact_name"]]), 
-                str(content["artifact_original_source"]))
-        self.cursor.execute(sql, val)
-        self.connector.commit()
-        payload = {
-            "err_message": "Success: Artifact attributes changes."
-        }
-        return (json.dumps(payload), 202)
+        if content.get("artifact_id", "") == "":
+            sql = "SELECT artifact_id FROM artifact WHERE artifact_repo = %s && artifact_name = %s"
+            data = (repo_id, str(content["artifact_name"]))
+            self.cursor.execute(sql, data)
+            temp = self.cursor.fetchall()
+            if len(temp) == 0:
+                payload = {
+                    "err_message": "Failure: That artifact does not exist."
+                }
+                return (json.dumps(payload), 400)
+            artifact_id = int(temp[0][0])
+        else:
+            artifact_id = int(content["artifact_id"])
+        
+        if self.get_permission_level(user_id) >= 3:
+            sql = "SELECT owner_id FROM artifact WHERE artifact_id = %s"
+            self.cursor.execute(sql, (artifact_id, ))
+            temp = self.cursor.fetchall()
+            if int(temp[0][0]) == user_id or (int(self.get_permission_level(user_id)) == 5):
+                if content.get("new_owner_id", "") != "":
+                    sql = "UPDATE artifact WHERE artifact_id = %s SET owner_id = %s"
+                    val = (artifact_id, str(content["new_owner_id"]))
+                    self.cursor.execute(sql, val)
+                    self.cursor.commit()
+                if content.get("new_access_level", "") != "":
+                    sql = "UPDATE artifact WHERE artifact_id = %s SET access_level = %s"
+                    val = (artifact_id, str(content["new_access_level"]))
+                    self.cursor.execute(sql, val)
+                    self.cursor.commit()
+                if content.get("new_artifact_original_source", "") != "":
+                    sql = "UPDATE artifact WHERE artifact_id = %s SET artifact_original_source = %s"
+                    val = (artifact_id, str(content["new_artifact_original_source"]))
+                    self.cursor.execute(sql, val)
+                    self.cursor.commit()
+                if content.get("new_artifact_name", "") != "":
+                    sql = "UPDATE artifact WHERE artifact_id = %s SET artifact_name = %s"
+                    val = (artifact_id, str(content["new_artifact_name"]))
+                    self.cursor.execute(sql, val)
+                    self.cursor.commit()       
+                payload = {
+                    "err_message": "Success: Artifact attributes changes."
+                }
+                return (json.dumps(payload), 202)
+            else:
+                payload = {
+                    "err_message": "Failure: You do not have permission to change attributes on this artifact."
+                }
+                return (json.dumps(payload), 401)
+        else:
+            payload = {
+                "err_message": "Failure: You do not have permission to change attributes on this artifact."
+            }
+            return (json.dumps(payload), 401)
     
     '''
     def updateArtifact(self,content): ?
@@ -627,7 +668,8 @@ class Database():
         #receive username and pw or user_id
         #check against db
         #return tuple (user_id, )
-
+    '''
+    '''
     def diff(self, content):
         #check file type, can be diff'd, full diff
         #can't be diff'd, simple compare
@@ -701,7 +743,7 @@ class Database():
         d = difflib.HtmlDiff()
         return  (d.make_file(artifact_change.split('\n'), artifact_change_previous.split('\n')), 200)
         #to only return a HTML table for ui to use if they need it
-        #return  (d.make_table(artifact_change.split('\n'), artifact_change_previous.split('\n')), 200)
+        #return (d.make_table(artifact_change.split('\n'), artifact_change_previous.split('\n')), 200)
     '''
     def remove_repo(self,content):
 
@@ -903,10 +945,46 @@ class Database():
     def change_tag(self, content):
 
     def remove_bookmark(self, content):
+    '''
     
     def return_artifact_list(self, content):
+        self.ensureConnected()
+
+        if content.get("user_id", "") == "":
+            user_id = self.get_user_id(str(content["username"]), str(content["password"]))        
+            if user_id == "":
+                return (json.dumps(AUTHENTICATE_FAIL), 401)   
+        else:
+            user_id = int(content["user_id"])
+        
+        sql = "SELECT artifact_name FROM artifact WHERE permission_level <= %s"
+        val = (self.get_permission_level(user_id), )
+        self.cursor.execute(sql, val)
+        result = self.cursor.fetchall()
+        payload = {
+            "err_message": "List of artifacts you have access to.",
+            "repository_id": result
+        }
+        return (json.dumps(payload), 202)
 
     def return_repo_list(self, content):
-    '''
+        self.ensureConnected()
+
+        if content.get("user_id", "") == "":
+            user_id = self.get_user_id(str(content["username"]), str(content["password"]))        
+            if user_id == "":
+                return (json.dumps(AUTHENTICATE_FAIL), 401)   
+        else:
+            user_id = int(content["user_id"])
+        
+        sql = "SELECT repo_name FROM repository WHERE permission_level <= %s"
+        val = (self.get_permission_level(user_id), )
+        self.cursor.execute(sql, val)
+        result = self.cursor.fetchall()
+        payload = {
+            "err_message": "List of repositories you have access to.",
+            "repository_id": result
+        }
+        return (json.dumps(payload), 202)
 
     
