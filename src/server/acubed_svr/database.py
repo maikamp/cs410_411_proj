@@ -343,7 +343,7 @@ class Database():
         #soup.save(os.path.join(UPLOAD_FOLDER, retrieved_file))
         datecreated = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         sqlUp = "INSERT INTO artifact (owner_id, artifact_repo, artifact_access_level, artifact_name, artifact_original_filetype, artifact_creation_date) VALUES (%s, %s, %s, %s, %s, %s)"
-        dataUp = (user_id, int(content["artifact_repo"]), int(content["artifact_access_level"]), str(content["artifact_name"]), ".txt", datecreated)
+        dataUp = (user_id, repo_id, int(content["artifact_access_level"]), str(content["artifact_name"]), ".txt", datecreated)
 
         self.cursor.execute(sqlUp, dataUp)
         self.connector.commit()
