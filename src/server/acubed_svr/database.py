@@ -7,6 +7,7 @@ import os
 import sys
 import pypandoc
 import difflib
+import urllib.request
 from bs4 import BeautifulSoup
 from flask import send_file, redirect, url_for, request, flash
 from werkzeug.utils import secure_filename
@@ -311,7 +312,6 @@ class Database():
     def artifact_scrape(self, content):
         self.ensureConnected()
 
-
         if str(content["user_id"]) == "":
             temp = self.get_user_id(str(content["username"]), str(content["password"]))        
             if temp == "":
@@ -328,10 +328,19 @@ class Database():
         #retrieved_file = urlopen(content["desired_url"]).read().decode('utf-8')
         #retrieved_file.save(os.path.join(UPLOAD_FOLDER, retrieved_file))
 
-        retrieved_file = requests.get("desired_url")
-        soup = BeautifulSoup(retrieved_file.content, 'html_parser')
+        retrieved_file = requests.get(content["desired_url"])
+        #possibly change content to content.text or content.md?
+        #soup = BeautifulSoup(retrieved_file.content, 'html_parser')
+        #soup.html.text
+        #soup.prettify()
+        #open('facebook.ico', 'wb').write(r.content)
+        #https://www.w3.org/TR/PNG/iso_8859-1.txt
+        retrieved_filename = requests.get(content["desired_url"]).split("/")[-1]
+        retrieved_filename = os.path.join(UPLOAD_FOLDER, retrieved_filename)
+        with open(retrieved_filename, "wb") as file_on_disk:
+            file_on_disk.write(retrieved_file.content)
 
-        soup.save(os.path.join(UPLOAD_FOLDER, retrieved_file))
+        #soup.save(os.path.join(UPLOAD_FOLDER, retrieved_file))
         datecreated = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         sqlUp = "INSERT INTO artifact (owner_id, artifact_repo, artifact_access_level, artifact_name, artifact_original_filetype, artifact_creation_date) VALUES (%s, %s, %s, %s, %s, %s)"
         dataUp = (user_id, int(content["artifact_repo"]), int(content["artifact_access_level"]), str(content["artifact_name"]), ".txt", datecreated)
@@ -344,11 +353,8 @@ class Database():
         self.cursor.execute(sql, val)
         temp = self.cursor.fetchall()
         
-
         sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_id, artifact_blob, version) VALUES (%s, %s, %s, %s, %s)"
-
-        artifact_blob = open(os.path.join(UPLOAD_FOLDER, retrieved_file), "rb").read()
-
+        artifact_blob = open(retrieved_filename, "rb").read()
         dataTwo = (datecreated, user_id, temp[0][0], artifact_blob, 1)
         
         self.cursor.execute(sqlTwo, dataTwo)
