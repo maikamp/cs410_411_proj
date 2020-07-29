@@ -334,7 +334,6 @@ class Database():
             file_on_disk.write(retrieved_file.content)
 
         extension = retrieved_filename.rsplit('.', 1)[1].lower()
-        conversion = self.convertToMD(retrieved_filename, extension)
         datecreated = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         sqlUp = "INSERT INTO artifact (owner_id, artifact_repo, artifact_access_level, artifact_name, artifact_original_filetype, artifact_creation_date) VALUES (%s, %s, %s, %s, %s, %s)"
         dataUp = (user_id, repo_id, int(content["artifact_access_level"]), str(content["artifact_name"]), extension, datecreated)
@@ -348,7 +347,7 @@ class Database():
         temp = self.cursor.fetchall()
         
         sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_id, artifact_blob, version) VALUES (%s, %s, %s, %s, %s)"
-        artifact_blob = open(conversion, "rb").read()
+        artifact_blob = open(retrieved_filename, "rb").read()
         dataTwo = (datecreated, user_id, temp[0][0], artifact_blob, 1)
         
         self.cursor.execute(sqlTwo, dataTwo)
