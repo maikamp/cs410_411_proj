@@ -5,6 +5,7 @@
     "permission_req": "3",
     "repo_name": "testrepo1",
     "tag": [
-        "CS411W_2"
+        "CS411W_2",
+        "CS411W_3"
     ] 
 }

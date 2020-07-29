@@ -228,7 +228,7 @@ class Database():
             #creation date, we need to pull current datetime
             #pull extension from filename
             #exten = self.allowed_file(filename)
-            dataUp = (user_id, int(content["artifact_repo"]), int(content["artifact_access_level"]), str(content["artifact_name"]), extension, datecreated)
+            dataUp = (user_id, int(content["repository_id"]), int(content["artifact_access_level"]), str(content["artifact_name"]), extension, datecreated)
         
             self.cursor.execute(sqlUp, dataUp)
             self.connector.commit()
@@ -616,7 +616,7 @@ class Database():
         payload = {
             "artifact_id": str(artifact_data[0][0]),
             "owner_id": str(artifact_data[0][1]),
-            "artifact_repo": str(artifact_data[0][2]),
+            "repository_id": str(artifact_data[0][2]),
             "artifact_access_level": str(artifact_data[0][3]),
             "artifact_name": str(artifact_data[0][4]),
             "artifact_original_source": str(artifact_data[0][5]),
@@ -850,9 +850,8 @@ class Database():
         option = 0
         if content.get("repo_name", "") != "":
             option = 1
-        elif content.get("artifact_name", "") != "":
+        elif content.get("artifact_name", "") != "" or content.get("artifact_id", "") != "":
             option = 2
-        
         #if the json passed in has neither artifact nor repo stuff, return error
         else:
             payload = {
@@ -870,27 +869,30 @@ class Database():
             val = (str(content["repo_name"]), )
             self.cursor.execute(sql, val)
             result = self.cursor.fetchall()
-            tempRepoID = result[0][0]
+            tempRepoID = int(result[0][0])
         #if tagging an artifact
         if option == 2:
-            #query for artifact id
-            sql = "SELECT artifact_id FROM artifact WHERE artifact_name = %s"
-            val = (str(content["artifact_name"]), )
-            self.cursor.execute(sql, val)
-            result = self.cursor.fetchall()
-            tempArtifactID = result[0][0]
+            if content.get("artifact_id", "") == "":
+                #query for artifact id
+                sql = "SELECT artifact_id FROM artifact WHERE artifact_name = %s"
+                val = (str(content["artifact_name"]), )
+                self.cursor.execute(sql, val)
+                result = self.cursor.fetchall()
+                tempArtifactID = int(result[0][0])
+            else:
+                tempArtifactID = int(content["artifact_id"])
 
         #process tag input(s)
         for x in content["tag"]:
             #check to tag table to find match for input tag(s)
-            sql = "SELECT tag_name FROM tag WHERE tag_name = %s"
-            val = (x, )
+            sql = "SELECT * FROM tag WHERE tag_name = %s and (repo_id = %s or artifact_id = %s)"
+            val = (x, tempRepoID, tempArtifactID)
             self.cursor.execute(sql, val)
             result = self.cursor.fetchall()
             #if tag doesnt yet exist
             if len(result) == 0:
                 #if user is tagging a repo
-                if tempArtifactID == 0:
+                if tempArtifactID == None:
                     #add new row to tag table with repo id and specified tag
                     sql = "INSERT INTO tag (tag_name, repository_id) VALUES(%s, %s)"
                     val = (x, tempRepoID)
@@ -899,10 +901,9 @@ class Database():
                     payload = {
                         "err_message": "Repository successfully tagged."
                     }
-                    return (json.dumps(payload), 202)
 
                 #if user is tagging an artifact
-                elif tempRepoID == 0:    
+                elif tempRepoID == None:    
                     #add new row to tag table with artifact id and specified tag
                     sql = "INSERT INTO tag (tag_name, artifact_id) VALUES(%s, %s)"
                     val = (x, tempArtifactID)
@@ -911,10 +912,10 @@ class Database():
                     payload = {
                         "err_message": "Artifact successfully tagged."
                     }
-                    return (json.dumps(payload), 202)
-
+            
             #if the tag already exists
             else:
+                '''
                 #if user is tagging a repo
                 if tempArtifactID == 0:
                     #add new row to tag table with repo id and specified tag
@@ -925,19 +926,22 @@ class Database():
                     payload = {
                         "err_message": "Repository successfully tagged."
                     }
-                    return (json.dumps(payload), 202)
 
                 #if user is tagging an artifact
-                elif tempRepoID == 0:                  
+                elif tempRepoID == 0 and result[0][2] != x:                  
                     #add new row to tag table with artifact id and specified tag
                     sql = "INSERT INTO tag (tag_name, artifact_id) VALUES(%s, %s)"
                     val = (x, tempArtifactID)
                     self.cursor.execute(sql, val)
                     self.connector.commit()
-                    payload = {
-                        "err_message": "Artifact successfully tagged."
-                    }
-                    return (json.dumps(payload), 202)
+                '''    
+                payload = {
+                    "err_message": "Tag already exists."
+                }
+                return (json.dumps(payload), 400)
+             
+            
+        return (json.dumps(payload), 202)
             
     '''
     def add_bookmark(self,content):

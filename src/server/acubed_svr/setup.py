@@ -105,13 +105,13 @@ TABLES['tag'] = """
     `repo_id` INT,
     `artifact_id` INT,
 
-    PRIMARY KEY (`tag_name`),
     INDEX `repository_id_fk` (`repo_id`),
     FOREIGN KEY (`repo_id`) REFERENCES `repository` (`repository_id`),
     INDEX `artifact_id_fk` (`artifact_id`),
     FOREIGN KEY (`artifact_id`) REFERENCES `artifact` (`artifact_id`)                                                                                         
     ) ENGINE=InnoDB 
     """
+    #removed until we find proper implementation for multifield key PRIMARY KEY (`tag_name`, `repo_id`, `artifact_id`),
 
 TABLES['user_bookmarks'] = """
     CREATE TABLE `user_bookmarks` (
