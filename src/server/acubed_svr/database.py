@@ -881,9 +881,7 @@ class Database():
                 tempArtifactID = int(result[0][0])
             else:
                 tempArtifactID = int(content["artifact_id"])
-        payload = {
-            "err_message": "Something is wrong."
-        }
+
         #process tag input(s)
         for x in content["tag"]:
             #check to tag table to find match for input tag(s)
@@ -894,7 +892,7 @@ class Database():
             #if tag doesnt yet exist
             if len(result) == 0:
                 #if user is tagging a repo
-                if tempArtifactID == None:
+                if tempArtifactID == 0:
                     #add new row to tag table with repo id and specified tag
                     sql = "INSERT INTO tag (tag_name, repository_id) VALUES(%s, %s)"
                     val = (x, tempRepoID)
@@ -904,7 +902,7 @@ class Database():
                         "err_message": "Repository successfully tagged."
                     }
                 #if user is tagging an artifact
-                elif tempRepoID == None:    
+                elif tempRepoID == 0:    
                     #add new row to tag table with artifact id and specified tag
                     sql = "INSERT INTO tag (tag_name, artifact_id) VALUES(%s, %s)"
                     val = (x, tempArtifactID)
