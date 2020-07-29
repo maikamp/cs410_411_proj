@@ -228,7 +228,7 @@ class Database():
             #creation date, we need to pull current datetime
             #pull extension from filename
             #exten = self.allowed_file(filename)
-            dataUp = (user_id, int(content["artifact_repo"]), int(content["artifact_access_level"]), str(content["artifact_name"]), extension, datecreated)
+            dataUp = (user_id, int(content["repository_id"]), int(content["artifact_access_level"]), str(content["artifact_name"]), extension, datecreated)
         
             self.cursor.execute(sqlUp, dataUp)
             self.connector.commit()
@@ -575,7 +575,7 @@ class Database():
         payload = {
             "artifact_id": str(artifact_data[0][0]),
             "owner_id": str(artifact_data[0][1]),
-            "artifact_repo": str(artifact_data[0][2]),
+            "repository_id": str(artifact_data[0][2]),
             "artifact_access_level": str(artifact_data[0][3]),
             "artifact_name": str(artifact_data[0][4]),
             "artifact_original_source": str(artifact_data[0][5]),
