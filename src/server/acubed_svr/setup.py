@@ -105,7 +105,7 @@ TABLES['tag'] = """
     `repo_id` INT,
     `artifact_id` INT,
 
-    PRIMARY KEY (`tag_name`),
+    PRIMARY KEY (`tag_name`, `repo_id`, `artifact_id`),
     INDEX `repository_id_fk` (`repo_id`),
     FOREIGN KEY (`repo_id`) REFERENCES `repository` (`repository_id`),
     INDEX `artifact_id_fk` (`artifact_id`),

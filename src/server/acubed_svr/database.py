@@ -817,8 +817,8 @@ class Database():
             }
             return (json.dumps(payload), 400)
         
-        tempRepoID = 0
-        tempArtifactID = 0
+        tempRepoID = None
+        tempArtifactID = None
         
         #if tagging a repo
         if option == 1:
@@ -827,7 +827,7 @@ class Database():
             val = (str(content["repo_name"]), )
             self.cursor.execute(sql, val)
             result = self.cursor.fetchall()
-            tempRepoID = result[0][0]
+            tempRepoID = int(result[0][0])
         #if tagging an artifact
         if option == 2:
             if content.get("artifact_id", "") == "":
@@ -836,21 +836,21 @@ class Database():
                 val = (str(content["artifact_name"]), )
                 self.cursor.execute(sql, val)
                 result = self.cursor.fetchall()
-                tempArtifactID = result[0][0]
+                tempArtifactID = int(result[0][0])
             else:
                 tempArtifactID = int(content["artifact_id"])
 
         #process tag input(s)
         for x in content["tag"]:
             #check to tag table to find match for input tag(s)
-            sql = "SELECT tag_name FROM tag WHERE tag_name = %s"
-            val = (x, )
+            sql = "SELECT * FROM tag WHERE tag_name = %s and repo_id = %s and artifact_id = %s"
+            val = (x, tempRepoID, tempArtifactID)
             self.cursor.execute(sql, val)
             result = self.cursor.fetchall()
             #if tag doesnt yet exist
             if len(result) == 0:
                 #if user is tagging a repo
-                if tempArtifactID == 0:
+                if tempArtifactID == None:
                     #add new row to tag table with repo id and specified tag
                     sql = "INSERT INTO tag (tag_name, repository_id) VALUES(%s, %s)"
                     val = (x, tempRepoID)
@@ -861,7 +861,7 @@ class Database():
                     }
 
                 #if user is tagging an artifact
-                elif tempRepoID == 0:    
+                elif tempRepoID == None:    
                     #add new row to tag table with artifact id and specified tag
                     sql = "INSERT INTO tag (tag_name, artifact_id) VALUES(%s, %s)"
                     val = (x, tempArtifactID)
@@ -870,9 +870,10 @@ class Database():
                     payload = {
                         "err_message": "Artifact successfully tagged."
                     }
-
+            
             #if the tag already exists
             else:
+                '''
                 #if user is tagging a repo
                 if tempArtifactID == 0:
                     #add new row to tag table with repo id and specified tag
@@ -885,16 +886,19 @@ class Database():
                     }
 
                 #if user is tagging an artifact
-                elif tempRepoID == 0:                  
+                elif tempRepoID == 0 and result[0][2] != x:                  
                     #add new row to tag table with artifact id and specified tag
                     sql = "INSERT INTO tag (tag_name, artifact_id) VALUES(%s, %s)"
                     val = (x, tempArtifactID)
                     self.cursor.execute(sql, val)
                     self.connector.commit()
-                    payload = {
-                        "err_message": "Artifact successfully tagged."
-                    }
-                    
+                '''    
+                payload = {
+                    "err_message": "Tag already exists."
+                }
+                return (json.dumps(payload), 400)
+             
+            
         return (json.dumps(payload), 202)
             
     '''
