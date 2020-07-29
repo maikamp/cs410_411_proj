@@ -859,7 +859,6 @@ class Database():
                     payload = {
                         "err_message": "Repository successfully tagged."
                     }
-                    return (json.dumps(payload), 202)
 
                 #if user is tagging an artifact
                 elif tempRepoID == 0:    
@@ -871,7 +870,6 @@ class Database():
                     payload = {
                         "err_message": "Artifact successfully tagged."
                     }
-                    return (json.dumps(payload), 202)
 
             #if the tag already exists
             else:
@@ -885,7 +883,6 @@ class Database():
                     payload = {
                         "err_message": "Repository successfully tagged."
                     }
-                    return (json.dumps(payload), 202)
 
                 #if user is tagging an artifact
                 elif tempRepoID == 0:                  
@@ -897,7 +894,8 @@ class Database():
                     payload = {
                         "err_message": "Artifact successfully tagged."
                     }
-                    return (json.dumps(payload), 202)
+                    
+        return (json.dumps(payload), 202)
             
     '''
     def add_bookmark(self,content):
