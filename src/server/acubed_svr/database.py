@@ -817,8 +817,8 @@ class Database():
             }
             return (json.dumps(payload), 400)
         
-        tempRepoID = None
-        tempArtifactID = None
+        tempRepoID = 0
+        tempArtifactID = 0
         
         #if tagging a repo
         if option == 1:
@@ -843,7 +843,7 @@ class Database():
         #process tag input(s)
         for x in content["tag"]:
             #check to tag table to find match for input tag(s)
-            sql = "SELECT * FROM tag WHERE tag_name = %s and repo_id = %s and artifact_id = %s"
+            sql = "SELECT * FROM tag WHERE tag_name = %s and (repo_id = %s or artifact_id = %s)"
             val = (x, tempRepoID, tempArtifactID)
             self.cursor.execute(sql, val)
             result = self.cursor.fetchall()
