@@ -360,7 +360,7 @@ class Database():
             val = (temp[0][0], )
             self.cursor.execute(sql, val)
             results = self.cursor.fetchall()
-            version = results[0][0] + 1
+            version += 1
 
         sql = "SELECT artifact_id FROM artifact WHERE owner_id = %s && artifact_repo = %s && artifact_name = %s"
         val = (user_id, repo_id, str(content["artifact_name"]))
