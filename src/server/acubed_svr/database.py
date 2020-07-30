@@ -346,7 +346,7 @@ class Database():
         self.cursor.execute(sqlUp, dataUp)
         self.connector.commit()
         '''
-        
+
         sql = "SELECT artifact_id FROM artifact WHERE owner_id = %s && artifact_repo = %s && artifact_name = %s"
         val = (user_id, repo_id, str(content["artifact_name"]))
         self.cursor.execute(sql, val)
@@ -369,10 +369,10 @@ class Database():
             self.connector.commit()
         else:
             sql = "SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s"
-            val = (artifact_id[0][0], )
+            val = (int(artifact_id[0][0]), )
             self.cursor.execute(sql, val)
             results = self.cursor.fetchall()
-            temp = results[0][0]
+            temp = int(results[0][0])
             version = temp + 1
         
         sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_id, artifact_blob, version) VALUES (%s, %s, %s, %s, %s)"
