@@ -910,17 +910,17 @@ class Database():
 
         #process tag input(s)
         for x in content["tag"]:
-            #check to tag table to find match for input tag(s)
+            #check for duplicate in tag table
             sql = "SELECT * FROM tag WHERE tag_name = %s and (repo_id = %s or artifact_id = %s)"
             val = (x, tempRepoID, tempArtifactID)
             self.cursor.execute(sql, val)
             result = self.cursor.fetchall()
-            #if tag doesnt yet exist
+            #if tag input isnt a duplicate
             if len(result) == 0:
                 #if user is tagging a repo
                 if tempArtifactID == 0:
                     #add new row to tag table with repo id and specified tag
-                    sql = "INSERT INTO tag (tag_name, repository_id) VALUES(%s, %s)"
+                    sql = "INSERT INTO tag (tag_name, repo_id) VALUES(%s, %s)"
                     val = (x, tempRepoID)
                     self.cursor.execute(sql, val)
                     self.connector.commit()
