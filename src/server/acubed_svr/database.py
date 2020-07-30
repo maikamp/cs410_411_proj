@@ -362,25 +362,25 @@ class Database():
             results = self.cursor.fetchall()
             version = results[0][0] + 1
 
-            sql = "SELECT artifact_id FROM artifact WHERE owner_id = %s && artifact_repo = %s && artifact_name = %s"
-            val = (user_id, repo_id, str(content["artifact_name"]))
-            self.cursor.execute(sql, val)
-            temp = self.cursor.fetchall()
-            sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_id, artifact_blob, version) VALUES (%s, %s, %s, %s, %s)"
-            #datetime from artifact_creation_date, changer_id from owner_id, artifact_size get file size, convert to blob
-            #(variable for version) = (query for previous version, if updating; 1 if no previous version)
-            artifact_blob = open(retrieved_filename, "rb").read()
-            #temp_filename = UPLOAD_FOLDER + '/'
-            #temp_blob = temp_filename + file.filename
-            dataTwo = (datecreated, user_id, temp[0][0], artifact_blob, version)
-            
-            self.cursor.execute(sqlTwo, dataTwo)
-            self.connector.commit()
-            
-            payload = {
-                    "err_message": "Success: Artifact uploaded."
-                }
-            return (json.dumps(payload), 201)
+        sql = "SELECT artifact_id FROM artifact WHERE owner_id = %s && artifact_repo = %s && artifact_name = %s"
+        val = (user_id, repo_id, str(content["artifact_name"]))
+        self.cursor.execute(sql, val)
+        temp = self.cursor.fetchall()
+        sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_id, artifact_blob, version) VALUES (%s, %s, %s, %s, %s)"
+        #datetime from artifact_creation_date, changer_id from owner_id, artifact_size get file size, convert to blob
+        #(variable for version) = (query for previous version, if updating; 1 if no previous version)
+        artifact_blob = open(retrieved_filename, "rb").read()
+        #temp_filename = UPLOAD_FOLDER + '/'
+        #temp_blob = temp_filename + file.filename
+        dataTwo = (datecreated, user_id, temp[0][0], artifact_blob, version)
+        
+        self.cursor.execute(sqlTwo, dataTwo)
+        self.connector.commit()
+        
+        payload = {
+                "err_message": "Success: Artifact uploaded."
+            }
+        return (json.dumps(payload), 201)
 
         '''
         #collects file from url
