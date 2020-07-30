@@ -228,7 +228,7 @@ class Database():
             #creation date, we need to pull current datetime
             #pull extension from filename
             #exten = self.allowed_file(filename)
-            dataUp = (user_id, int(content["artifact_repo"]), int(content["artifact_access_level"]), str(content["artifact_name"]), extension, datecreated)
+            dataUp = (user_id, int(content["repository_id"]), int(content["artifact_access_level"]), str(content["artifact_name"]), extension, datecreated)
         
             self.cursor.execute(sqlUp, dataUp)
             self.connector.commit()
@@ -524,18 +524,59 @@ class Database():
         else:
             repo_id = int(content["repository_id"])
 
-        permission_level = self.get_permission_level(user_id)
-
-        sql = "UPDATE artifact WHERE artifact_name = %s && repo_name = %s SET owner_id = %s && artifact_access_level = %s && artifact_name = %s && artifact_original_source = %s"
-        val = (str(content["artifact_name"]), str(content["repo_name"]), str(content["attribute": ["owner_id"]]), 
-                str(content["attribute": ["artifact_access_level"]]), str(content["attribute": ["artifact_name"]]), 
-                str(content["artifact_original_source"]))
-        self.cursor.execute(sql, val)
-        self.connector.commit()
-        payload = {
-            "err_message": "Success: Artifact attributes changes."
-        }
-        return (json.dumps(payload), 202)
+        if content.get("artifact_id", "") == "":
+            sql = "SELECT artifact_id FROM artifact WHERE artifact_repo = %s && artifact_name = %s"
+            data = (repo_id, str(content["artifact_name"]))
+            self.cursor.execute(sql, data)
+            temp = self.cursor.fetchall()
+            if len(temp) == 0:
+                payload = {
+                    "err_message": "Failure: That artifact does not exist."
+                }
+                return (json.dumps(payload), 400)
+            artifact_id = int(temp[0][0])
+        else:
+            artifact_id = int(content["artifact_id"])
+        
+        if self.get_permission_level(user_id) >= 3:
+            sql = "SELECT owner_id FROM artifact WHERE artifact_id = %s"
+            self.cursor.execute(sql, (artifact_id, ))
+            temp = self.cursor.fetchall()
+            if int(temp[0][0]) == user_id or (int(self.get_permission_level(user_id)) == 5):
+                if content.get("new_owner_id", "") != "":
+                    sql = "UPDATE artifact WHERE artifact_id = %s SET owner_id = %s"
+                    val = (artifact_id, str(content["new_owner_id"]))
+                    self.cursor.execute(sql, val)
+                    self.cursor.commit()
+                if content.get("new_access_level", "") != "":
+                    sql = "UPDATE artifact WHERE artifact_id = %s SET access_level = %s"
+                    val = (artifact_id, str(content["new_access_level"]))
+                    self.cursor.execute(sql, val)
+                    self.cursor.commit()
+                if content.get("new_artifact_original_source", "") != "":
+                    sql = "UPDATE artifact WHERE artifact_id = %s SET artifact_original_source = %s"
+                    val = (artifact_id, str(content["new_artifact_original_source"]))
+                    self.cursor.execute(sql, val)
+                    self.cursor.commit()
+                if content.get("new_artifact_name", "") != "":
+                    sql = "UPDATE artifact WHERE artifact_id = %s SET artifact_name = %s"
+                    val = (artifact_id, str(content["new_artifact_name"]))
+                    self.cursor.execute(sql, val)
+                    self.cursor.commit()       
+                payload = {
+                    "err_message": "Success: Artifact attributes changes."
+                }
+                return (json.dumps(payload), 202)
+            else:
+                payload = {
+                    "err_message": "Failure: You do not have permission to change attributes on this artifact."
+                }
+                return (json.dumps(payload), 401)
+        else:
+            payload = {
+                "err_message": "Failure: You do not have permission to change attributes on this artifact."
+            }
+            return (json.dumps(payload), 401)
     
     '''
     def updateArtifact(self,content): ?
@@ -596,7 +637,7 @@ class Database():
         payload = {
             "artifact_id": str(artifact_data[0][0]),
             "owner_id": str(artifact_data[0][1]),
-            "artifact_repo": str(artifact_data[0][2]),
+            "repository_id": str(artifact_data[0][2]),
             "artifact_access_level": str(artifact_data[0][3]),
             "artifact_name": str(artifact_data[0][4]),
             "artifact_original_source": str(artifact_data[0][5]),
@@ -648,7 +689,8 @@ class Database():
         #receive username and pw or user_id
         #check against db
         #return tuple (user_id, )
-
+    '''
+    '''
     def diff(self, content):
         #check file type, can be diff'd, full diff
         #can't be diff'd, simple compare
@@ -722,7 +764,7 @@ class Database():
         d = difflib.HtmlDiff()
         return  (d.make_file(artifact_change.split('\n'), artifact_change_previous.split('\n')), 200)
         #to only return a HTML table for ui to use if they need it
-        #return  (d.make_table(artifact_change.split('\n'), artifact_change_previous.split('\n')), 200)
+        #return (d.make_table(artifact_change.split('\n'), artifact_change_previous.split('\n')), 200)
     '''
     def remove_repo(self,content):
 
@@ -829,10 +871,8 @@ class Database():
         option = 0
         if content.get("repo_name", "") != "":
             option = 1
-        #add or content.get("artifact_id", "") != "" for update functionality
-        elif content.get("artifact_name", "") != "":
+        elif content.get("artifact_name", "") != "" or content.get("artifact_id", "") != "":
             option = 2
-        
         #if the json passed in has neither artifact nor repo stuff, return error
         else:
             payload = {
@@ -850,21 +890,24 @@ class Database():
             val = (str(content["repo_name"]), )
             self.cursor.execute(sql, val)
             result = self.cursor.fetchall()
-            tempRepoID = result[0][0]
+            tempRepoID = int(result[0][0])
         #if tagging an artifact
         if option == 2:
-            #query for artifact id
-            sql = "SELECT artifact_id FROM artifact WHERE artifact_name = %s"
-            val = (str(content["artifact_name"]), )
-            self.cursor.execute(sql, val)
-            result = self.cursor.fetchall()
-            tempArtifactID = result[0][0]
+            if content.get("artifact_id", "") == "":
+                #query for artifact id
+                sql = "SELECT artifact_id FROM artifact WHERE artifact_name = %s"
+                val = (str(content["artifact_name"]), )
+                self.cursor.execute(sql, val)
+                result = self.cursor.fetchall()
+                tempArtifactID = int(result[0][0])
+            else:
+                tempArtifactID = int(content["artifact_id"])
 
         #process tag input(s)
         for x in content["tag"]:
             #check to tag table to find match for input tag(s)
-            sql = "SELECT tag_name FROM tag WHERE tag_name = %s"
-            val = (x, )
+            sql = "SELECT * FROM tag WHERE tag_name = %s and (repo_id = %s or artifact_id = %s)"
+            val = (x, tempRepoID, tempArtifactID)
             self.cursor.execute(sql, val)
             result = self.cursor.fetchall()
             #if tag doesnt yet exist
@@ -879,8 +922,6 @@ class Database():
                     payload = {
                         "err_message": "Repository successfully tagged."
                     }
-                    return (json.dumps(payload), 202)
-
                 #if user is tagging an artifact
                 elif tempRepoID == 0:    
                     #add new row to tag table with artifact id and specified tag
@@ -891,33 +932,13 @@ class Database():
                     payload = {
                         "err_message": "Artifact successfully tagged."
                     }
-                    return (json.dumps(payload), 202)
-
             #if the tag already exists
-            else:
-                #if user is tagging a repo
-                if tempArtifactID == 0:
-                    #add new row to tag table with repo id and specified tag
-                    sql = "INSERT INTO tag (tag_name, repository_id) VALUES(%s, %s)"
-                    val = (x, tempRepoID)
-                    self.cursor.execute(sql, val)
-                    self.connector.commit()
-                    payload = {
-                        "err_message": "Repository successfully tagged."
-                    }
-                    return (json.dumps(payload), 202)
-
-                #if user is tagging an artifact
-                elif tempRepoID == 0:                  
-                    #add new row to tag table with artifact id and specified tag
-                    sql = "INSERT INTO tag (tag_name, artifact_id) VALUES(%s, %s)"
-                    val = (x, tempArtifactID)
-                    self.cursor.execute(sql, val)
-                    self.connector.commit()
-                    payload = {
-                        "err_message": "Artifact successfully tagged."
-                    }
-                    return (json.dumps(payload), 202)
+            else:  
+                payload = {
+                    "err_message": "Tag already exists."
+                }
+                return (json.dumps(payload), 400)
+        return (json.dumps(payload), 202)
             
     '''
     def add_bookmark(self,content):
@@ -925,10 +946,46 @@ class Database():
     def change_tag(self, content):
 
     def remove_bookmark(self, content):
+    '''
     
     def return_artifact_list(self, content):
+        self.ensureConnected()
+
+        if content.get("user_id", "") == "":
+            user_id = self.get_user_id(str(content["username"]), str(content["password"]))        
+            if user_id == "":
+                return (json.dumps(AUTHENTICATE_FAIL), 401)   
+        else:
+            user_id = int(content["user_id"])
+        
+        sql = "SELECT artifact_name FROM artifact WHERE permission_level <= %s"
+        val = (self.get_permission_level(user_id), )
+        self.cursor.execute(sql, val)
+        result = self.cursor.fetchall()
+        payload = {
+            "err_message": "List of artifacts you have access to.",
+            "repository_id": result
+        }
+        return (json.dumps(payload), 202)
 
     def return_repo_list(self, content):
-    '''
+        self.ensureConnected()
+
+        if content.get("user_id", "") == "":
+            user_id = self.get_user_id(str(content["username"]), str(content["password"]))        
+            if user_id == "":
+                return (json.dumps(AUTHENTICATE_FAIL), 401)   
+        else:
+            user_id = int(content["user_id"])
+        
+        sql = "SELECT repo_name FROM repository WHERE permission_level <= %s"
+        val = (self.get_permission_level(user_id), )
+        self.cursor.execute(sql, val)
+        result = self.cursor.fetchall()
+        payload = {
+            "err_message": "List of repositories you have access to.",
+            "repository_id": result
+        }
+        return (json.dumps(payload), 202)
 
     
