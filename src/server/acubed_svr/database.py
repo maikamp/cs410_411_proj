@@ -377,7 +377,7 @@ class Database():
         
         sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_id, artifact_blob, version) VALUES (%s, %s, %s, %s, %s)"
         artifact_blob = open(retrieved_filename, "rb").read()
-        dataTwo = (datecreated, user_id, artifact_id, artifact_blob, version)
+        dataTwo = (datecreated, user_id, int(artifact_id[0][0]), artifact_blob, version)
         
         self.cursor.execute(sqlTwo, dataTwo)
         self.connector.commit()
