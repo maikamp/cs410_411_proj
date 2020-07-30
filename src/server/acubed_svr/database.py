@@ -339,18 +339,20 @@ class Database():
         extension = retrieved_filename.rsplit('.', 1)[1].lower()
         #conversion = self.convertToMD(tempname, extension)
         datecreated = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        '''
         sqlUp = "INSERT INTO artifact (owner_id, artifact_repo, artifact_access_level, artifact_name, artifact_original_filetype, artifact_creation_date) VALUES (%s, %s, %s, %s, %s, %s)"
         dataUp = (user_id, repo_id, int(content["artifact_access_level"]), str(content["artifact_name"]), extension, datecreated)
         
         self.cursor.execute(sqlUp, dataUp)
         self.connector.commit()
-
+        '''
+        
         sql = "SELECT artifact_id FROM artifact WHERE owner_id = %s && artifact_repo = %s && artifact_name = %s"
         val = (user_id, repo_id, str(content["artifact_name"]))
         self.cursor.execute(sql, val)
         artifact_id = self.cursor.fetchall()
 
-        if len(artifact_id) ==0:
+        if len(artifact_id) == 0:
             if str(content["version"]) == "":
                 version = 1
             else:
@@ -370,8 +372,8 @@ class Database():
             val = (artifact_id[0][0], )
             self.cursor.execute(sql, val)
             results = self.cursor.fetchall()
-            version = int(results[0][0])
-            version = version + 1
+            temp = results[0][0]
+            version = temp + 1
         
         sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_id, artifact_blob, version) VALUES (%s, %s, %s, %s, %s)"
         artifact_blob = open(retrieved_filename, "rb").read()
