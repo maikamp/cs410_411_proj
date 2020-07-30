@@ -335,24 +335,45 @@ class Database():
             file_on_disk.write(retrieved_file.content)
 
         #gets extension of file and gets the time of creation
-        tempname = str(content["artifact_name"])
-        extension = retrieved_filename.rsplit('.', 1)[1].lower()
+        #tempname = str(content["artifact_name"])
+        #extension = retrieved_filename.rsplit('.', 1)[1].lower()
         #conversion = self.convertToMD(tempname, extension)
         datecreated = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        sqlUp = "INSERT INTO artifact (owner_id, artifact_repo, artifact_access_level, artifact_name, artifact_original_filetype, artifact_creation_date) VALUES (%s, %s, %s, %s, %s, %s)"
-        dataUp = (user_id, repo_id, int(content["artifact_access_level"]), str(content["artifact_name"]), extension, datecreated)
+        #sqlUp = "INSERT INTO artifact (owner_id, artifact_repo, artifact_access_level, artifact_name, artifact_original_filetype, artifact_creation_date) VALUES (%s, %s, %s, %s, %s, %s)"
+        #dataUp = (user_id, repo_id, int(content["artifact_access_level"]), str(content["artifact_name"]), extension, datecreated)
+        temp = self.cursor.fetchall()
+        if len(temp) == 0:
+            if str(content["version"]) == "":
+                version = 1
+            else:
+                version = int(content["version"])
+            extension = retrieved_filename.rsplit('.', 1)[1].lower()
+            sqlUp = "INSERT INTO artifact (owner_id, artifact_repo, artifact_access_level, artifact_name, artifact_original_filetype, artifact_creation_date) VALUES (%s, %s, %s, %s, %s, %s)"
+            #can UI send us repository_id or do we need to query for it?
+            #creation date, we need to pull current datetime
+            #pull extension from filename
+            #exten = self.allowed_file(filename)
+            dataUp = (user_id, repo_id, int(content["artifact_access_level"]), str(content["artifact_name"]), extension, datecreated)
         
+            self.cursor.execute(sqlUp, dataUp)
+            self.connector.commit()
+        else:
+            sql = "SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s"
+            val = (temp[0][0], )
+            self.cursor.execute(sql, val)
+            results = self.cursor.fetchall()
+            version = results[0][0] + 1
         self.cursor.execute(sqlUp, dataUp)
         self.connector.commit()
 
         sql = "SELECT artifact_id FROM artifact WHERE owner_id = %s && artifact_repo = %s && artifact_name = %s"
         val = (user_id, repo_id, str(content["artifact_name"]))
         self.cursor.execute(sql, val)
-        temp = self.cursor.fetchall()
+        #temp = self.cursor.fetchall()
         
         sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_id, artifact_blob, version) VALUES (%s, %s, %s, %s, %s)"
         artifact_blob = open(retrieved_filename, "rb").read()
-        dataTwo = (datecreated, user_id, temp[0][0], artifact_blob, 1)
+        dataTwo = (datecreated, user_id, temp[0][0], artifact_blob, version)
         
         self.cursor.execute(sqlTwo, dataTwo)
         self.connector.commit()
