@@ -367,6 +367,10 @@ class Database():
         
             self.cursor.execute(sqlUp, dataUp)
             self.connector.commit()
+            sql = "SELECT artifact_id FROM artifact WHERE owner_id = %s && artifact_repo = %s && artifact_name = %s"
+            val = (user_id, repo_id, str(content["artifact_name"]))
+            self.cursor.execute(sql, val)
+            artifact_id = self.cursor.fetchall()
         else:
             sql = "SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s"
             val = (int(artifact_id[0][0]), )
@@ -374,10 +378,12 @@ class Database():
             results = self.cursor.fetchall()
             temp = int(results[0][0])
             version = temp + 1
+
+
         
         sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_id, artifact_blob, version) VALUES (%s, %s, %s, %s, %s)"
         artifact_blob = open(retrieved_filename, "rb").read()
-        dataTwo = (datecreated, user_id, artifact_id, artifact_blob, version)
+        dataTwo = (datecreated, user_id, int(artifact_id[0][0]), artifact_blob, version)
         
         self.cursor.execute(sqlTwo, dataTwo)
         self.connector.commit()
