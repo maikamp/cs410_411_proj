@@ -370,7 +370,8 @@ class Database():
             val = (artifact_id[0][0], )
             self.cursor.execute(sql, val)
             results = self.cursor.fetchall()
-            version = int(results[0][0]) + 1
+            version = int(results[0][0])
+            version = version + 1
         
         sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_id, artifact_blob, version) VALUES (%s, %s, %s, %s, %s)"
         artifact_blob = open(retrieved_filename, "rb").read()
