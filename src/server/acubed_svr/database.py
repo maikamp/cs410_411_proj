@@ -235,9 +235,9 @@ class Database():
         print(user_id , file=sys.stderr)
         print(int(results[0][0]), file=sys.stderr)
         print((user_id != int(results[0][0])), file=sys.stderr)
-        print(self.get_permission_level, file=sys.stderr)
+        print(self.get_permission_level(user_id), file=sys.stderr)
         print((self.get_permission_level != 5), file=sys.stderr)
-        if (user_id != int(results[0][0])) or (self.get_permission_level != 5):
+        if (user_id != int(results[0][0])) or (self.get_permission_level(user_id) != 5):
             payload = {
                 "err_message": "Failure: Permission Denied."
             }
