@@ -63,6 +63,7 @@ TABLES['artifact'] = """
     `artifact_access_level` INT NOT NULL,
     `artifact_name` varchar(40) NOT NULL,
     `artifact_original_source` text,
+    `artifact_original_filetype` text,
     `artifact_creation_date` datetime NOT NULL,
     `artifact_last_accessed` datetime,
     `artifact_access_count` INT,
@@ -86,7 +87,7 @@ TABLES['artifact_change_record'] = """
     `changer_id` INT NOT NULL,
     `artifact_id` INT NOT NULL,
     `artifact_size` INT,
-    `artifact_blob` blob NOT NULL,
+    `artifact_blob` blob,
     `version` INT NOT NULL,
 
     PRIMARY KEY (`change_datetime`),
@@ -104,13 +105,13 @@ TABLES['tag'] = """
     `repo_id` INT,
     `artifact_id` INT,
 
-    PRIMARY KEY (`tag_name`),
     INDEX `repository_id_fk` (`repo_id`),
     FOREIGN KEY (`repo_id`) REFERENCES `repository` (`repository_id`),
     INDEX `artifact_id_fk` (`artifact_id`),
     FOREIGN KEY (`artifact_id`) REFERENCES `artifact` (`artifact_id`)                                                                                         
     ) ENGINE=InnoDB 
     """
+    #removed until we find proper implementation for multifield key PRIMARY KEY (`tag_name`, `repo_id`, `artifact_id`),
 
 TABLES['user_bookmarks'] = """
     CREATE TABLE `user_bookmarks` (

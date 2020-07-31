@@ -23,5 +23,5 @@ yarn-debug.log*
 yarn-error.log*
 
 .vs*
-*__pycache__*
-.vscode/settings.json
+__pycache__*
+
