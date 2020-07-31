@@ -87,7 +87,7 @@ TABLES['artifact_change_record'] = """
     `changer_id` INT NOT NULL,
     `artifact_id` INT NOT NULL,
     `artifact_size` INT,
-    `artifact_blob` blob NOT NULL,
+    `artifact_blob` blob,
     `version` INT NOT NULL,
 
     PRIMARY KEY (`change_datetime`),
