@@ -83,7 +83,7 @@ class Database():
         data = (user_id, )
         self.cursor.execute(sql, data)
         temp = self.cursor.fetchall()
-        return temp[0][0]
+        return int(temp[0][0])
 
     #get artifact id when you only have the repo name
     def get_artifact_id(self, artifact_name):
@@ -230,7 +230,7 @@ class Database():
         sql = "SELECT repo_creator FROM repository WHERE repository_id = %s"
         self.cursor.execute(sql,(repo_id, ))
         results = self.cursor.fetchall()
-        if (user_id != results[0][0]) or (self.get_permission_level != 5):
+        if (user_id != int(results[0][0])) or (self.get_permission_level != 5):
             payload = {
                 "err_message": "Failure: Permission Denied."
             }
