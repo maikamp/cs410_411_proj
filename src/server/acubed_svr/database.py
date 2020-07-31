@@ -320,8 +320,8 @@ class Database():
         retrieved_file = requests.get(content["desired_url"])
         
         #https://www.w3.org/TR/PNG/iso_8859-1.txt
-        retrieved_filename = content["desired_url"].split("/")[-1]
-        retrieved_filename = os.path.join(UPLOAD_FOLDER, retrieved_filename)
+        only_filename = content["desired_url"].split("/")[-1]
+        retrieved_filename = os.path.join(UPLOAD_FOLDER, only_filename)
         with open(retrieved_filename, "wb") as file_on_disk:
             file_on_disk.write(retrieved_file.content)
 
