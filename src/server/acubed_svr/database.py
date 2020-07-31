@@ -352,10 +352,10 @@ class Database():
             results = self.cursor.fetchall()
             version = results[0][0] + 1
         
-        if self.allowed_file(retrieved_file.filename):
-            if self.convertible_file(retrieved_file.filename):
+        if self.allowed_file(only_filename):
+            if self.convertible_file(only_filename):
                 tempname = str(content["artifact_name"])
-                extension = retrieved_file.filename.rsplit('.', 1)[1].lower()
+                extension = only_filename.rsplit('.', 1)[1].lower()
                 retrieved_filename = self.convertToMD(tempname, extension)
         
             sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_id, artifact_blob, version) VALUES (%s, %s, %s, %s, %s)"
