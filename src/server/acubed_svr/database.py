@@ -385,10 +385,10 @@ class Database():
                 print(tempname, file=sys.stderr)
                 ext = retrieved_filename.rsplit('.', 1)[1]
                 print(ext, file=sys.stderr)
-                retrieved_filename = self.convertToMD(tempname, ext)
+                retrieved_filename = os.path.join(UPLOAD_FOLDER, self.convertToMD(tempname, ext))
         
             sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_id, artifact_blob, version) VALUES (%s, %s, %s, %s, %s)"
-            artifact_blob = open(os.path.join(UPLOAD_FOLDER,retrieved_filename), "rb").read()
+            artifact_blob = open(retrieved_filename, "rb").read()
             dataTwo = (datecreated, user_id, artifact_id, artifact_blob, version)
             self.cursor.execute(sqlTwo, dataTwo)
             self.connector.commit()
