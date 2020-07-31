@@ -84,6 +84,19 @@ class Database():
         self.cursor.execute(sql, data)
         temp = self.cursor.fetchall()
         return temp[0][0]
+
+    #get artifact id when you only have the repo name
+    def get_artifact_id(self, user_id, repo_id, artifact_name):
+        sql = "SELECT artifact_id FROM artifact WHERE owner_id = %s && artifact_repo = %s && artifact_name = %s"
+        val = (user_id, repo_id, artifact_name)
+        self.cursor.execute(sql, val)
+        temp = self.cursor.fetchall()
+        if len(temp) == 0:
+            #set an empty string for no repository
+            artifact_id = ""
+        else:
+            artifact_id = int(temp[0][0])
+        return artifact_id
     
     #check file type for defined set of allowed extensions 
     def allowed_file(self, filename):
@@ -192,57 +205,49 @@ class Database():
         return (json.dumps(payload), 202)
     
     #Uploads original file  content = request.files['file']
-    def artifactUpload(self, file, content):
+    def artifact_upload(self, file, content):
         self.ensureConnected()
         
         content = json.loads(content.read().decode('utf-8'))
-
-  
-        if str(content["user_id"]) == "":
-            temp = self.get_user_id(str(content["username"]), str(content["password"]))        
-            if temp == "":
-                payload = {
-                    "err_message": "Failure: That username or password does not exist."
-                }
-                return (json.dumps(payload), 401)   
-            user_id = int(temp)
+        if content.get("user_id", "") == "":
+            user_id = self.get_user_id(str(content["username"]), str(content["password"]))        
+            if user_id == "":
+                return (json.dumps(AUTHENTICATE_FAIL), 401)
         else:
             user_id = int(content["user_id"])
 
-        repo_id = int(content["repository_id"])
+        if content.get("repository_id", "") == "":
+            repo_id = self.get_repo_id(str(content["repo_name"]), user_id)
+            if repo_id == "":
+                return (json.dumps(NO_REPO), 400)
+        else:
+            repo_id = int(content["repository_id"])
          
-        sql = "SELECT artifact_id FROM artifact WHERE owner_id = %s && artifact_repo = %s && artifact_name = %s"
-        val = (user_id, repo_id, str(content["artifact_name"]))
-        self.cursor.execute(sql, val)
-        temp = self.cursor.fetchall()
+        artifact_id = self.get_artifact_id(user_id, repo_id, str(content["artifact_name"]))
         datecreated = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-        if len(temp) == 0:
+        #check for the first time an artifact has been uploaded
+        if artifact_id == "":
+            #version control for initial version
             if str(content["version"]) == "":
                 version = 1
             else:
                 version = int(content["version"])
+            #get the extension from the filename
             extension = file.filename.rsplit('.', 1)[1].lower()
+            #create an entry for the artifact in the artifact table
             sqlUp = "INSERT INTO artifact (owner_id, artifact_repo, artifact_access_level, artifact_name, artifact_original_filetype, artifact_creation_date) VALUES (%s, %s, %s, %s, %s, %s)"
-            #can UI send us repository_id or do we need to query for it?
-            #creation date, we need to pull current datetime
-            #pull extension from filename
-            #exten = self.allowed_file(filename)
-            dataUp = (user_id, int(content["repository_id"]), int(content["artifact_access_level"]), str(content["artifact_name"]), extension, datecreated)
-        
+            dataUp = (user_id, repo_id, int(content["artifact_access_level"]), str(content["artifact_name"]), extension, datecreated)
             self.cursor.execute(sqlUp, dataUp)
             self.connector.commit()
+        #artifact has been uploaded before so its an update get the max version and increment by 1
         else:
             sql = "SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s"
-            val = (temp[0][0], )
+            val = (artifact_id, )
             self.cursor.execute(sql, val)
             results = self.cursor.fetchall()
             version = results[0][0] + 1
         
-        #artifact_file = open("simplemd.md", "r")
-        #fileupload steps
-        
-        #if request.method == 'POST':
         #check if the post request has the file part
         if 'file' not in request.files:
             flash('No file part')
@@ -250,7 +255,6 @@ class Database():
                 "err_message": "No file part."
             }
             return (json.dumps(payload), 404)
-        #file = request.files[request.url]
         #if user does not select file, browser also
         #submit an empty part without filename
         if file.filename == '':
@@ -259,51 +263,37 @@ class Database():
                 "err_message": "No selected file."
             }
             return (json.dumps(payload), 404)
+        #make the fileneame secure and save it   
         filename = secure_filename(file.filename)
         file.save(os.path.join(UPLOAD_FOLDER, filename))
+        artifact_id = self.get_artifact_id(user_id, repo_id, str(content["artifact_name"]))
+
         if file and self.allowed_file(file.filename):
             if self.convertible_file(file.filename):
                 tempname = str(content["artifact_name"])
                 extension = file.filename.rsplit('.', 1)[1].lower()
-                print(filename, file = sys.stderr, end='')
                 filename = self.convertToMD(tempname, extension)
 
-            sql = "SELECT artifact_id FROM artifact WHERE owner_id = %s && artifact_repo = %s && artifact_name = %s"
-            val = (user_id, repo_id, str(content["artifact_name"]))
-            self.cursor.execute(sql, val)
-            temp = self.cursor.fetchall()
             sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_id, artifact_blob, version) VALUES (%s, %s, %s, %s, %s)"
             #datetime from artifact_creation_date, changer_id from owner_id, artifact_size get file size, convert to blob
             #(variable for version) = (query for previous version, if updating; 1 if no previous version)
             artifact_blob = open(os.path.join(UPLOAD_FOLDER, filename), "rb").read()
-            #temp_filename = UPLOAD_FOLDER + '/'
-            #temp_blob = temp_filename + file.filename
-            dataTwo = (datecreated, user_id, temp[0][0], artifact_blob, version)
-            
+            dataTwo = (datecreated, user_id, artifact_id, artifact_blob, version)
             self.cursor.execute(sqlTwo, dataTwo)
             self.connector.commit()
-            
             payload = {
                     "err_message": "Success: Artifact uploaded."
                 }
             return (json.dumps(payload), 201)
         else:
-            sql = "SELECT artifact_id FROM artifact WHERE owner_id = %s && artifact_repo = %s && artifact_name = %s"
-            val = (user_id, repo_id, str(content["artifact_name"]))
-            self.cursor.execute(sql, val)
-            temp = self.cursor.fetchall()
+            #needs a location for the file we stored
             temp = UPLOAD_FOLDER + file.filename
             sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_id, version) VALUES (%s, %s, %s, %s)"
             #datetime from artifact_creation_date, changer_id from owner_id, artifact_size get file size, convert to blob
             #(variable for version) = (query for previous version, if updating; 1 if no previous version)
-
-            #temp_filename = UPLOAD_FOLDER + '/'
-            #temp_blob = temp_filename + file.filename
-            dataTwo = (datecreated, user_id, temp[0][0], version)
-            
+            dataTwo = (datecreated, user_id, artifact_id, version)    
             self.cursor.execute(sqlTwo, dataTwo)
             self.connector.commit()
-            
             payload = {
                     "err_message": "Success: Artifact uploaded."
                 }
@@ -312,18 +302,19 @@ class Database():
     def artifact_scrape(self, content):
         self.ensureConnected()
 
-        if str(content["user_id"]) == "":
-            temp = self.get_user_id(str(content["username"]), str(content["password"]))        
-            if temp == "":
-                payload = {
-                    "err_message": "Failure: That username or password does not exist."
-                }
-                return (json.dumps(payload), 401)   
-            user_id = int(temp)
+        if content.get("user_id", "") == "":
+            user_id = self.get_user_id(str(content["username"]), str(content["password"]))        
+            if user_id == "":
+                return (json.dumps(AUTHENTICATE_FAIL), 401)
         else:
             user_id = int(content["user_id"])
 
-        repo_id = int(content["repository_id"])
+        if content.get("repository_id", "") == "":
+            repo_id = self.get_repo_id(str(content["repo_name"]), user_id)
+            if repo_id == "":
+                return (json.dumps(NO_REPO), 400)
+        else:
+            repo_id = int(content["repository_id"])
 
         #collects file from url
         retrieved_file = requests.get(content["desired_url"])
@@ -339,60 +330,55 @@ class Database():
         extension = retrieved_filename.rsplit('.', 1)[1].lower()
         #conversion = self.convertToMD(tempname, extension)
         datecreated = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        '''
-        sqlUp = "INSERT INTO artifact (owner_id, artifact_repo, artifact_access_level, artifact_name, artifact_original_filetype, artifact_creation_date) VALUES (%s, %s, %s, %s, %s, %s)"
-        dataUp = (user_id, repo_id, int(content["artifact_access_level"]), str(content["artifact_name"]), extension, datecreated)
-        
-        self.cursor.execute(sqlUp, dataUp)
-        self.connector.commit()
-        '''
+    
+        artifact_id = self.get_artifact_id(user_id, repo_id, str(content["artifact_name"]))
 
-        sql = "SELECT artifact_id FROM artifact WHERE owner_id = %s && artifact_repo = %s && artifact_name = %s"
-        val = (user_id, repo_id, str(content["artifact_name"]))
-        self.cursor.execute(sql, val)
-        artifact_id = self.cursor.fetchall()
-
-        if len(artifact_id) == 0:
+        if artifact_id == "":
             if str(content["version"]) == "":
                 version = 1
             else:
                 version = int(content["version"])
             #extension = retrieved_filename.rsplit('.', 1)[1].lower()
             sqlUp = "INSERT INTO artifact (owner_id, artifact_repo, artifact_access_level, artifact_name, artifact_original_filetype, artifact_creation_date) VALUES (%s, %s, %s, %s, %s, %s)"
-            #can UI send us repository_id or do we need to query for it?
-            #creation date, we need to pull current datetime
-            #pull extension from filename
-            #exten = self.allowed_file(filename)
             dataUp = (user_id, repo_id, int(content["artifact_access_level"]), str(content["artifact_name"]), extension, datecreated)
-        
             self.cursor.execute(sqlUp, dataUp)
             self.connector.commit()
-            sql = "SELECT artifact_id FROM artifact WHERE owner_id = %s && artifact_repo = %s && artifact_name = %s"
-            val = (user_id, repo_id, str(content["artifact_name"]))
-            self.cursor.execute(sql, val)
-            artifact_id = self.cursor.fetchall()
+
+            artifact_id = self.get_artifact_id(user_id, repo_id, str(content["artifact_name"]))
         else:
             sql = "SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s"
-            val = (int(artifact_id[0][0]), )
+            val = (artifact_id, )
             self.cursor.execute(sql, val)
             results = self.cursor.fetchall()
-            temp = int(results[0][0])
-            version = temp + 1
-
-
+            version = results[0][0] + 1
         
-        sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_id, artifact_blob, version) VALUES (%s, %s, %s, %s, %s)"
-        artifact_blob = open(retrieved_filename, "rb").read()
-        dataTwo = (datecreated, user_id, int(artifact_id[0][0]), artifact_blob, version)
+        if self.allowed_file(retrieved_file.filename):
+            if self.convertible_file(retrieved_file.filename):
+                tempname = str(content["artifact_name"])
+                extension = retrieved_file.filename.rsplit('.', 1)[1].lower()
+                retrieved_filename = self.convertToMD(tempname, extension)
         
-        self.cursor.execute(sqlTwo, dataTwo)
-        self.connector.commit()
-
-        payload = {
-            "err_message": "Success: Artifact uploaded."
-        }
-        return (json.dumps(payload), 201)
-
+            sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_id, artifact_blob, version) VALUES (%s, %s, %s, %s, %s)"
+            artifact_blob = open(retrieved_filename, "rb").read()
+            dataTwo = (datecreated, user_id, artifact_id, artifact_blob, version)
+            self.cursor.execute(sqlTwo, dataTwo)
+            self.connector.commit()
+            payload = {
+                "err_message": "Success: Artifact uploaded."
+            }
+            return (json.dumps(payload), 201)
+        else:
+            #needs a location for the file we stored
+            sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_id, version) VALUES (%s, %s, %s, %s)"
+            #datetime from artifact_creation_date, changer_id from owner_id, artifact_size get file size, convert to blob
+            #(variable for version) = (query for previous version, if updating; 1 if no previous version)
+            dataTwo = (datecreated, user_id, artifact_id, version)    
+            self.cursor.execute(sqlTwo, dataTwo)
+            self.connector.commit()
+            payload = {
+                    "err_message": "Success: Artifact uploaded."
+                }
+            return (json.dumps(payload), 201)
         
     #create a repository as long as the user has permission and no repository they own has the same name
     def create_repo(self,content):
@@ -589,9 +575,6 @@ class Database():
             }
             return (json.dumps(payload), 401)
     
-    '''
-    def updateArtifact(self,content): ?
-    '''
     #Get information on an artifact 
     def artifact_info(self, content):
         self.ensureConnected()
@@ -695,12 +678,6 @@ class Database():
         }
         return (json.dumps(payload), 200)
 
-    '''
-    def authenticate(self, content):
-        #receive username and pw or user_id
-        #check against db
-        #return tuple (user_id, )
-    '''
     '''
     def diff(self, content):
         #check file type, can be diff'd, full diff
