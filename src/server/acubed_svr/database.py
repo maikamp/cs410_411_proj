@@ -354,7 +354,7 @@ class Database():
         
         if self.allowed_file(only_filename):
             if self.convertible_file(only_filename):
-                tempname = only_filename.rsplit('.', -1)[-1].lower()
+                tempname = only_filename.rsplit('.', )[0].lower()
                 print(tempname, file=sys.stderr)
                 extension = only_filename.rsplit('.', 1)[1].lower()
                 retrieved_filename = self.convertToMD(tempname, extension)
