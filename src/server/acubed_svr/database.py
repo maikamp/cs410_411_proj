@@ -227,9 +227,12 @@ class Database():
          
         artifact_id = self.get_artifact_id(str(content["artifact_name"]))
         datecreated = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
         sql = "SELECT repo_creator FROM repository WHERE repository_id = %s"
-        self.cursor.execute(sql,(repo_id, ))
+        self.cursor.execute(sql, (repo_id, ))
         results = self.cursor.fetchall()
+        print((user_id != int(results[0][0])), file=sys.stderr)
+        print((self.get_permission_level != 5), file=sys.stderr)
         if (user_id != int(results[0][0])) or (self.get_permission_level != 5):
             payload = {
                 "err_message": "Failure: Permission Denied."
