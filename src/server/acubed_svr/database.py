@@ -231,7 +231,11 @@ class Database():
         sql = "SELECT repo_creator FROM repository WHERE repository_id = %s"
         self.cursor.execute(sql, (repo_id, ))
         results = self.cursor.fetchall()
+        
+        print(user_id , file=sys.stderr)
+        print(int(results[0][0]), file=sys.stderr)
         print((user_id != int(results[0][0])), file=sys.stderr)
+        print(self.get_permission_level, file=sys.stderr)
         print((self.get_permission_level != 5), file=sys.stderr)
         if (user_id != int(results[0][0])) or (self.get_permission_level != 5):
             payload = {
