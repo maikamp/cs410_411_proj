@@ -69,7 +69,7 @@ def register():
 
 @app.route('/artifactupload', methods = ['GET', 'POST'])
 def artifactupload():
-    return db.artifact_upload(request.files['file'], request.files["meta-data"])
+    return db.artifact_upload(request.files['file'], request.files['meta-data'])
     #return db.artifactUpload(request.files['meta-data', 'file'])
 
 @app.route('/artifactscrape', methods = ['GET', 'POST'])
