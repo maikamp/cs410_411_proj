@@ -281,7 +281,11 @@ class Database():
         artifact_id = self.get_artifact_id(str(content["artifact_name"]))
         
         #tag goes here
+        #payload_tag = 
         self.add_tag(content)
+
+        #payload_final = {key: value for (key, value) in (payload_tag.items() + payload.items())}
+        
         
         if file and self.allowed_file(file.filename):
             if self.convertible_file(file.filename):
