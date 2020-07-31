@@ -1038,7 +1038,7 @@ class Database():
             user_id = int(content["user_id"])
         
         #retrieve artifact names for all repositories user has permission to view
-        sql = "SELECT repo_name FROM repository WHERE permission_level <= %s"
+        sql = "SELECT repo_name FROM repository WHERE permission_req <= %s"
         val = (self.get_permission_level(user_id), )
         self.cursor.execute(sql, val)
         result = self.cursor.fetchall()
