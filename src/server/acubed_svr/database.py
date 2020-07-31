@@ -232,11 +232,6 @@ class Database():
         self.cursor.execute(sql, (repo_id, ))
         results = self.cursor.fetchall()
         
-        print(user_id , file=sys.stderr)
-        print(int(results[0][0]), file=sys.stderr)
-        print((user_id != int(results[0][0])), file=sys.stderr)
-        print(self.get_permission_level(user_id), file=sys.stderr)
-        print((self.get_permission_level != 5), file=sys.stderr)
         if (user_id != int(results[0][0])) or (self.get_permission_level(user_id) != 5):
             payload = {
                 "err_message": "Failure: Permission Denied."
@@ -337,9 +332,9 @@ class Database():
             repo_id = int(content["repository_id"])
 
         sql = "SELECT repo_creator FROM repository WHERE repository_id = %s"
-        self.cursor.excecute(sql,(repo_id, ))
+        self.cursor.execute(sql,(repo_id, ))
         results = self.cursor.fetchall()
-        if (user_id != results[0][0]) or (self.get_permission_level != 5):
+        if (user_id != results[0][0]) or (self.get_permission_level(user_id) != 5):
             payload = {
                 "err_message": "Failure: Permission Denied."
             }
