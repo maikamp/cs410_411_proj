@@ -115,6 +115,8 @@ class Database():
         #create the input path + filename witht the original extension
         temp_filename = './uploads/' + filename + '.' + ext
         #run pandoc and as far as I can tell it must have a variable which will be empty 
+        print(md_filename, file=sys.stderr)
+        print(temp_filename, file=sys.stderr)
         file_MD = pypandoc.convert_file(temp_filename, 'md', outputfile = md_filename)
         #assert the variable is empty
         assert file_MD == ""
