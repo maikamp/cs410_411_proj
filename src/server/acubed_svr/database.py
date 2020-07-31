@@ -995,7 +995,7 @@ class Database():
             "repository_id": result
         }
         return (json.dumps(payload), 202)
-        
+
         '''
         #retrieve owned artifacts
         sql = "SELECT artifact_name FROM artifact WHERE owner_id = %s"
@@ -1050,7 +1050,7 @@ class Database():
         
         '''
         #retrieve owned repositories
-        sql = "SELECT repo_name FROM repository WHERE owner_id = %s"
+        sql = "SELECT repo_name FROM repository WHERE repo_creator = %s"
         self.cursor.execute(sql, user_id)
         result = self.cursor.fetchall()
         payload = {
