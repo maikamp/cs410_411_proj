@@ -977,7 +977,7 @@ class Database():
     
     def return_artifact_list(self, content):
         self.ensureConnected()
-
+        #acquire user id
         if content.get("user_id", "") == "":
             user_id = self.get_user_id(str(content["username"]), str(content["password"]))        
             if user_id == "":
@@ -985,7 +985,8 @@ class Database():
         else:
             user_id = int(content["user_id"])
         
-        sql = "SELECT artifact_name FROM artifact WHERE permission_level <= %s"
+        #retrieve artifact names for all artifacts user has permission to view
+        sql = "SELECT artifact_name FROM artifact WHERE artifact_access_level <= %s"
         val = (self.get_permission_level(user_id), )
         self.cursor.execute(sql, val)
         result = self.cursor.fetchall()
@@ -994,10 +995,41 @@ class Database():
             "repository_id": result
         }
         return (json.dumps(payload), 202)
+        
+        '''
+        #retrieve owned artifacts
+        sql = "SELECT artifact_name FROM artifact WHERE owner_id = %s"
+        self.cursor.execute(sql, user_id)
+        result = self.cursor.fetchall()
+        payload = {
+            "err_message": "List of artifacts you own.",
+            "repository_id": result
+        }
+        return (json.dumps(payload), 202)
+
+        #retrieve artifacts from specified repo
+        sql = "SELECT artifact_name FROM artifact WHERE artifact_repo = %s"
+        if content.get("repository_id", "") != "":
+            val = (int(content["repository_id"]), )
+        elif content.get("repo_name", "") != "":
+            val = self.get_repo_id(str(content["repo_name"]), )
+        else:
+            payload = {
+                "err_message": "No repository specified."
+            }
+            return (json.dumps(payload), 400)
+        self.cursor.execute(sql, val)
+        result = self.cursor.fetchall()
+        payload = {
+            "err_message": "List of artifacts in specified repository.",
+            "repository_id": result
+        }
+        return (json.dumps(payload), 202)
+        '''
 
     def return_repo_list(self, content):
         self.ensureConnected()
-
+        #acquire user id
         if content.get("user_id", "") == "":
             user_id = self.get_user_id(str(content["username"]), str(content["password"]))        
             if user_id == "":
@@ -1005,6 +1037,7 @@ class Database():
         else:
             user_id = int(content["user_id"])
         
+        #retrieve artifact names for all repositories user has permission to view
         sql = "SELECT repo_name FROM repository WHERE permission_level <= %s"
         val = (self.get_permission_level(user_id), )
         self.cursor.execute(sql, val)
@@ -1014,5 +1047,17 @@ class Database():
             "repository_id": result
         }
         return (json.dumps(payload), 202)
+        
+        '''
+        #retrieve owned repositories
+        sql = "SELECT repo_name FROM repository WHERE owner_id = %s"
+        self.cursor.execute(sql, user_id)
+        result = self.cursor.fetchall()
+        payload = {
+            "err_message": "List of repositories you own.",
+            "repository_id": result
+        }
+        return (json.dumps(payload), 202)
+        '''
 
     
