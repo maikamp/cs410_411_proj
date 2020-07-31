@@ -356,10 +356,11 @@ class Database():
         
         if self.allowed_file(only_filename):
             if self.convertible_file(only_filename):
-                tempname = only_filename.rsplit('.', )[0].lower()
+                tempname = only_filename.rsplit('.', )[0]
                 print(tempname, file=sys.stderr)
-                print(extension, file=sys.stderr)
-                retrieved_filename = self.convertToMD(tempname, extension)
+                ext = retrieved_filename.rsplit('.', 1)[1]
+                print(ext, file=sys.stderr)
+                retrieved_filename = self.convertToMD(tempname, ext)
         
             sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_id, artifact_blob, version) VALUES (%s, %s, %s, %s, %s)"
             artifact_blob = open(retrieved_filename, "rb").read()
