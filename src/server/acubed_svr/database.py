@@ -332,7 +332,7 @@ class Database():
         datecreated = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
         artifact_id = self.get_artifact_id(user_id, repo_id, str(content["artifact_name"]))
-
+        print(artifact_id, file=sys.stderr)
         if artifact_id == "":
             if str(content["version"]) == "":
                 version = 1
