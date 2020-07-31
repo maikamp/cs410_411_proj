@@ -228,7 +228,7 @@ class Database():
         artifact_id = self.get_artifact_id(str(content["artifact_name"]))
         datecreated = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         sql = "SELECT repo_creator FROM repository WHERE repository_id = %s"
-        self.cursor.excecute(sql,(repo_id, ))
+        self.cursor.execute(sql,(repo_id, ))
         results = self.cursor.fetchall()
         if (user_id != results[0][0]) or (self.get_permission_level != 5):
             payload = {
