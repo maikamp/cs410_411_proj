@@ -65,9 +65,9 @@ class Database():
         return user_id
 
     #get repo id when you only have the repo name
-    def get_repo_id(self, reponame, permission_level):
-        sql = "SELECT repository_id FROM repository WHERE repo_name = %s && permission_req = %s"
-        data = (reponame, permission_level)
+    def get_repo_id(self, reponame):
+        sql = "SELECT repository_id FROM repository WHERE repo_name = %s "
+        data = (reponame, )
         self.cursor.execute(sql, data)
         temp = self.cursor.fetchall()
         if len(temp) == 0:
@@ -86,9 +86,9 @@ class Database():
         return temp[0][0]
 
     #get artifact id when you only have the repo name
-    def get_artifact_id(self, user_id, repo_id, artifact_name):
-        sql = "SELECT artifact_id FROM artifact WHERE owner_id = %s && artifact_repo = %s && artifact_name = %s"
-        val = (user_id, repo_id, artifact_name)
+    def get_artifact_id(self, artifact_name):
+        sql = "SELECT artifact_id FROM artifact WHERE artifact_name = %s"
+        val = (artifact_name, )
         self.cursor.execute(sql, val)
         temp = self.cursor.fetchall()
         if len(temp) == 0:
@@ -219,14 +219,22 @@ class Database():
             user_id = int(content["user_id"])
 
         if content.get("repository_id", "") == "":
-            repo_id = self.get_repo_id(str(content["repo_name"]), user_id)
+            repo_id = self.get_repo_id(str(content["repo_name"]))
             if repo_id == "":
                 return (json.dumps(NO_REPO), 400)
         else:
             repo_id = int(content["repository_id"])
          
-        artifact_id = self.get_artifact_id(user_id, repo_id, str(content["artifact_name"]))
+        artifact_id = self.get_artifact_id(str(content["artifact_name"]))
         datecreated = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        sql = "SELECT repo_creator FROM repository WHERE repository_id = %s"
+        self.cursor.excecute(sql,(repo_id, ))
+        results = self.cursor.fetchall()
+        if (user_id != results[0][0]) or (self.get_permission_level != 5):
+            payload = {
+                "err_message": "Failure: Permission Denied."
+            }
+            return (json.dumps(payload), 403)
 
         #check for the first time an artifact has been uploaded
         if artifact_id == "":
@@ -244,12 +252,12 @@ class Database():
             self.connector.commit()
         #artifact has been uploaded before so its an update get the max version and increment by 1
         else:
-            sql = "SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s"
-            val = (artifact_id, )
-            self.cursor.execute(sql, val)
-            results = self.cursor.fetchall()
-            version = results[0][0] + 1
-        
+                sql = "SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s"
+                val = (artifact_id, )
+                self.cursor.execute(sql, val)
+                results = self.cursor.fetchall()
+                version = results[0][0] + 1
+           
         #check if the post request has the file part
         if 'file' not in request.files:
             flash('No file part')
@@ -268,8 +276,11 @@ class Database():
         #make the fileneame secure and save it   
         filename = secure_filename(file.filename)
         file.save(os.path.join(UPLOAD_FOLDER, filename))
-        artifact_id = self.get_artifact_id(user_id, repo_id, str(content["artifact_name"]))
-
+        artifact_id = self.get_artifact_id(str(content["artifact_name"]))
+        
+        #tag goes here
+        self.add_tag(content)
+        
         if file and self.allowed_file(file.filename):
             if self.convertible_file(file.filename):
                 tempname = str(content["artifact_name"])
@@ -312,11 +323,20 @@ class Database():
             user_id = int(content["user_id"])
 
         if content.get("repository_id", "") == "":
-            repo_id = self.get_repo_id(str(content["repo_name"]), user_id)
+            repo_id = self.get_repo_id(str(content["repo_name"]))
             if repo_id == "":
                 return (json.dumps(NO_REPO), 400)
         else:
             repo_id = int(content["repository_id"])
+
+        sql = "SELECT repo_creator FROM repository WHERE repository_id = %s"
+        self.cursor.excecute(sql,(repo_id, ))
+        results = self.cursor.fetchall()
+        if (user_id != results[0][0]) or (self.get_permission_level != 5):
+            payload = {
+                "err_message": "Failure: Permission Denied."
+            }
+            return (json.dumps(payload), 403)
 
         #collects file from url
         retrieved_file = requests.get(content["desired_url"])
@@ -333,7 +353,7 @@ class Database():
         #conversion = self.convertToMD(tempname, extension)
         datecreated = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
-        artifact_id = self.get_artifact_id(user_id, repo_id, str(content["artifact_name"]))
+        artifact_id = self.get_artifact_id(str(content["artifact_name"]))
         print(artifact_id, file=sys.stderr)
         if artifact_id == "":
             if str(content["version"]) == "":
@@ -346,13 +366,16 @@ class Database():
             self.cursor.execute(sqlUp, dataUp)
             self.connector.commit()
 
-            artifact_id = self.get_artifact_id(user_id, repo_id, str(content["artifact_name"]))
+            artifact_id = self.get_artifact_id(str(content["artifact_name"]))
         else:
             sql = "SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s"
             val = (artifact_id, )
             self.cursor.execute(sql, val)
             results = self.cursor.fetchall()
             version = results[0][0] + 1
+        
+        #tag goes here
+        self.add_tag(content)
         
         if self.allowed_file(only_filename):
             if self.convertible_file(only_filename):
@@ -409,6 +432,9 @@ class Database():
                 self.cursor.execute(sql, data)
                 self.connector.commit()
 
+                #tag goes here
+                self.add_tag(content)
+
                 #get the repository information to return the info to the user
                 sql2 = "SELECT * FROM repository WHERE repo_name = %s"
                 self.ensureConnected()
@@ -463,7 +489,7 @@ class Database():
             user_id = int(content["user_id"])
         
         if content.get("repository_id", "") == "":
-            repo_id = self.get_repo_id(str(content["repo_name"]), user_id)
+            repo_id = self.get_repo_id(str(content["repo_name"]))
             if repo_id == "":
                 return (json.dumps(NO_REPO), 400)
         else:
@@ -519,7 +545,7 @@ class Database():
             user_id = int(content["user_id"])
         
         if content.get("repository_id", "") == "":
-            repo_id = self.get_repo_id(str(content["repo_name"]), user_id)
+            repo_id = self.get_repo_id(str(content["repo_name"]))
             if repo_id == "":
                 return (json.dumps(NO_REPO), 400)
         else:
@@ -589,11 +615,9 @@ class Database():
                 return (json.dumps(AUTHENTICATE_FAIL), 401)   
         else:
             user_id = int(content["user_id"])
-        
-        permission_level = self.get_permission_level(user_id)
 
         if content.get("repository_id", "") == "":
-            repo_id = self.get_repo_id(str(content["repo_name"]), permission_level)
+            repo_id = self.get_repo_id(str(content["repo_name"]))
             if repo_id == "":
                 return (json.dumps(NO_REPO), 400)
         else:
@@ -631,56 +655,65 @@ class Database():
         data = (artifact_id, version)
         self.cursor.execute(sql, data)
         artifact_change = self.cursor.fetchall()
-    
-        payload = {
-            "artifact_id": str(artifact_data[0][0]),
-            "owner_id": str(artifact_data[0][1]),
-            "repository_id": str(artifact_data[0][2]),
-            "artifact_access_level": str(artifact_data[0][3]),
-            "artifact_name": str(artifact_data[0][4]),
-            "artifact_original_source": str(artifact_data[0][5]),
-            "artifact_original_filetype": str(artifact_data[0][6]),
-            "artifact_creation_date": str(artifact_data[0][7]),
-            "artifact_last_accessed": str(artifact_data[0][8]),
-            "artifact_access_count": str(artifact_data[0][9]),
-            "change_datetime": str(artifact_change[0][0]),
-            "artifact_size": str(artifact_change[0][3]),
-            "version": str(artifact_change[0][5])
-        }
-        return (json.dumps(payload), 200)
-    
+        if (self.get_permission_level(user_id) >= int(artifact_data[0][3])) or (user_id == int(artifact_data[0][1])): 
+            payload = {
+                "artifact_id": str(artifact_data[0][0]),
+                "owner_id": str(artifact_data[0][1]),
+                "repository_id": str(artifact_data[0][2]),
+                "artifact_access_level": str(artifact_data[0][3]),
+                "artifact_name": str(artifact_data[0][4]),
+                "artifact_original_source": str(artifact_data[0][5]),
+                "artifact_original_filetype": str(artifact_data[0][6]),
+                "artifact_creation_date": str(artifact_data[0][7]),
+                "artifact_last_accessed": str(artifact_data[0][8]),
+                "artifact_access_count": str(artifact_data[0][9]),
+                "change_datetime": str(artifact_change[0][0]),
+                "artifact_size": str(artifact_change[0][3]),
+                "version": str(artifact_change[0][5])
+            }
+            return (json.dumps(payload), 200)
+        else:
+            payload = {
+                "err_message": "Failure: Permission Denied."
+            }
+            return (json.dumps(payload), 403)
+
     #Get information on a repo
     def repo_info(self,content):
         self.ensureConnected()
-        
+        #get the user_id or find it when a username and password are present
         if content.get("user_id", "") == "":
             user_id = self.get_user_id(str(content["username"]), str(content["password"]))        
             if user_id == "":
                 return (json.dumps(AUTHENTICATE_FAIL), 401)   
         else:
             user_id = int(content["user_id"])
-        
-        permission_level = self.get_permission_level(user_id)
-
+        #get the repo id or look it up when the name is present
         if content.get("repository_id", "") == "":
-            repo_id = self.get_repo_id(str(content["repo_name"]), permission_level)
+            repo_id = self.get_repo_id(str(content["repo_name"]))
             if repo_id == "":
                 return (json.dumps(NO_REPO), 400)
         else:
             repo_id = int(content["repository_id"])
-
+        #get the attributes for the repo_id
         sql = "SELECT * FROM repository WHERE repository_id = %s"
         data = (repo_id, )
         self.cursor.execute(sql, data)
         repo_data = self.cursor.fetchall()
-
-        payload = {
-            "repository_id": str(repo_data[0][0]),
-            "repo_name": str(repo_data[0][3]),
-            "repo_creator": str(repo_data[0][1]),
-            "permission_req": str(repo_data[0][2])
-        }
-        return (json.dumps(payload), 200)
+        #get the permission level of the user
+        if (self.get_permission_level(user_id) >= int(repo_data[0][2])) or (user_id == int(repo_data[0][1])): 
+            payload = {
+                "repository_id": str(repo_data[0][0]),
+                "repo_name": str(repo_data[0][3]),
+                "repo_creator": str(repo_data[0][1]),
+                "permission_req": str(repo_data[0][2])
+            }
+            return (json.dumps(payload), 200)
+        else:
+            payload = {
+                "err_message": "Failure: Permission Denied."
+            }
+            return (json.dumps(payload), 403)
 
     '''
     def diff(self, content):
@@ -702,7 +735,7 @@ class Database():
         permission_level = self.get_permission_level(user_id)
 
         if content.get("repository_id", "") == "":
-            repo_id = self.get_repo_id(str(content["repo_name"]), permission_level)
+            repo_id = self.get_repo_id(str(content["repo_name"]))
             if repo_id == "":
                 return (json.dumps(NO_REPO), 400)
         else:
@@ -780,7 +813,7 @@ class Database():
         permission_level = self.get_permission_level(user_id)
 
         if content.get("repository_id", "") == "":
-            repo_id = self.get_repo_id(str(content["repo_name"]), permission_level)
+            repo_id = self.get_repo_id(str(content["repo_name"]))
             if repo_id == "":
                 return (json.dumps(NO_REPO), 400)
         else:
