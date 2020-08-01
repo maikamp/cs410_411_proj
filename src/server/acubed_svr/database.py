@@ -292,15 +292,15 @@ class Database():
             tag_return_tuple = self.add_tag(content)
             print(tag_return_tuple[1], file = sys.stderr)
             if tag_return_tuple[1] >= 400:          
-                #decrement index (auto-increment) by 1
-                sqlDecrIndex = "ALTER TABLE artifact AUTO_INCREMENT = %s"
-                valDecrIndex = (artifact_id, )
-                self.cursor.execute(sqlDecrIndex, valDecrIndex)
-                self.connector.commit()
                 #remove artifact
                 sqlRemove = "DELETE FROM artifact WHERE artifact_id = %s"
                 valRemove = (artifact_id, )
                 self.cursor.execute(sqlRemove, valRemove)
+                self.connector.commit()
+                #set auto_increment back to reuse index from removed artifact
+                sqlDecrIndex = "ALTER TABLE artifact AUTO_INCREMENT = %s"
+                valDecrIndex = (artifact_id, )
+                self.cursor.execute(sqlDecrIndex, valDecrIndex)
                 self.connector.commit()
                 return tag_return_tuple      
         
@@ -397,8 +397,24 @@ class Database():
             results = self.cursor.fetchall()
             version = results[0][0] + 1
         
-        #tag goes here
-        self.add_tag(content)
+        '''
+        #tag goes here 
+        if does_exist == 0:
+            tag_return_tuple = self.add_tag(content)
+            print(tag_return_tuple[1], file = sys.stderr)
+            if tag_return_tuple[1] >= 400:          
+                #remove artifact
+                sqlRemove = "DELETE FROM artifact WHERE artifact_id = %s"
+                valRemove = (artifact_id, )
+                self.cursor.execute(sqlRemove, valRemove)
+                self.connector.commit()
+                #set auto_increment back to reuse index from removed artifact
+                sqlDecrIndex = "ALTER TABLE artifact AUTO_INCREMENT = %s"
+                valDecrIndex = (artifact_id, )
+                self.cursor.execute(sqlDecrIndex, valDecrIndex)
+                self.connector.commit()
+                return tag_return_tuple  
+        '''
         
         if self.allowed_file(only_filename):
             if self.convertible_file(only_filename):
@@ -455,8 +471,23 @@ class Database():
                 self.cursor.execute(sql, data)
                 self.connector.commit()
 
-                #tag goes here
-                self.add_tag(content)
+                '''
+                #tag goes here 
+                tag_return_tuple = self.add_tag(content)
+                print(tag_return_tuple[1], file = sys.stderr)
+                if tag_return_tuple[1] >= 400:          
+                    #remove artifact
+                    sqlRemove = "DELETE FROM repository WHERE repository_id = %s"
+                    valRemove = (self.get_repo_id(str(content["repo_name"])), )
+                    self.cursor.execute(sqlRemove, valRemove)
+                    self.connector.commit()
+                    #set auto_increment back to reuse index from removed repo
+                    sqlDecrIndex = "ALTER TABLE repository AUTO_INCREMENT = %s"
+                    valDecrIndex = (self.get_repo_id(str(content["repo_name"])), )
+                    self.cursor.execute(sqlDecrIndex, valDecrIndex)
+                    self.connector.commit()
+                    return tag_return_tuple  
+                '''
 
                 #get the repository information to return the info to the user
                 sql2 = "SELECT * FROM repository WHERE repo_name = %s"
