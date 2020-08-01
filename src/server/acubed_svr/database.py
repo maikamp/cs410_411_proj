@@ -721,12 +721,54 @@ class Database():
             }
             return (json.dumps(payload), 403)
 
-    '''
+    
     def diff(self, content):
         #check file type, can be diff'd, full diff
         #can't be diff'd, simple compare
-    
-    '''
+        self.ensureConnected()
+        if content.get("user_id", "") == "":
+            user_id = self.get_user_id(str(content["username"]), str(content["password"]))        
+            if user_id == "":
+                return (json.dumps(AUTHENTICATE_FAIL), 401)   
+        else:
+            user_id = int(content["user_id"])
+
+        if content.get("repository_id", "") == "":
+            repo_id = self.get_repo_id(str(content["repo_name"]))
+            if repo_id == "":
+                return (json.dumps(NO_REPO), 400)
+        else:
+            repo_id = int(content["repository_id"])
+
+        if content.get("artifact_id", "") == "":
+            sql = "SELECT artifact_id FROM artifact WHERE artifact_repo = %s && artifact_name = %s"
+            data = (repo_id, str(content["artifact_name"]))
+            self.cursor.execute(sql, data)
+            temp = self.cursor.fetchall()
+            if len(temp) == 0:
+                payload = {
+                    "err_message": "Failure: That artifact does not exist."
+                }
+                return (json.dumps(payload), 400)
+            artifact_id = int(temp[0][0])
+        else:
+            artifact_id = int(content["artifact_id"])
+
+        sql = "SELECT artifact_original_filetype WHERE artifact_id =%s"
+        data = (artifact_id, )
+        self.cursor.execute(sql, data)
+        ext = self.cursor.fetchall()
+
+        if ext in CONVERTIBLE_EXTENSIONS:
+            if content.get("version", "") == "":
+                sql = "SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s"
+                data = (artifact_id, )
+                self.cursor.execute(sql, data)
+                temp = self.cursor.fetchall()
+                version = int(temp[0][0])
+            else:
+                version = (int(content["version"]))
+            
     #html file which shows a side by side difference of the attributes of an artifact
     def simple_compare (self, content):
         self.ensureConnected()
