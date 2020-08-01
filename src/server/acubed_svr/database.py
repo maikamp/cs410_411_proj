@@ -281,11 +281,20 @@ class Database():
         artifact_id = self.get_artifact_id(str(content["artifact_name"]))
         
         #tag goes here
-        #payload_tag = 
-        self.add_tag(content)
-
-        #payload_final = {key: value for (key, value) in (payload_tag.items() + payload.items())}
-        
+        tag_return_tuple = self.add_tag(content)
+        print(tag_return_tuple[1], file = sys.stderr)
+        if tag_return_tuple[1] >= 400:          
+            #decrement index (auto-increment) by 1
+            sqlDecrIndex = "ALTER TABLE artifact AUTO_INCREMENT = %s"
+            valDecrIndex = (artifact_id, )
+            self.cursor.execute(sqlDecrIndex, valDecrIndex)
+            self.connector.commit()
+            #remove artifact
+            sqlRemove = "DELETE FROM artifact WHERE artifact_id = %s"
+            valRemove = (artifact_id, )
+            self.cursor.execute(sqlRemove, valRemove)
+            self.connector.commit()
+            return tag_return_tuple      
         
         if file and self.allowed_file(file.filename):
             if self.convertible_file(file.filename):
@@ -1040,7 +1049,7 @@ class Database():
             "err_message": "List of artifacts you have access to.",
             "repository_id": result
         }
-        return (json.dumps(payload), 202)
+        return (json.dumps(payload), 200)
 
         '''
         #retrieve owned artifacts
@@ -1049,16 +1058,16 @@ class Database():
         result = self.cursor.fetchall()
         payload = {
             "err_message": "List of artifacts you own.",
-            "repository_id": result
+            "repository_id": [result]
         }
         return (json.dumps(payload), 202)
 
         #retrieve artifacts from specified repo
-        sql = "SELECT artifact_name FROM artifact WHERE artifact_repo = %s"
+        sql = "SELECT artifact_name FROM artifact WHERE artifact_repo = %s && (artifact_access_level <= %s || owner_id = %s)"
         if content.get("repository_id", "") != "":
-            val = (int(content["repository_id"]), )
+            val = (int(content["repository_id"]), self.get_permission_level(user_id), user_id)
         elif content.get("repo_name", "") != "":
-            val = self.get_repo_id(str(content["repo_name"]), )
+            val = (self.get_repo_id(str(content["repo_name"])), self.get_permission_level(user_id), user_id)
         else:
             payload = {
                 "err_message": "No repository specified."
@@ -1068,9 +1077,12 @@ class Database():
         result = self.cursor.fetchall()
         payload = {
             "err_message": "List of artifacts in specified repository.",
-            "repository_id": result
+            "repository_id": [result]
         }
         return (json.dumps(payload), 202)
+
+        #retrieve artifacts by tag
+
         '''
 
     def return_repo_list(self, content):
@@ -1104,6 +1116,9 @@ class Database():
             "repository_id": result
         }
         return (json.dumps(payload), 202)
+
+        #retrieve repos by tag
+
         '''
 
     
