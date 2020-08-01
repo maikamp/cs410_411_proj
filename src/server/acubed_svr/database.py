@@ -777,6 +777,9 @@ class Database():
                 version = int(temp[0][0])
             else:
                 version = (int(content["version"]))
+        #else:
+            #simple compare
+            
             
     #html file which shows a side by side difference of the attributes of an artifact
     def simple_compare (self, content):
