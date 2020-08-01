@@ -237,7 +237,8 @@ class Database():
                 "err_message": "Failure: Permission Denied."
             }
             return (json.dumps(payload), 403)
-
+        
+        does_exist = 0
         #check for the first time an artifact has been uploaded
         if artifact_id == "":
             #version control for initial version
@@ -259,6 +260,7 @@ class Database():
                 self.cursor.execute(sql, val)
                 results = self.cursor.fetchall()
                 version = results[0][0] + 1
+                does_exist = 1
            
         #check if the post request has the file part
         if 'file' not in request.files:
@@ -280,21 +282,27 @@ class Database():
         file.save(os.path.join(UPLOAD_FOLDER, filename))
         artifact_id = self.get_artifact_id(str(content["artifact_name"]))
         
-        #tag goes here
-        tag_return_tuple = self.add_tag(content)
-        print(tag_return_tuple[1], file = sys.stderr)
-        if tag_return_tuple[1] >= 400:          
-            #decrement index (auto-increment) by 1
-            sqlDecrIndex = "ALTER TABLE artifact AUTO_INCREMENT = %s"
-            valDecrIndex = (artifact_id, )
-            self.cursor.execute(sqlDecrIndex, valDecrIndex)
-            self.connector.commit()
-            #remove artifact
-            sqlRemove = "DELETE FROM artifact WHERE artifact_id = %s"
-            valRemove = (artifact_id, )
-            self.cursor.execute(sqlRemove, valRemove)
-            self.connector.commit()
-            return tag_return_tuple      
+        '''
+        This may need to move to be inside the if statement checking 
+        for update vs original upload line 241 to avoid duplicate tag error.
+        For now i've added a control variable, does_exist, to skip tagging if the artifact already exists
+        '''       
+        #tag goes here 
+        if does_exist == 0:
+            tag_return_tuple = self.add_tag(content)
+            print(tag_return_tuple[1], file = sys.stderr)
+            if tag_return_tuple[1] >= 400:          
+                #decrement index (auto-increment) by 1
+                sqlDecrIndex = "ALTER TABLE artifact AUTO_INCREMENT = %s"
+                valDecrIndex = (artifact_id, )
+                self.cursor.execute(sqlDecrIndex, valDecrIndex)
+                self.connector.commit()
+                #remove artifact
+                sqlRemove = "DELETE FROM artifact WHERE artifact_id = %s"
+                valRemove = (artifact_id, )
+                self.cursor.execute(sqlRemove, valRemove)
+                self.connector.commit()
+                return tag_return_tuple      
         
         if file and self.allowed_file(file.filename):
             if self.convertible_file(file.filename):

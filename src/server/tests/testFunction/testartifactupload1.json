@@ -5,5 +5,8 @@
     "repository_id": "1",
     "artifact_access_level": "3",
     "artifact_name": "dope artifact",
-    "version": ""
+    "version": "",
+    "tag": [
+        "CS411W_1"
+    ] 
 }

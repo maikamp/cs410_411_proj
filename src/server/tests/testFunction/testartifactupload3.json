@@ -5,5 +5,8 @@
     "repository_id": "2",
     "artifact_access_level": "1",
     "artifact_name": "Example",
-    "version": "2"
+    "version": "2",
+    "tag": [
+        "CS411W_3"
+    ] 
 }
