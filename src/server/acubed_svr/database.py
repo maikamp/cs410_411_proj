@@ -1070,13 +1070,15 @@ class Database():
         val = (self.get_permission_level(user_id), )
         self.cursor.execute(sql, val)
         result = self.cursor.fetchall()
+        i = 0
         for x in result:
             sql = "SELECT username FROM user WHERE user_id = %s"
             val = (x[2], )
             self.cursor.execute(sql, val)
-            owner_name =  self.cursor.fetchall()
+            owner_name = self.cursor.fetchall()
             print(x, file = sys.stderr)
-            result[x[0]][2] = owner_name[0][0]
+            result[i][2] = owner_name[0][0]
+            i = i + 1
         payload = {
             "err_message": "List of artifacts you have access to.",
             "repository_id": result
@@ -1132,13 +1134,15 @@ class Database():
         val = (self.get_permission_level(user_id), )
         self.cursor.execute(sql, val)
         result = self.cursor.fetchall()
+        i = 0
         for x in result:
             sql = "SELECT username FROM user WHERE user_id = %s"
             val = (x[1], )
             self.cursor.execute(sql, val)
             owner_name =  self.cursor.fetchall()
             print(x, file = sys.stderr)
-            result[x[0]][1] = owner_name[0][0]
+            result[i][1] = owner_name[0][0]
+            i = i + 1
         payload = {
             "err_message": "List of repositories you have access to.",
             "repo_name": result
