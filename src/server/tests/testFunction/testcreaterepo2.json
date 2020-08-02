@@ -3,5 +3,8 @@
     "username": "",
     "password": "",
     "permission_req": "1",
-    "repo_name": "testrepo2" 
+    "repo_name": "testrepo2",
+    "tag": [
+        "testrepo"
+    ] 
 }
