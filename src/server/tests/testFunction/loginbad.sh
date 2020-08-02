@@ -1,4 +1,4 @@
 #!/bin/sh
-echo Test bad login: curl -X POST -d @testlogin.json crystal.cpi.cs.odu.edu:5000/login -o ./curlresponse/loginresponse.txt
-curl -s -X POST -d @testlogin.json crystal.cpi.cs.odu.edu:5000/login -o ./curlresponse/loginresponse.txt
-cat ./curlresponse/loginresponse.txt |jq '.'
+echo Test bad login: curl -X POST -d @testloginbad.json crystal.cpi.cs.odu.edu:5000/login -o ./curlresponse/loginresponsebad.txt
+curl -s -X POST -d @testloginbad.json crystal.cpi.cs.odu.edu:5000/login -o ./curlresponse/loginresponsebad.txt
+cat ./curlresponse/loginresponsebad.txt |jq '.'
