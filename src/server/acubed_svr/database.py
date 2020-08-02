@@ -1081,7 +1081,7 @@ class Database():
             i = i + 1
         payload = {
             "err_message": "List of artifacts you have access to.",
-            "repository_id": result
+            "artifact_name": result
         }
         return (json.dumps(payload), 200)
 
@@ -1134,18 +1134,19 @@ class Database():
         val = (self.get_permission_level(user_id), )
         self.cursor.execute(sql, val)
         result = self.cursor.fetchall()
+        result_list = {}
         i = 0
         for x in result:
             sql = "SELECT username FROM user WHERE user_id = %s"
             val = (x[1], )
             self.cursor.execute(sql, val)
-            owner_name =  self.cursor.fetchall()
+            creator_name =  self.cursor.fetchall()
             print(x, file = sys.stderr)
-            result[i][1] = owner_name[0][0]
+            result_list[i] = [x[0] , creator_name[0][0]]
             i = i + 1
         payload = {
             "err_message": "List of repositories you have access to.",
-            "repo_name": result
+            "repo_name": result_list
         }
         return (json.dumps(payload), 202)
         
