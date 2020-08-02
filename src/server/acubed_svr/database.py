@@ -1077,7 +1077,6 @@ class Database():
             val = (x[2], )
             self.cursor.execute(sql, val)
             owner_name =  self.cursor.fetchall()
-            print(x, file = sys.stderr)
             result_list[i] = [x[0] , x[1], owner_name[0][0]]
             i = i + 1
         payload = {
@@ -1142,7 +1141,6 @@ class Database():
             val = (x[1], )
             self.cursor.execute(sql, val)
             creator_name =  self.cursor.fetchall()
-            print(x, file = sys.stderr)
             result_list[i] = [x[0] , creator_name[0][0]]
             i = i + 1
         payload = {
