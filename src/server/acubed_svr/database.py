@@ -1066,10 +1066,16 @@ class Database():
             user_id = int(content["user_id"])
         
         #retrieve artifact names for all artifacts user has permission to view
-        sql = "SELECT artifact_name FROM artifact WHERE artifact_access_level <= %s"
+        sql = "SELECT artifact_name, artifact_original_filetype, owner_id FROM artifact WHERE artifact_access_level <= %s"
         val = (self.get_permission_level(user_id), )
         self.cursor.execute(sql, val)
         result = self.cursor.fetchall()
+        for x in result:
+            sql = "SELECT username FROM user WHERE user_id = %s"
+            val = (result[x][2], )
+            self.cursor.execute(sql, val)
+            owner_name =  self.cursor.fetchall()
+            result[x][2] = owner_name[0][0]
         payload = {
             "err_message": "List of artifacts you have access to.",
             "repository_id": result
@@ -1121,10 +1127,16 @@ class Database():
             user_id = int(content["user_id"])
         
         #retrieve artifact names for all repositories user has permission to view
-        sql = "SELECT repo_name FROM repository WHERE permission_req <= %s"
+        sql = "SELECT repo_name, repo_creator FROM repository WHERE permission_req <= %s"
         val = (self.get_permission_level(user_id), )
         self.cursor.execute(sql, val)
         result = self.cursor.fetchall()
+        for x in result:
+            sql = "SELECT username FROM user WHERE user_id = %s"
+            val = (result[x][1], )
+            self.cursor.execute(sql, val)
+            owner_name =  self.cursor.fetchall()
+            result[x][1] = owner_name[0][0]
         payload = {
             "err_message": "List of repositories you have access to.",
             "repo_name": result
