@@ -1075,7 +1075,7 @@ class Database():
             val = (x[2], )
             self.cursor.execute(sql, val)
             owner_name =  self.cursor.fetchall()
-            x[2] = owner_name[0][0]
+            result[x][2] = owner_name[0][0]
         payload = {
             "err_message": "List of artifacts you have access to.",
             "repository_id": result
@@ -1136,7 +1136,7 @@ class Database():
             val = (x[1], )
             self.cursor.execute(sql, val)
             owner_name =  self.cursor.fetchall()
-            x[1] = owner_name[0][0]
+            result[x][1] = owner_name[0][0]
         payload = {
             "err_message": "List of repositories you have access to.",
             "repo_name": result
