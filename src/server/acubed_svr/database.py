@@ -1072,10 +1072,10 @@ class Database():
         result = self.cursor.fetchall()
         for x in result:
             sql = "SELECT username FROM user WHERE user_id = %s"
-            val = (result[x][2], )
+            val = (x[2], )
             self.cursor.execute(sql, val)
             owner_name =  self.cursor.fetchall()
-            result[x][2] = owner_name[0][0]
+            x[2] = owner_name[0][0]
         payload = {
             "err_message": "List of artifacts you have access to.",
             "repository_id": result
@@ -1133,10 +1133,10 @@ class Database():
         result = self.cursor.fetchall()
         for x in result:
             sql = "SELECT username FROM user WHERE user_id = %s"
-            val = (result[x][1], )
+            val = (x[1], )
             self.cursor.execute(sql, val)
             owner_name =  self.cursor.fetchall()
-            result[x][1] = owner_name[0][0]
+            x[1] = owner_name[0][0]
         payload = {
             "err_message": "List of repositories you have access to.",
             "repo_name": result
