@@ -6,5 +6,8 @@
     "artifact_access_level": "1",
     "artifact_name": "Lab 3",
     "desired_url": "https://www.cs.odu.edu/~411crystal/resources/Lab_3_version_1.docx",
-    "version": ""
+    "version": "",
+    "tag":[
+        "CS411W_2"
+    ]
 }

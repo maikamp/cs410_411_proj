@@ -753,6 +753,8 @@ class Database():
                 "repository_id": str(repo_data[0][0]),
                 "repo_name": str(repo_data[0][3]),
                 "repo_creator": str(repo_data[0][1]),
+                #repo_owner name needs to be added,
+                #tags for the repo
                 "permission_req": str(repo_data[0][2])
             }
             return (json.dumps(payload), 200)
@@ -1109,7 +1111,7 @@ class Database():
         #retrieve artifacts by tag
 
         '''
-
+#in the json add entry "return_owned": "True or False"
     def return_repo_list(self, content):
         self.ensureConnected()
         #acquire user id
@@ -1127,7 +1129,7 @@ class Database():
         result = self.cursor.fetchall()
         payload = {
             "err_message": "List of repositories you have access to.",
-            "repository_id": result
+            "repo_name": result
         }
         return (json.dumps(payload), 202)
         
