@@ -192,7 +192,7 @@ if __name__ == '__main__':
         cursor2.execute(sqlinsert, val)
         print("Setting permission_level {}: ".format(str(val)), end='')
         connection2.commit()
-        sqlinsert = ("INSERT INTO user (user_id, access_level, username, password, user_email) VALUES (0, %s, %s, %s, %s)")
+        sqlinsert = ("INSERT INTO user (access_level, username, password, user_email) VALUES (%s, %s, %s, %s)")
         val = (1, "guest", "guest", "guest")
         cursor2.execute(sqlinsert, val)
         print("Setting global guest user {}: ".format(str(val)), end='')

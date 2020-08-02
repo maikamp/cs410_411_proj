@@ -1061,7 +1061,7 @@ class Database():
         if content.get("user_id", "") == "":
             user_id = self.get_user_id(str(content["username"]), str(content["password"]))        
             if user_id == "":
-                user_id = 0    
+                user_id = 1    
         else:
             user_id = int(content["user_id"])
         
@@ -1116,7 +1116,7 @@ class Database():
         if content.get("user_id", "") == "":
             user_id = self.get_user_id(str(content["username"]), str(content["password"]))        
             if user_id == "":
-                user_id = 0  
+                user_id = 1  
         else:
             user_id = int(content["user_id"])
         
