@@ -1047,7 +1047,7 @@ class Database():
                     self.cursor.execute(sql, val)
                     self.connector.commit()
                     tag_count = tag_count + 1
-        return ( ,tag_count)
+        return (0 ,tag_count)
             
     '''
     def add_bookmark(self,content):
