@@ -1138,7 +1138,7 @@ class Database():
             self.cursor.execute(sql, val)
             owner_name =  self.cursor.fetchall()
             print(x, file = sys.stderr)
-            result[x[0]][2] = owner_name[0][0]
+            result[x[0]][1] = owner_name[0][0]
         payload = {
             "err_message": "List of repositories you have access to.",
             "repo_name": result
