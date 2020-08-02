@@ -238,6 +238,26 @@ class Database():
             }
             return (json.dumps(payload), 403)
         
+        #check if the post request has the file part
+        if 'file' not in request.files:
+            flash('No file part')
+            payload = {
+                "err_message": "No file part."
+            }
+            return (json.dumps(payload), 404)
+        #if user does not select file, browser also
+        #submit an empty part without filename
+        if file.filename == '':
+            flash('No selected file')
+            payload = {
+                "err_message": "No selected file."
+            }
+            return (json.dumps(payload), 404)
+        #make the fileneame secure and save it   
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(UPLOAD_FOLDER, filename))
+        artifact_id = self.get_artifact_id(str(content["artifact_name"]))  
+        
         #check for the first time an artifact has been uploaded
         if artifact_id == "":
             #version control for initial version
@@ -259,28 +279,7 @@ class Database():
                 self.cursor.execute(sql, val)
                 results = self.cursor.fetchall()
                 version = results[0][0] + 1
-                does_exist = 1
-           
-        #check if the post request has the file part
-        if 'file' not in request.files:
-            flash('No file part')
-            payload = {
-                "err_message": "No file part."
-            }
-            return (json.dumps(payload), 404)
-        #if user does not select file, browser also
-        #submit an empty part without filename
-        if file.filename == '':
-            flash('No selected file')
-            payload = {
-                "err_message": "No selected file."
-            }
-            return (json.dumps(payload), 404)
-        #make the fileneame secure and save it   
-        filename = secure_filename(file.filename)
-        file.save(os.path.join(UPLOAD_FOLDER, filename))
-        artifact_id = self.get_artifact_id(str(content["artifact_name"]))
-           
+
         #tag goes here 
         tag_return_tuple = self.add_tag(content)
         print(tag_return_tuple[1], file = sys.stderr)
@@ -295,7 +294,7 @@ class Database():
             valDecrIndex = (1, )
             self.cursor.execute(sqlDecrIndex, valDecrIndex)
             self.connector.commit()
-            return tag_return_tuple      
+            return tag_return_tuple                            
         
         if file and self.allowed_file(file.filename):
             if self.convertible_file(file.filename):
@@ -390,24 +389,21 @@ class Database():
             results = self.cursor.fetchall()
             version = results[0][0] + 1
         
-        '''
         #tag goes here 
-        if does_exist == 0:
-            tag_return_tuple = self.add_tag(content)
-            print(tag_return_tuple[1], file = sys.stderr)
-            if tag_return_tuple[1] >= 400:          
-                #remove artifact
-                sqlRemove = "DELETE FROM artifact WHERE artifact_id = %s"
-                valRemove = (artifact_id, )
-                self.cursor.execute(sqlRemove, valRemove)
-                self.connector.commit()
-                #set auto_increment back to reuse index from removed artifact
-                sqlDecrIndex = "ALTER TABLE artifact AUTO_INCREMENT = %s"
-                valDecrIndex = (artifact_id, )
-                self.cursor.execute(sqlDecrIndex, valDecrIndex)
-                self.connector.commit()
-                return tag_return_tuple  
-        '''
+        tag_return_tuple = self.add_tag(content)
+        print(tag_return_tuple[1], file = sys.stderr)
+        if tag_return_tuple[1] >= 400:          
+            #remove artifact
+            sqlRemove = "DELETE FROM artifact WHERE artifact_id = %s"
+            valRemove = (artifact_id, )
+            self.cursor.execute(sqlRemove, valRemove)
+            self.connector.commit()
+            #set auto_increment back to reuse index from removed artifact
+            sqlDecrIndex = "ALTER TABLE artifact AUTO_INCREMENT = %s"
+            valDecrIndex = (1, )
+            self.cursor.execute(sqlDecrIndex, valDecrIndex)
+            self.connector.commit()
+            return tag_return_tuple
         
         if self.allowed_file(only_filename):
             if self.convertible_file(only_filename):
@@ -464,7 +460,6 @@ class Database():
                 self.cursor.execute(sql, data)
                 self.connector.commit()
 
-                '''
                 #tag goes here 
                 tag_return_tuple = self.add_tag(content)
                 print(tag_return_tuple[1], file = sys.stderr)
@@ -480,7 +475,6 @@ class Database():
                     self.cursor.execute(sqlDecrIndex, valDecrIndex)
                     self.connector.commit()
                     return tag_return_tuple  
-                '''
 
                 #get the repository information to return the info to the user
                 sql2 = "SELECT * FROM repository WHERE repo_name = %s"
