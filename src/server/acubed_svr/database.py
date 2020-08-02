@@ -225,7 +225,11 @@ class Database():
         else:
             repo_id = int(content["repository_id"])
          
-        artifact_id = self.get_artifact_id(str(content["artifact_name"]))
+        if content.get("artifact_id", "") == "":
+            artifact_id = self.get_artifact_id(str(content["artifact_name"]))
+        else:
+            artifact_id = int(content["artifact_id"])
+                
         datecreated = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         sql = "SELECT repo_creator FROM repository WHERE repository_id = %s"
@@ -256,7 +260,6 @@ class Database():
         #make the fileneame secure and save it   
         filename = secure_filename(file.filename)
         file.save(os.path.join(UPLOAD_FOLDER, filename))
-        artifact_id = self.get_artifact_id(str(content["artifact_name"]))  
         
         #check for the first time an artifact has been uploaded
         if artifact_id == "":
@@ -272,6 +275,7 @@ class Database():
             dataUp = (user_id, repo_id, int(content["artifact_access_level"]), str(content["artifact_name"]), extension, datecreated)
             self.cursor.execute(sqlUp, dataUp)
             self.connector.commit()
+            artifact_id = self.get_artifact_id(str(content["artifact_name"]))  
         #artifact has been uploaded before so its an update get the max version and increment by 1
         else:
                 sql = "SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s"
