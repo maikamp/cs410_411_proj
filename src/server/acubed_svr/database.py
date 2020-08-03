@@ -920,8 +920,16 @@ class Database():
         temp = self.cursor.fetchall()
         artifact_change_previous = "change datettime: " + str(temp[0][0]) + ",\nchanger id: " + str(temp[0][1]) + ",\nartifact_id: " + str(temp[0][2]) + ",\nartifact size: " + str(temp[0][3]) + ",\nversion: " + str(temp[0][4]) + '\n'
 
-        d = difflib.HtmlDiff()
-        return  (d.make_file(artifact_change.split('\n'), artifact_change_previous.split('\n')), 200)
+        #d = difflib.HtmlDiff()
+        #return  (d.make_file(artifact_change.split('\n'), artifact_change_previous.split('\n')), 200)
+
+        with open("simplecompare.txt", "w") as file_out:
+            #for line in list(difflib.context_diff(extracted_data, extracted_data_previous_version)):
+            for i in difflib.context_diff(artifact_change.split('\n'), artifact_change_previous.split('\n')):
+                #print(line, file=sys.stderr)
+                file_out.write(i)
+                
+        return(send_file("simplecompare.txt", attachment_filename="simplecompare.txt"), 200)
         # read file into string, return said string
         #to only return a HTML table for ui to use if they need it
         #return (d.make_table(artifact_change.split('\n'), artifact_change_previous.split('\n')), 200)
