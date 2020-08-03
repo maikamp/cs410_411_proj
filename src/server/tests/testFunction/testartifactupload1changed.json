@@ -3,9 +3,10 @@
     "username": "aberm002",
     "password": "guest1337",
     "repository_id": "1",
-    "repo_name": "",
-    "artifact_id": "1",
+    "artifact_access_level": "3",
     "artifact_name": "dope artifact",
     "version": "",
-    "previous_version": "1"
+    "tag": [
+        "CS411W_1"
+    ] 
 }
