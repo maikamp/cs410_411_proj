@@ -1,11 +1,11 @@
 {
-    "user_id": "2",
-    "username": "",
+    "user_id": "",
+    "username": "aberm002",
     "password": "",
-    "repository_id": "2",
+    "repository_id": "1",
     "repo_name": "",
     "artifact_id": "",
-    "artifact_name": "Example",
+    "artifact_name": "dope_artifact",
     "version": "",
     "previous_version": "1"
 }
