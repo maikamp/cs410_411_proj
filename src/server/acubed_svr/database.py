@@ -842,7 +842,7 @@ class Database():
         #readable_data_previous_version = base64.decodebytes(extracted_data_previous_version)
 
         d = difflib.Differ()
-        return  (d.compare(extracted_data.split('\n'), extracted_data_previous_version.split('\n')), 200)
+        return  (d.compare(extracted_data, extracted_data_previous_version), 200)
         # read file into string, return said string
 
         #else:
