@@ -818,7 +818,8 @@ class Database():
         self.cursor.execute(sql, data)
         temp = self.cursor.fetchall()
         artifact_change = temp[0][0]
-        extracted_data = artifact_change.encode('utf-8')
+        #extracted_data = artifact_change.encode('utf-8')
+        extracted_data = artifact_change
         readable_data = base64.decodebytes(extracted_data)
         
         if content.get("previous_version", "") == "":
@@ -835,7 +836,8 @@ class Database():
         self.cursor.execute(sql, data)
         temp = self.cursor.fetchall()
         artifact_change_previous = temp[0][0]
-        extracted_data_previous_version = artifact_change_previous.encode('utf-8')
+        #extracted_data_previous_version = artifact_change_previous.encode('utf-8')
+        extracted_data_previous_version = artifact_change_previous
         readable_data_previous_version = base64.decodebytes(extracted_data_previous_version)
 
         d = difflib.HtmlDiff()
