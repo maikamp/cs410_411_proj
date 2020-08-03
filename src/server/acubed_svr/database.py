@@ -905,7 +905,7 @@ class Database():
         data = (artifact_id, version)
         self.cursor.execute(sql, data)
         temp = self.cursor.fetchall()
-        artifact_change = ["change datettime: " + str(temp[0][0]), "changer id: " + str(temp[0][1]), "artifact_id: " + str(temp[0][2]), "artifact size: " + str(temp[0][3]), "version: " + str(temp[0][4])]
+        artifact_change = ["change datettime: " + str(temp[0][0]) + "\n", "changer id: " + str(temp[0][1]) + "\n", "artifact_id: " + str(temp[0][2]) + "\n", "artifact size: " + str(temp[0][3]) + "\n", "version: " + str(temp[0][4]) + "\n"]
 
 
         if content.get("previous_version", "") == "":
@@ -921,7 +921,7 @@ class Database():
         data = (artifact_id, version)
         self.cursor.execute(sql, data)
         temp = self.cursor.fetchall()
-        artifact_change_previous = ["change datettime: " + str(temp[0][0]), "changer id: " + str(temp[0][1]), "artifact_id: " + str(temp[0][2]), "artifact size: " + str(temp[0][3]), "version: " + str(temp[0][4])]
+        artifact_change_previous = ["change datettime: " + str(temp[0][0]) + "\n", "changer id: " + str(temp[0][1]) + "\n", "artifact_id: " + str(temp[0][2]) + "\n", "artifact size: " + str(temp[0][3]) + "\n", "version: " + str(temp[0][4]) + "\n"]
 
         #d = difflib.HtmlDiff()
         #return  (d.make_file(artifact_change.split('\n'), artifact_change_previous.split('\n')), 200)
@@ -933,7 +933,7 @@ class Database():
                 file_out.write('\n'.join(i))
         '''
         with open("simplecompare.txt", "w") as file_out:
-            file_out.writelines(difflib.context_diff(artifact_change, artifact_change_previous)).join('\n') 
+            file_out.writelines(difflib.context_diff(artifact_change, artifact_change_previous))
         return(send_file("simplecompare.txt", attachment_filename="simplecompare.txt"), 200)
         # read file into string, return said string
         #to only return a HTML table for ui to use if they need it
