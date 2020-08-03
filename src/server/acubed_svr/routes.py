@@ -115,7 +115,7 @@ def returnrepoinfo():
 def simplecompare():
     return db.simple_compare(request.get_json(force=True))
 
-@app.route('/diffcompare' ,methods = ['GET', 'POST'])
+@app.route('/diff' ,methods = ['GET', 'POST'])
 def diff():
     return db.diff(request.get_json(force=True))
 '''
