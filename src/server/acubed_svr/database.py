@@ -844,7 +844,10 @@ class Database():
             for i in difflib.context_diff(readable_data, readable_data_previous_version):
                 #print(line, file=sys.stderr)
                 file_out.write(i)
-                
+
+        #with open("diffcompare.txt", "w") as file_out:
+        #file_out.writelines(difflib.context_diff(extracted_data, extracted_data_previous_version))  
+              
         return(send_file("diffcompare.txt", attachment_filename="diffcompare.txt"), 200)
         #d = difflib.Differ()
         #return  (d.compare(extracted_data, extracted_data_previous_version), 200)
