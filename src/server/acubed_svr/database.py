@@ -845,7 +845,7 @@ class Database():
                 print(line, file=sys.stderr)
                 file_out.write(line)
             file_out.close()
-            return(file_out, 200)
+            return(send_file(file_out, attachment_filename=file_out), 200)
         #d = difflib.Differ()
         #return  (d.compare(extracted_data, extracted_data_previous_version), 200)
         # read file into string, return said string
@@ -1135,7 +1135,7 @@ class Database():
 
         #retrieve owned artifacts
         elif content.get("return_type", "") == "owned":
-            sql = "SELECT artifact_name FROM artifact WHERE owner_id = %s"
+            sql = "SELECT artifact_name, artifact_original_filetype FROM artifact WHERE owner_id = %s"
             val = (user_id, )
             self.cursor.execute(sql, val)
             result = self.cursor.fetchall()
