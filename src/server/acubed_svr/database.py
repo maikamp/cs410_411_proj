@@ -819,7 +819,7 @@ class Database():
         temp = self.cursor.fetchall()
         artifact_change = temp[0][0]
         print(type(artifact_change), file = sys.stderr)
-        extracted_data = artifact_change.encode('utf-8')
+        extracted_data = artifact_change.decode('utf-8')
         print(type(extracted_data), file = sys.stderr)
         readable_data = base64.decodebytes(extracted_data)
         print(type(readable_data), file = sys.stderr)
