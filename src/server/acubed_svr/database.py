@@ -818,9 +818,8 @@ class Database():
         self.cursor.execute(sql, data)
         temp = self.cursor.fetchall()
         artifact_change = temp[0][0]
-        print(type(artifact_change), file = sys.stderr)
         extracted_data = artifact_change.decode('utf-8')
-        print(type(extracted_data), file = sys.stderr)
+        print(extracted_data, file = sys.stderr)
         #readable_data = base64.decodebytes(extracted_data)
         #print(type(readable_data), file = sys.stderr)
         
@@ -841,9 +840,10 @@ class Database():
         extracted_data_previous_version = artifact_change_previous.decode('utf-8')
         #readable_data_previous_version = base64.decodebytes(extracted_data_previous_version)
         with open("diffcompare.txt", "w") as file_out:
-            for line in list(difflib.context_diff(extracted_data, extracted_data_previous_version)):
-                #print(line, file=sys.stderr)
-                file_out.write(''.join(line))
+            #for line in list(difflib.context_diff(extracted_data, extracted_data_previous_version)):
+            line = difflib.context_diff(extracted_data, extracted_data_previous_version)
+            #print(line, file=sys.stderr)
+            file_out.write(''.join(line))
                 
         return(send_file("diffcompare.txt", attachment_filename="diffcompare.txt"), 200)
         #d = difflib.Differ()
