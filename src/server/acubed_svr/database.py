@@ -844,7 +844,6 @@ class Database():
             for line in difflib.unified_diff(extracted_data, extracted_data_previous_version):
                 print(line, file=sys.stderr)
                 file_out.write(line)
-            file_out.close()
             return(send_file(file_out, attachment_filename="diffcompare.txt"), 200)
         #d = difflib.Differ()
         #return  (d.compare(extracted_data, extracted_data_previous_version), 200)
