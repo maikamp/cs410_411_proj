@@ -1112,7 +1112,11 @@ class Database():
             val = (x[2], )
             self.cursor.execute(sql, val)
             owner_name =  self.cursor.fetchall()
-            result_list[i] = [x[0] , x[1], owner_name[0][0]]
+            result_list[i] = {
+                "artifact_name": x[0],
+                "artifact_original_filetype": x[1],
+                "owner_name": owner_name[0][0]
+            }
             i = i + 1
         payload = {
             "err_message": "List of artifacts you have access to.",
@@ -1176,7 +1180,10 @@ class Database():
             val = (x[1], )
             self.cursor.execute(sql, val)
             creator_name =  self.cursor.fetchall()
-            result_list[i] = [x[0] , creator_name[0][0]]
+            result_list[i] = {
+                "repo_name": x[0], 
+                "repo_creator": creator_name[0][0]
+                }
             i = i + 1
         payload = {
             "err_message": "List of repositories you have access to.",
