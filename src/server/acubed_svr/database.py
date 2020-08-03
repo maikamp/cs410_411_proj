@@ -1135,7 +1135,7 @@ class Database():
 
         #retrieve owned artifacts
         elif content.get("return_type", "") == "owned":
-            sql = "SELECT artifact_name FROM artifact WHERE owner_id = %s"
+            sql = "SELECT artifact_name, artifact_original_filetype FROM artifact WHERE owner_id = %s"
             val = (user_id, )
             self.cursor.execute(sql, val)
             result = self.cursor.fetchall()
