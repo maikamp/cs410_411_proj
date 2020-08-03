@@ -1,0 +1,1 @@
+{"err_message": "List of artifacts you have access to.", "artifact_name": {"0": ["dope artifact", "md", "aberm002"], "1": ["Example", "docx", "njenn001"], "2": ["scraped artifact", "txt", "aberm002"], "3": ["Lab 3", "docx", "aberm002"]}}

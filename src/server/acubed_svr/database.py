@@ -840,9 +840,14 @@ class Database():
         artifact_change_previous = temp[0][0]
         extracted_data_previous_version = artifact_change_previous.decode('utf-8')
         #readable_data_previous_version = base64.decodebytes(extracted_data_previous_version)
-
-        d = difflib.HtmlDiff()
-        return  (d.make_file(extracted_data.split('\n'), extracted_data_previous_version.split('\n')), 200)
+        with open("diffcompare.txt", "w") as file_out:
+            for line in difflib.unified_diff(extracted_data, extracted_data_previous_version):
+                print(line, file=sys.stderr)
+                file_out.write(line)
+            file_out.close()
+            return(file_out, 200)
+        #d = difflib.Differ()
+        #return  (d.compare(extracted_data, extracted_data_previous_version), 200)
         # read file into string, return said string
 
         #else:
@@ -1102,42 +1107,57 @@ class Database():
                 user_id = 1    
         else:
             user_id = int(content["user_id"])
-        
+
         #retrieve artifact names for all artifacts user has permission to view
-        sql = "SELECT artifact_name, artifact_original_filetype, owner_id FROM artifact WHERE artifact_access_level <= %s"
-        val = (self.get_permission_level(user_id), )
-        self.cursor.execute(sql, val)
-        result = self.cursor.fetchall()
-        result_list = {}
-        i = 0
-        for x in result:
-            sql = "SELECT username FROM user WHERE user_id = %s"
-            val = (x[2], )
+        if content.get("return_type", "") == "all":
+            sql = "SELECT artifact_name, artifact_original_filetype, owner_id FROM artifact WHERE artifact_access_level <= %s || owner_id = %s"
+            val = (self.get_permission_level(user_id), user_id)
             self.cursor.execute(sql, val)
-            owner_name =  self.cursor.fetchall()
-            result_list[i] = {
-                "artifact_name": x[0],
-                "artifact_original_filetype": x[1],
-                "owner_name": owner_name[0][0]
+            result = self.cursor.fetchall()
+            result_list = {}
+            i = 0
+            for x in result:
+                sql = "SELECT username FROM user WHERE user_id = %s"
+                val = (x[2], )
+                self.cursor.execute(sql, val)
+                owner_name =  self.cursor.fetchall()
+                result_list[i] = {
+                    "artifact_name": x[0],
+                    "artifact_original_filetype": x[1],
+                    "owner_name": owner_name[0][0]
+                }
+                i = i + 1
+            payload = {
+                "err_message": "List of artifacts you have access to.",
+                "artifact_name": result_list
             }
-            i = i + 1
-        payload = {
-            "err_message": "List of artifacts you have access to.",
-            "artifact_name": result_list
-        }
-        return (json.dumps(payload), 200)
+            return (json.dumps(payload), 200)
 
-        '''
         #retrieve owned artifacts
-        sql = "SELECT artifact_name FROM artifact WHERE owner_id = %s"
-        self.cursor.execute(sql, user_id)
-        result = self.cursor.fetchall()
-        payload = {
-            "err_message": "List of artifacts you own.",
-            "repository_id": [result]
-        }
-        return (json.dumps(payload), 202)
-
+        elif content.get("return_type", "") == "owned":
+            sql = "SELECT artifact_name FROM artifact WHERE owner_id = %s"
+            val = (user_id, )
+            self.cursor.execute(sql, val)
+            result = self.cursor.fetchall()
+            result_list = {}
+            i = 0
+            for x in result:
+                result_list[i] = {
+                    "artifact_name": x[0],
+                    "artifact_original_filetype": x[1]
+                }
+                i = i + 1
+            payload = {
+                "err_message": "List of artifacts you have access to.",
+                "artifact_name": result_list
+            }
+            return (json.dumps(payload), 200)
+        else:
+            payload = {
+                "err_message": "No return type specified."
+            }
+            return (json.dumps(payload), 400)
+        '''
         #retrieve artifacts from specified repo
         sql = "SELECT artifact_name FROM artifact WHERE artifact_repo = %s && (artifact_access_level <= %s || owner_id = %s)"
         if content.get("repository_id", "") != "":
@@ -1171,42 +1191,57 @@ class Database():
         else:
             user_id = int(content["user_id"])
         
-        #retrieve artifact names for all repositories user has permission to view
-        sql = "SELECT repo_name, repo_creator FROM repository WHERE permission_req <= %s"
-        val = (self.get_permission_level(user_id), )
-        self.cursor.execute(sql, val)
-        result = self.cursor.fetchall()
-        result_list = {}
-        i = 0
-        for x in result:
-            sql = "SELECT username FROM user WHERE user_id = %s"
-            val = (x[1], )
+        #retrieve all repositories user has permission to view
+        if content.get("return_type", "") == "all":
+            sql = "SELECT repo_name, repo_creator FROM repository WHERE permission_req <= %s || repo_creator = %s"
+            val = (self.get_permission_level(user_id), user_id)
             self.cursor.execute(sql, val)
-            creator_name =  self.cursor.fetchall()
-            result_list[i] = {
-                "repo_name": x[0], 
-                "repo_creator": creator_name[0][0]
-                }
-            i = i + 1
-        payload = {
-            "err_message": "List of repositories you have access to.",
-            "repo_name": result_list
-        }
-        return (json.dumps(payload), 202)
-        
-        '''
+            result = self.cursor.fetchall()
+            result_list = {}
+            i = 0
+            for x in result:
+                sql = "SELECT username FROM user WHERE user_id = %s"
+                val = (x[1], )
+                self.cursor.execute(sql, val)
+                creator_name =  self.cursor.fetchall()
+                result_list[i] = {
+                    "repo_name": x[0], 
+                    "repo_creator": creator_name[0][0]
+                    }
+                i = i + 1
+            payload = {
+                "err_message": "List of repositories you have access to.",
+                "results": result_list
+            }
+            return (json.dumps(payload), 200)
+            
         #retrieve owned repositories
-        sql = "SELECT repo_name FROM repository WHERE repo_creator = %s"
-        self.cursor.execute(sql, user_id)
-        result = self.cursor.fetchall()
-        payload = {
-            "err_message": "List of repositories you own.",
-            "repository_id": result
-        }
-        return (json.dumps(payload), 202)
+        elif content.get("return_type", "") == "owned":    
+            sql = "SELECT repo_name FROM repository WHERE repo_creator = %s"
+            val = (user_id, )
+            self.cursor.execute(sql, val)
+            result = self.cursor.fetchall()
+            result_list = {}
+            i = 0
+            for x in result:
+                result_list[i] = {
+                    "repo_name": x[0]
+                    }
+                i = i + 1
+            payload = {
+                "err_message": "List of repositories you own.",
+                "results": result_list
+            }
+            return (json.dumps(payload), 200)
+
+        else:
+            payload = {
+                "err_message": "No return type specified."
+            }
+            return (json.dumps(payload), 400)
 
         #retrieve repos by tag
 
-        '''
+        
 
     
