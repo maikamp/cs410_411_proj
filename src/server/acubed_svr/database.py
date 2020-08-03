@@ -930,7 +930,7 @@ class Database():
             #for line in list(difflib.context_diff(extracted_data, extracted_data_previous_version)):
             for i in difflib.context_diff(artifact_change, artifact_change_previous):
                 #print(line, file=sys.stderr)
-                file_out.write(i)
+                file_out.write('\n'.join(i))
                 
         return(send_file("simplecompare.txt", attachment_filename="simplecompare.txt"), 200)
         # read file into string, return said string
