@@ -841,8 +841,8 @@ class Database():
         extracted_data_previous_version = artifact_change_previous.decode('utf-8')
         #readable_data_previous_version = base64.decodebytes(extracted_data_previous_version)
 
-        d = difflib.HtmlDiff()
-        return  (d.make_file(extracted_data.split('\n'), extracted_data_previous_version.split('\n')), 200)
+        d = difflib.Differ()
+        return  (d.compare(extracted_data.split('\n'), extracted_data_previous_version.split('\n')), 200)
         # read file into string, return said string
 
         #else:
