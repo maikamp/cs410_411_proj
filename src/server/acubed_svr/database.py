@@ -842,7 +842,7 @@ class Database():
         with open("diffcompare.txt", "w") as file_out:
             #for line in list(difflib.context_diff(extracted_data, extracted_data_previous_version)):
             for i in difflib.context_diff(extracted_data, extracted_data_previous_version)
-            #print(line, file=sys.stderr)
+                #print(line, file=sys.stderr)
                 file_out.write(i)
                 
         return(send_file("diffcompare.txt", attachment_filename="diffcompare.txt"), 200)
