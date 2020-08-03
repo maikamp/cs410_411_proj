@@ -115,7 +115,7 @@ def returnrepoinfo():
 def simplecompare():
     return db.simple_compare(request.get_json(force=True))
 
-@app.route('/diffcompare' ,methods = ['GET', 'POST'])
+@app.route('/diff' ,methods = ['GET', 'POST'])
 def diff():
     return db.diff(request.get_json(force=True))
 '''
@@ -141,8 +141,8 @@ def addtag():
 
 @app.route('/returnlistrepos' ,methods = ['GET', 'POST'])
 def returnlistrepos():
-    return db.return_artifact_list(request.get_json(force=True))
+    return db.return_repo_list(request.get_json(force=True))
     
 @app.route('/returnlistartifacts' ,methods = ['GET', 'POST'])
 def returnlistartifacts():
-    return db.return_repo_list(request.get_json(force=True))
+    return db.return_artifact_list(request.get_json(force=True))

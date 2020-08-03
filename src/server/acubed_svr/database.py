@@ -8,6 +8,7 @@ import sys
 import pypandoc
 import difflib
 import urllib.request
+import base64
 from bs4 import BeautifulSoup
 from flask import send_file, redirect, url_for, request, flash
 from werkzeug.utils import secure_filename
@@ -225,7 +226,11 @@ class Database():
         else:
             repo_id = int(content["repository_id"])
          
-        artifact_id = self.get_artifact_id(str(content["artifact_name"]))
+        if content.get("artifact_id", "") == "":
+            artifact_id = self.get_artifact_id(str(content["artifact_name"]))
+        else:
+            artifact_id = int(content["artifact_id"])
+                
         datecreated = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         sql = "SELECT repo_creator FROM repository WHERE repository_id = %s"
@@ -256,7 +261,6 @@ class Database():
         #make the fileneame secure and save it   
         filename = secure_filename(file.filename)
         file.save(os.path.join(UPLOAD_FOLDER, filename))
-        artifact_id = self.get_artifact_id(str(content["artifact_name"]))  
         
         #check for the first time an artifact has been uploaded
         if artifact_id == "":
@@ -272,6 +276,7 @@ class Database():
             dataUp = (user_id, repo_id, int(content["artifact_access_level"]), str(content["artifact_name"]), extension, datecreated)
             self.cursor.execute(sqlUp, dataUp)
             self.connector.commit()
+            artifact_id = self.get_artifact_id(str(content["artifact_name"]))  
         #artifact has been uploaded before so its an update get the max version and increment by 1
         else:
                 sql = "SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s"
@@ -791,22 +796,55 @@ class Database():
         else:
             artifact_id = int(content["artifact_id"])
 
+        '''
         sql = "SELECT artifact_original_filetype WHERE artifact_id =%s"
         data = (artifact_id, )
         self.cursor.execute(sql, data)
         ext = self.cursor.fetchall()
+        '''
 
-        if ext in CONVERTIBLE_EXTENSIONS:
-            if content.get("version", "") == "":
-                sql = "SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s"
-                data = (artifact_id, )
-                self.cursor.execute(sql, data)
-                temp = self.cursor.fetchall()
-                version = int(temp[0][0])
-            else:
-                version = (int(content["version"]))
+        #if ext in CONVERTIBLE_EXTENSIONS:
+        if content.get("version", "") == "":
+            sql = "SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s"
+            data = (artifact_id, )
+            self.cursor.execute(sql, data)
+            temp = self.cursor.fetchall()
+            version = int(temp[0][0])
+        else:
+            version = (int(content["version"]))
+
+        sql = "SELECT artifact_blob FROM artifact_change_record WHERE artifact_id = %s && version = %s"
+        data = (artifact_id, version)
+        self.cursor.execute(sql, data)
+        temp = self.cursor.fetchall()
+        artifact_change = temp[0][0]
+        extracted_data = artifact_change.encode('utf-8')
+        readable_data = base64.decodebytes(extracted_data)
+        
+        if content.get("previous_version", "") == "":
+            sql = "SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s"
+            data = (artifact_id, )
+            self.cursor.execute(sql, data)
+            temp = self.cursor.fetchall()
+            version = int(temp[0][0])
+        else:
+            version = (int(content["previous_version"]))
+
+        sql = "SELECT artifact_blob FROM artifact_change_record WHERE artifact_id = %s && version = %s"
+        data = (artifact_id, version)
+        self.cursor.execute(sql, data)
+        temp = self.cursor.fetchall()
+        artifact_change_previous = temp[0][0]
+        extracted_data_previous_version = artifact_change_previous.encode('utf-8')
+        readable_data_previous_version = base64.decodebytes(extracted_data_previous_version)
+
+        d = difflib.HtmlDiff()
+        return  (d.make_file(readable_data.split('\n'), readable_data_previous_version.split('\n')), 200)
+        # read file into string, return said string
+
         #else:
             #simple compare
+            #may forgo checking if convertable for demo purposes
             
             
     #html file which shows a side by side difference of the attributes of an artifact
@@ -876,6 +914,7 @@ class Database():
 
         d = difflib.HtmlDiff()
         return  (d.make_file(artifact_change.split('\n'), artifact_change_previous.split('\n')), 200)
+        # read file into string, return said string
         #to only return a HTML table for ui to use if they need it
         #return (d.make_table(artifact_change.split('\n'), artifact_change_previous.split('\n')), 200)
     '''
@@ -1057,18 +1096,31 @@ class Database():
         if content.get("user_id", "") == "":
             user_id = self.get_user_id(str(content["username"]), str(content["password"]))        
             if user_id == "":
-                return (json.dumps(AUTHENTICATE_FAIL), 401)   
+                user_id = 1    
         else:
             user_id = int(content["user_id"])
         
         #retrieve artifact names for all artifacts user has permission to view
-        sql = "SELECT artifact_name FROM artifact WHERE artifact_access_level <= %s"
+        sql = "SELECT artifact_name, artifact_original_filetype, owner_id FROM artifact WHERE artifact_access_level <= %s"
         val = (self.get_permission_level(user_id), )
         self.cursor.execute(sql, val)
         result = self.cursor.fetchall()
+        result_list = {}
+        i = 0
+        for x in result:
+            sql = "SELECT username FROM user WHERE user_id = %s"
+            val = (x[2], )
+            self.cursor.execute(sql, val)
+            owner_name =  self.cursor.fetchall()
+            result_list[i] = {
+                "artifact_name": x[0],
+                "artifact_original_filetype": x[1],
+                "owner_name": owner_name[0][0]
+            }
+            i = i + 1
         payload = {
             "err_message": "List of artifacts you have access to.",
-            "repository_id": result
+            "artifact_name": result_list
         }
         return (json.dumps(payload), 200)
 
@@ -1112,18 +1164,30 @@ class Database():
         if content.get("user_id", "") == "":
             user_id = self.get_user_id(str(content["username"]), str(content["password"]))        
             if user_id == "":
-                return (json.dumps(AUTHENTICATE_FAIL), 401)   
+                user_id = 1  
         else:
             user_id = int(content["user_id"])
         
         #retrieve artifact names for all repositories user has permission to view
-        sql = "SELECT repo_name FROM repository WHERE permission_req <= %s"
+        sql = "SELECT repo_name, repo_creator FROM repository WHERE permission_req <= %s"
         val = (self.get_permission_level(user_id), )
         self.cursor.execute(sql, val)
         result = self.cursor.fetchall()
+        result_list = {}
+        i = 0
+        for x in result:
+            sql = "SELECT username FROM user WHERE user_id = %s"
+            val = (x[1], )
+            self.cursor.execute(sql, val)
+            creator_name =  self.cursor.fetchall()
+            result_list[i] = {
+                "repo_name": x[0], 
+                "repo_creator": creator_name[0][0]
+                }
+            i = i + 1
         payload = {
             "err_message": "List of repositories you have access to.",
-            "repo_name": result
+            "repo_name": result_list
         }
         return (json.dumps(payload), 202)
         
