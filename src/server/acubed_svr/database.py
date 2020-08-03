@@ -905,7 +905,7 @@ class Database():
         data = (artifact_id, version)
         self.cursor.execute(sql, data)
         temp = self.cursor.fetchall()
-        artifact_change = ["change datettime: " + str(temp[0][0]), "changer id: " + str(temp[0][1]), "artifact_id: " + str(temp[0][2]), "artifact size: " + str(temp[0][3]), "version: " + str(temp[0][4])]
+        artifact_change = [["change datettime: " + str(temp[0][0])], ["changer id: " + str(temp[0][1])], ["artifact_id: " + str(temp[0][2])], ["artifact size: " + str(temp[0][3])], ["version: " + str(temp[0][4])]]
 
 
         if content.get("previous_version", "") == "":
@@ -921,7 +921,7 @@ class Database():
         data = (artifact_id, version)
         self.cursor.execute(sql, data)
         temp = self.cursor.fetchall()
-        artifact_change_previous = ["change datettime: " + str(temp[0][0]), "changer id: " + str(temp[0][1]), "artifact_id: " + str(temp[0][2]), "artifact size: " + str(temp[0][3]), "version: " + str(temp[0][4])]
+        artifact_change_previous = [["change datettime: " + str(temp[0][0])], ["changer id: " + str(temp[0][1])], ["artifact_id: " + str(temp[0][2])], ["artifact size: " + str(temp[0][3])], ["version: " + str(temp[0][4])]]
 
         #d = difflib.HtmlDiff()
         #return  (d.make_file(artifact_change.split('\n'), artifact_change_previous.split('\n')), 200)
