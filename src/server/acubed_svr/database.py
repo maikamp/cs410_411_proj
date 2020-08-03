@@ -818,8 +818,11 @@ class Database():
         self.cursor.execute(sql, data)
         temp = self.cursor.fetchall()
         artifact_change = temp[0][0]
-        #extracted_data = artifact_change.encode('utf-8')
-        #readable_data = base64.decodebytes(extracted_data)
+        print(type(artifact_change), file = sys.stderr)
+        extracted_data = artifact_change.encode('utf-8')
+        print(type(extracted_data), file = sys.stderr)
+        readable_data = base64.decodebytes(extracted_data)
+        print(type(readable_data), file = sys.stderr)
         
         if content.get("previous_version", "") == "":
             sql = "SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s"
