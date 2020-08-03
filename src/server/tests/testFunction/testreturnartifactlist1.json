@@ -1,5 +1,6 @@
 {
     "user_id": "",
     "username": "aberm001",
-    "password": "guest1337"
+    "password": "guest1337",
+    "return_type": "all"
 }
