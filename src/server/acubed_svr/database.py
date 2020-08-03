@@ -469,7 +469,7 @@ class Database():
                 tag_return_tuple = self.add_tag(content)
                 print(tag_return_tuple[1], file = sys.stderr)
                 if tag_return_tuple[1] >= 400:          
-                    #remove artifact
+                    #remove repo
                     sqlRemove = "DELETE FROM repository WHERE repository_id = %s"
                     valRemove = (self.get_repo_id(str(content["repo_name"])), )
                     self.cursor.execute(sqlRemove, valRemove)
