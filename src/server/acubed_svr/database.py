@@ -818,8 +818,8 @@ class Database():
         self.cursor.execute(sql, data)
         temp = self.cursor.fetchall()
         artifact_change = temp[0][0]
-        extracted_data = artifact_change.encode('utf-8')
-        readable_data = base64.decodebytes(extracted_data)
+        #extracted_data = artifact_change.encode('utf-8')
+        #readable_data = base64.decodebytes(extracted_data)
         
         if content.get("previous_version", "") == "":
             sql = "SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s"
@@ -835,11 +835,11 @@ class Database():
         self.cursor.execute(sql, data)
         temp = self.cursor.fetchall()
         artifact_change_previous = temp[0][0]
-        extracted_data_previous_version = artifact_change_previous.encode('utf-8')
-        readable_data_previous_version = base64.decodebytes(extracted_data_previous_version)
+        #extracted_data_previous_version = artifact_change_previous.encode('utf-8')
+        #readable_data_previous_version = base64.decodebytes(extracted_data_previous_version)
 
         d = difflib.HtmlDiff()
-        return  (d.make_file(readable_data.split('\n'), readable_data_previous_version.split('\n')), 200)
+        return  (d.make_file(artifact_change.split('\n'), artifact_change_previous.split('\n')), 200)
         # read file into string, return said string
 
         #else:
