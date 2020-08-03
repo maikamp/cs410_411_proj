@@ -1,5 +1,6 @@
 {
     "user_id": "2",
     "username": "",
-    "password": ""
+    "password": "",
+    "return_type": "owned"
 }
