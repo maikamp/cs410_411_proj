@@ -820,7 +820,7 @@ class Database():
         artifact_change = temp[0][0]
         extracted_data = artifact_change.decode('utf-8')
         print(extracted_data, file = sys.stderr)
-        #readable_data = base64.decodebytes(extracted_data)
+        readable_data = list(extracted_data.split('\n'))
         #print(type(readable_data), file = sys.stderr)
         
         if content.get("previous_version", "") == "":
@@ -838,12 +838,12 @@ class Database():
         temp = self.cursor.fetchall()
         artifact_change_previous = temp[0][0]
         extracted_data_previous_version = artifact_change_previous.decode('utf-8')
-        #readable_data_previous_version = base64.decodebytes(extracted_data_previous_version)
+        readable_data_previous_version = list(extracted_data_previous_version.split('\n'))
         with open("diffcompare.txt", "w") as file_out:
             #for line in list(difflib.context_diff(extracted_data, extracted_data_previous_version)):
-            for i in difflib.context_diff(extracted_data.split('\n'), extracted_data_previous_version.split('\n')):
+            for i in difflib.context_diff(readable_data, readable_data_previous_version):
                 #print(line, file=sys.stderr)
-                file_out.write('\n'.join(i))
+                file_out.write(i)
                 
         return(send_file("diffcompare.txt", attachment_filename="diffcompare.txt"), 200)
         #d = difflib.Differ()
