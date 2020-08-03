@@ -820,7 +820,7 @@ class Database():
         artifact_change = temp[0][0]
         extracted_data = artifact_change.decode('utf-8')
         print(extracted_data, file = sys.stderr)
-        readable_data = list(extracted_data.split('\n'))
+        readable_data = list(extracted_data.split('  '))
         #print(type(readable_data), file = sys.stderr)
         
         if content.get("previous_version", "") == "":
@@ -838,7 +838,7 @@ class Database():
         temp = self.cursor.fetchall()
         artifact_change_previous = temp[0][0]
         extracted_data_previous_version = artifact_change_previous.decode('utf-8')
-        readable_data_previous_version = list(extracted_data_previous_version.split('\n'))
+        readable_data_previous_version = list(extracted_data_previous_version.split('  '))
         with open("diffcompare.txt", "w") as file_out:
             #for line in list(difflib.context_diff(extracted_data, extracted_data_previous_version)):
             for i in difflib.context_diff(readable_data, readable_data_previous_version):
