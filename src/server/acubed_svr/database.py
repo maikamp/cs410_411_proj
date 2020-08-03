@@ -925,13 +925,15 @@ class Database():
 
         #d = difflib.HtmlDiff()
         #return  (d.make_file(artifact_change.split('\n'), artifact_change_previous.split('\n')), 200)
-
+        '''
         with open("simplecompare.txt", "w") as file_out:
             #for line in list(difflib.context_diff(extracted_data, extracted_data_previous_version)):
-            for i in difflib.context_diff(artifact_change, artifact_change_previous):
+            for i in difflib.context_diff(list(artifact_change), list(artifact_change_previous)):
                 #print(line, file=sys.stderr)
                 file_out.write('\n'.join(i))
-                
+        '''
+        with open("simplecompare.txt", "w") as file_out:
+            file_out.writelines(difflib.context_diff(artifact_change, artifact_change_previous)) 
         return(send_file("simplecompare.txt", attachment_filename="simplecompare.txt"), 200)
         # read file into string, return said string
         #to only return a HTML table for ui to use if they need it
