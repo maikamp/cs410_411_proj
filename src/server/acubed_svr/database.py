@@ -818,10 +818,9 @@ class Database():
         self.cursor.execute(sql, data)
         temp = self.cursor.fetchall()
         artifact_change = temp[0][0]
-        print(type(artifact_change), file = sys.stderr)
         extracted_data = artifact_change.decode('utf-8')
-        print(type(extracted_data), file = sys.stderr)
-        #readable_data = base64.decodebytes(extracted_data)
+        print(extracted_data, file = sys.stderr)
+        readable_data = list(extracted_data.split('  '))
         #print(type(readable_data), file = sys.stderr)
         
         if content.get("previous_version", "") == "":
@@ -839,12 +838,16 @@ class Database():
         temp = self.cursor.fetchall()
         artifact_change_previous = temp[0][0]
         extracted_data_previous_version = artifact_change_previous.decode('utf-8')
-        #readable_data_previous_version = base64.decodebytes(extracted_data_previous_version)
+        readable_data_previous_version = list(extracted_data_previous_version.split('  '))
         with open("diffcompare.txt", "w") as file_out:
-            for line in difflib.unified_diff(extracted_data, extracted_data_previous_version):
-                print(line, file=sys.stderr)
-                file_out.write(line)
-                
+            #for line in list(difflib.context_diff(extracted_data, extracted_data_previous_version)):
+            for i in difflib.context_diff(readable_data, readable_data_previous_version):
+                #print(line, file=sys.stderr)
+                file_out.write(i)
+
+        #with open("diffcompare.txt", "w") as file_out:
+        #file_out.writelines(difflib.context_diff(extracted_data, extracted_data_previous_version))  
+              
         return(send_file("diffcompare.txt", attachment_filename="diffcompare.txt"), 200)
         #d = difflib.Differ()
         #return  (d.compare(extracted_data, extracted_data_previous_version), 200)
@@ -902,7 +905,7 @@ class Database():
         data = (artifact_id, version)
         self.cursor.execute(sql, data)
         temp = self.cursor.fetchall()
-        artifact_change = "change datettime: " + str(temp[0][0]) + ",\nchanger id: " + str(temp[0][1]) + ",\nartifact_id: " + str(temp[0][2]) + ",\nartifact size: " + str(temp[0][3]) + ",\nversion: " + str(temp[0][4]) + '\n'
+        artifact_change = ["change datettime: " + str(temp[0][0]) + "\n", "changer id: " + str(temp[0][1]) + "\n", "artifact_id: " + str(temp[0][2]) + "\n", "artifact size: " + str(temp[0][3]) + "\n", "version: " + str(temp[0][4]) + "\n"]
 
 
         if content.get("previous_version", "") == "":
@@ -918,10 +921,20 @@ class Database():
         data = (artifact_id, version)
         self.cursor.execute(sql, data)
         temp = self.cursor.fetchall()
-        artifact_change_previous = "change datettime: " + str(temp[0][0]) + ",\nchanger id: " + str(temp[0][1]) + ",\nartifact_id: " + str(temp[0][2]) + ",\nartifact size: " + str(temp[0][3]) + ",\nversion: " + str(temp[0][4]) + '\n'
+        artifact_change_previous = ["change datettime: " + str(temp[0][0]) + "\n", "changer id: " + str(temp[0][1]) + "\n", "artifact_id: " + str(temp[0][2]) + "\n", "artifact size: " + str(temp[0][3]) + "\n", "version: " + str(temp[0][4]) + "\n"]
 
-        d = difflib.HtmlDiff()
-        return  (d.make_file(artifact_change.split('\n'), artifact_change_previous.split('\n')), 200)
+        #d = difflib.HtmlDiff()
+        #return  (d.make_file(artifact_change.split('\n'), artifact_change_previous.split('\n')), 200)
+        '''
+        with open("simplecompare.txt", "w") as file_out:
+            #for line in list(difflib.context_diff(extracted_data, extracted_data_previous_version)):
+            for i in difflib.context_diff(list(artifact_change), list(artifact_change_previous)):
+                #print(line, file=sys.stderr)
+                file_out.write('\n'.join(i))
+        '''
+        with open("simplecompare.txt", "w") as file_out:
+            file_out.writelines(difflib.context_diff(artifact_change, artifact_change_previous))
+        return(send_file("simplecompare.txt", attachment_filename="simplecompare.txt"), 200)
         # read file into string, return said string
         #to only return a HTML table for ui to use if they need it
         #return (d.make_table(artifact_change.split('\n'), artifact_change_previous.split('\n')), 200)
