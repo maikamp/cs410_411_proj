@@ -840,9 +840,14 @@ class Database():
         artifact_change_previous = temp[0][0]
         extracted_data_previous_version = artifact_change_previous.decode('utf-8')
         #readable_data_previous_version = base64.decodebytes(extracted_data_previous_version)
-
-        d = difflib.Differ()
-        return  (d.compare(extracted_data, extracted_data_previous_version), 200)
+        with open("diffcompare.txt", "w") as file_out:
+            for line in difflib.unified_diff(extracted_data, extracted_data_previous_version):
+                print(line, file=sys.stderr)
+                file_out.write(line)
+            file_out.close()
+            return(file_out, 200)
+        #d = difflib.Differ()
+        #return  (d.compare(extracted_data, extracted_data_previous_version), 200)
         # read file into string, return said string
 
         #else:
