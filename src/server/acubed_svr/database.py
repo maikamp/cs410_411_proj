@@ -841,7 +841,7 @@ class Database():
         extracted_data_previous_version = artifact_change_previous.decode('utf-8')
         #readable_data_previous_version = base64.decodebytes(extracted_data_previous_version)
         with open("diffcompare.txt", "w") as file_out:
-            for line in difflib.context_diff(extracted_data, extracted_data_previous_version):
+            for line in list(difflib.context_diff(extracted_data, extracted_data_previous_version)):
                 #print(line, file=sys.stderr)
                 file_out.write(''.join(line))
                 
