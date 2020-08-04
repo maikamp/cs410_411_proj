@@ -1,0 +1,13 @@
+{
+    "user_id": "",
+    "username": "aberm002",
+    "password": "guest1337",
+    "repository_id": "1",
+    "artifact_access_level": "1",
+    "artifact_name": "Testing Original Source",
+    "desired_url": "https://www.cs.odu.edu/~411crystal/resources/Lab_3_version_1.docx",
+    "version": "",
+    "tag":[
+        "CS411W_2"
+    ]
+}

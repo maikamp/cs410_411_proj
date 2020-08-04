@@ -383,7 +383,7 @@ class Database():
                 version = int(content["version"])
             #extension = retrieved_filename.rsplit('.', 1)[1].lower()
             sqlUp = "INSERT INTO artifact (owner_id, artifact_repo, artifact_access_level, artifact_name, artifact_original_source, artifact_original_filetype, artifact_creation_date) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-            dataUp = (user_id, repo_id, int(content["artifact_access_level"]), str(content["artifact_name"]),file_path, extension, datecreated)
+            dataUp = (user_id, repo_id, int(content["artifact_access_level"]), str(content["artifact_name"]), file_path, extension, datecreated)
             self.cursor.execute(sqlUp, dataUp)
             self.connector.commit()
 

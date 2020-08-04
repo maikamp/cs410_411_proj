@@ -1,0 +1,2 @@
+echo Test artifactscrape: curl -X POST -d @testartifactscrape3.json crystal.cpi.cs.odu.edu:5000/artifactscrape -o ./curlresponse/addartifactscraperesponse3.txt
+curl -X POST -d @testartifactscrape3.json crystal.cpi.cs.odu.edu:5000/artifactscrape -o ./curlresponse/addartifactscraperesponse3.txt
