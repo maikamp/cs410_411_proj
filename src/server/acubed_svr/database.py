@@ -751,6 +751,7 @@ class Database():
         owner_name =  self.cursor.fetchall()
         #retrieve tags for this repo
         sql3 = "SELECT tag_name FROM tag WHERE repo_id = %s"
+        val3 = (repo_id, )
         self.cursor.execute(sql3, val3)
         repo_tags =  self.cursor.fetchall()
         #get the permission level of the user
