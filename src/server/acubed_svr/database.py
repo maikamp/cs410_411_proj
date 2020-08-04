@@ -358,6 +358,7 @@ class Database():
         retrieved_file = requests.get(content["desired_url"])
         
         #https://www.w3.org/TR/PNG/iso_8859-1.txt
+        file_path = content["desired_url"]
         only_filename = content["desired_url"].split("/")[-1]
         retrieved_filename = os.path.join(UPLOAD_FOLDER, only_filename)
         with open(retrieved_filename, "wb") as file_on_disk:
@@ -376,8 +377,8 @@ class Database():
             else:
                 version = int(content["version"])
             #extension = retrieved_filename.rsplit('.', 1)[1].lower()
-            sqlUp = "INSERT INTO artifact (owner_id, artifact_repo, artifact_access_level, artifact_name, artifact_original_filetype, artifact_creation_date) VALUES (%s, %s, %s, %s, %s, %s)"
-            dataUp = (user_id, repo_id, int(content["artifact_access_level"]), str(content["artifact_name"]), extension, datecreated)
+            sqlUp = "INSERT INTO artifact (owner_id, artifact_repo, artifact_access_level, artifact_name, artifact_original_source, artifact_original_filetype, artifact_creation_date) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+            dataUp = (user_id, repo_id, int(content["artifact_access_level"]), str(content["artifact_name"]), file_path, extension, datecreated)
             self.cursor.execute(sqlUp, dataUp)
             self.connector.commit()
 
