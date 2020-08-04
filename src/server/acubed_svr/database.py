@@ -690,7 +690,7 @@ class Database():
         sql3 = "SELECT tag_name FROM tag WHERE artifact_id = %s"
         val3 = (artifact_id, )
         self.cursor.execute(sql3, val3)
-        repo_tags =  self.cursor.fetchall()
+        artifact_tags =  self.cursor.fetchall()
 
         #if no version was specified get the max version
         if content.get("version", "") == "":
@@ -722,7 +722,7 @@ class Database():
                 "change_datetime": str(artifact_change[0][0]),
                 "artifact_size": str(artifact_change[0][3]),
                 "version": str(artifact_change[0][5]),
-                "tag": repo_tags
+                "tag": artifact_tags
             }
             return (json.dumps(payload), 200)
         else:
