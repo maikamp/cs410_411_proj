@@ -793,63 +793,65 @@ class Database():
         else:
             artifact_id = int(content["artifact_id"])
 
-        '''
+        
         sql = "SELECT artifact_original_filetype WHERE artifact_id =%s"
         data = (artifact_id, )
         self.cursor.execute(sql, data)
         ext = self.cursor.fetchall()
-        '''
-
-        #if ext in CONVERTIBLE_EXTENSIONS:
-        if content.get("version", "") == "":
-            sql = "SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s"
-            data = (artifact_id, )
-            self.cursor.execute(sql, data)
-            temp = self.cursor.fetchall()
-            version = int(temp[0][0])
-        else:
-            version = (int(content["version"]))
-
-        sql = "SELECT artifact_blob FROM artifact_change_record WHERE artifact_id = %s && version = %s"
-        data = (artifact_id, version)
-        self.cursor.execute(sql, data)
-        temp = self.cursor.fetchall()
-        artifact_change = temp[0][0]
-        extracted_data = artifact_change.decode('utf-8')
-        readable_data = list(extracted_data.split('  '))
         
-        if content.get("previous_version", "") == "":
-            sql = "SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s"
-            data = (artifact_id, )
+
+        if ext in CONVERTIBLE_EXTENSIONS:
+            if content.get("version", "") == "":
+                sql = "SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s"
+                data = (artifact_id, )
+                self.cursor.execute(sql, data)
+                temp = self.cursor.fetchall()
+                version = int(temp[0][0])
+            else:
+                version = (int(content["version"]))
+
+            sql = "SELECT artifact_blob FROM artifact_change_record WHERE artifact_id = %s && version = %s"
+            data = (artifact_id, version)
             self.cursor.execute(sql, data)
             temp = self.cursor.fetchall()
-            version = int(temp[0][0])
+            artifact_change = temp[0][0]
+            extracted_data = artifact_change.decode('utf-8')
+            readable_data = list(extracted_data.split('  '))
+            
+            if content.get("previous_version", "") == "":
+                sql = "SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s"
+                data = (artifact_id, )
+                self.cursor.execute(sql, data)
+                temp = self.cursor.fetchall()
+                version = int(temp[0][0])
+            else:
+                version = (int(content["previous_version"]))
+
+            sql = "SELECT artifact_blob FROM artifact_change_record WHERE artifact_id = %s && version = %s"
+            data = (artifact_id, version)
+            self.cursor.execute(sql, data)
+            temp = self.cursor.fetchall()
+            artifact_change_previous = temp[0][0]
+            extracted_data_previous_version = artifact_change_previous.decode('utf-8')
+            readable_data_previous_version = list(extracted_data_previous_version.split('  '))
+            with open("diffcompare.txt", "w") as file_out:
+                #for line in list(difflib.context_diff(extracted_data, extracted_data_previous_version)):
+                for i in difflib.context_diff(readable_data, readable_data_previous_version):
+                    file_out.write(i)
+
+            #with open("diffcompare.txt", "w") as file_out:
+            #file_out.writelines(difflib.context_diff(extracted_data, extracted_data_previous_version))  
+                
+            return(send_file("diffcompare.txt", attachment_filename="diffcompare.txt"), 200)
+            #d = difflib.Differ()
+            #return  (d.compare(extracted_data, extracted_data_previous_version), 200)
+            # read file into string, return said string
+
         else:
-            version = (int(content["previous_version"]))
-
-        sql = "SELECT artifact_blob FROM artifact_change_record WHERE artifact_id = %s && version = %s"
-        data = (artifact_id, version)
-        self.cursor.execute(sql, data)
-        temp = self.cursor.fetchall()
-        artifact_change_previous = temp[0][0]
-        extracted_data_previous_version = artifact_change_previous.decode('utf-8')
-        readable_data_previous_version = list(extracted_data_previous_version.split('  '))
-        with open("diffcompare.txt", "w") as file_out:
-            #for line in list(difflib.context_diff(extracted_data, extracted_data_previous_version)):
-            for i in difflib.context_diff(readable_data, readable_data_previous_version):
-                file_out.write(i)
-
-        #with open("diffcompare.txt", "w") as file_out:
-        #file_out.writelines(difflib.context_diff(extracted_data, extracted_data_previous_version))  
-              
-        return(send_file("diffcompare.txt", attachment_filename="diffcompare.txt"), 200)
-        #d = difflib.Differ()
-        #return  (d.compare(extracted_data, extracted_data_previous_version), 200)
-        # read file into string, return said string
-
-        #else:
-            #simple compare
-            #may forgo checking if convertable for demo purposes
+            payload = {
+                "err_message": "Wrong file type, must be a convertable file type (doc, docx, odt, htm, html)"
+            }
+            return (json.dumps(payload),400)
                      
     #html file which shows a side by side difference of the attributes of an artifact
     def simple_compare (self, content):
