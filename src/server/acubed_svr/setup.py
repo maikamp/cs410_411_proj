@@ -89,6 +89,7 @@ TABLES['artifact_change_record'] = """
     `artifact_size` INT,
     `artifact_blob` blob,
     `version` INT NOT NULL,
+    `artifact_location` varchar(40),
 
     PRIMARY KEY (`change_datetime`),
     INDEX `user_id_fk` (`changer_id`),
