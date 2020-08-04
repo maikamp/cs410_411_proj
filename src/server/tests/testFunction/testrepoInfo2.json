@@ -2,5 +2,6 @@
     "user_id": "",
     "username": "registertest",
     "password": "system",
-    "return_type": "owned"
+    "repository_id": "",
+    "repo_name": "testrepo1"
 }

@@ -46,7 +46,6 @@ class Database():
                 user = 'root',
                 password = 'rT1@4PlgTd',
                 database = DATABASE_NAME,
-                #database = os.environ['DATABASE_NAME'],
                 host = 'acubed_db',
                 port = '3306'
             )
@@ -116,8 +115,6 @@ class Database():
         #create the input path + filename witht the original extension
         temp_filename = './uploads/' + filename + '.' + ext
         #run pandoc and as far as I can tell it must have a variable which will be empty 
-        print(md_filename, file=sys.stderr)
-        print(temp_filename, file=sys.stderr)
         file_MD = pypandoc.convert_file(temp_filename, 'md', outputfile = md_filename)
         #assert the variable is empty
         assert file_MD == ""
@@ -287,7 +284,6 @@ class Database():
 
         #tag goes here 
         tag_return_tuple = self.add_tag(content)
-        print(tag_return_tuple[1], file = sys.stderr)
         if tag_return_tuple[1] >= 400:          
             #remove artifact
             sqlRemove = "DELETE FROM artifact WHERE artifact_id = %s"
@@ -374,7 +370,6 @@ class Database():
         datecreated = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
         artifact_id = self.get_artifact_id(str(content["artifact_name"]))
-        print(artifact_id, file=sys.stderr)
         if artifact_id == "":
             if str(content["version"]) == "":
                 version = 1
@@ -396,7 +391,6 @@ class Database():
         
         #tag goes here 
         tag_return_tuple = self.add_tag(content)
-        print(tag_return_tuple[1], file = sys.stderr)
         if tag_return_tuple[1] >= 400:          
             #remove artifact
             sqlRemove = "DELETE FROM artifact WHERE artifact_id = %s"
@@ -413,9 +407,7 @@ class Database():
         if self.allowed_file(only_filename):
             if self.convertible_file(only_filename):
                 tempname = only_filename.rsplit('.', )[0]
-                print(tempname, file=sys.stderr)
                 ext = retrieved_filename.rsplit('.', 1)[1]
-                print(ext, file=sys.stderr)
                 retrieved_filename = os.path.join(UPLOAD_FOLDER, self.convertToMD(tempname, ext))
         
             sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_id, artifact_blob, version) VALUES (%s, %s, %s, %s, %s)"
@@ -467,7 +459,6 @@ class Database():
 
                 #tag goes here 
                 tag_return_tuple = self.add_tag(content)
-                print(tag_return_tuple[1], file = sys.stderr)
                 if tag_return_tuple[1] >= 400:          
                     #remove repo
                     sqlRemove = "DELETE FROM repository WHERE repository_id = %s"
@@ -683,11 +674,13 @@ class Database():
         else:
             artifact_id = int(content["artifact_id"])
 
+        #get the information that was stored in the artifact table
         sql = "SELECT * FROM artifact WHERE artifact_repo = %s && artifact_id = %s"
         data = (repo_id, artifact_id)
         self.cursor.execute(sql, data)
         artifact_data = self.cursor.fetchall()
 
+        #if no version was specified get the max version
         if content.get("version", "") == "":
             sql = "SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s"
             data = (artifact_id, )
@@ -697,6 +690,7 @@ class Database():
         else:
             version = (int(content["version"]))
         
+        #get the stored data from the change record for the version specified or the MAX version
         sql = "SELECT * FROM artifact_change_record WHERE artifact_id = %s && version = %s"
         data = (artifact_id, version)
         self.cursor.execute(sql, data)
@@ -705,6 +699,8 @@ class Database():
             payload = {
                 "artifact_id": str(artifact_data[0][0]),
                 "owner_id": str(artifact_data[0][1]),
+                #the artifact owners name should replace the id,
+                #the tags should be added as well
                 "repository_id": str(artifact_data[0][2]),
                 "artifact_access_level": str(artifact_data[0][3]),
                 "artifact_name": str(artifact_data[0][4]),
@@ -752,7 +748,7 @@ class Database():
                 "repository_id": str(repo_data[0][0]),
                 "repo_name": str(repo_data[0][3]),
                 "repo_creator": str(repo_data[0][1]),
-                #repo_owner name needs to be added,
+                #repo_owner name needs to replace repo creator,
                 #tags for the repo
                 "permission_req": str(repo_data[0][2])
             }
@@ -763,7 +759,7 @@ class Database():
             }
             return (json.dumps(payload), 403)
 
-    
+    #Create a line by line diference report between versions
     def diff(self, content):
         #check file type, can be diff'd, full diff
         #can't be diff'd, simple compare
@@ -819,9 +815,7 @@ class Database():
         temp = self.cursor.fetchall()
         artifact_change = temp[0][0]
         extracted_data = artifact_change.decode('utf-8')
-        print(extracted_data, file = sys.stderr)
         readable_data = list(extracted_data.split('  '))
-        #print(type(readable_data), file = sys.stderr)
         
         if content.get("previous_version", "") == "":
             sql = "SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s"
@@ -842,7 +836,6 @@ class Database():
         with open("diffcompare.txt", "w") as file_out:
             #for line in list(difflib.context_diff(extracted_data, extracted_data_previous_version)):
             for i in difflib.context_diff(readable_data, readable_data_previous_version):
-                #print(line, file=sys.stderr)
                 file_out.write(i)
 
         #with open("diffcompare.txt", "w") as file_out:
@@ -856,8 +849,7 @@ class Database():
         #else:
             #simple compare
             #may forgo checking if convertable for demo purposes
-            
-            
+                     
     #html file which shows a side by side difference of the attributes of an artifact
     def simple_compare (self, content):
         self.ensureConnected()
@@ -929,7 +921,6 @@ class Database():
         with open("simplecompare.txt", "w") as file_out:
             #for line in list(difflib.context_diff(extracted_data, extracted_data_previous_version)):
             for i in difflib.context_diff(list(artifact_change), list(artifact_change_previous)):
-                #print(line, file=sys.stderr)
                 file_out.write('\n'.join(i))
         '''
         with open("simplecompare.txt", "w") as file_out:
@@ -938,6 +929,7 @@ class Database():
         # read file into string, return said string
         #to only return a HTML table for ui to use if they need it
         #return (d.make_table(artifact_change.split('\n'), artifact_change_previous.split('\n')), 200)
+    
     '''
     def remove_repo(self,content):
 
@@ -947,6 +939,7 @@ class Database():
 
     def remove_tag(self, content)
     '''
+    
     #returns an artifact from the database
     def export_artifact(self, content):
         self.ensureConnected()
@@ -957,8 +950,6 @@ class Database():
                 return (json.dumps(AUTHENTICATE_FAIL), 401)   
         else:
             user_id = int(content["user_id"])
-        
-        permission_level = self.get_permission_level(user_id)
 
         if content.get("repository_id", "") == "":
             repo_id = self.get_repo_id(str(content["repo_name"]))
@@ -1024,12 +1015,11 @@ class Database():
                     payload = {
                         "err_message": "Failure: We cannot convert to that type."
                     }
+                    return (json.dumps(payload), 400)
             return (send_file(convertedfile, attachment_filename=fullfilename))
-
         else:
             with open(fullfilename, 'wb') as file:
                 file.write(blobfile)
-
             return (send_file(fullfilename, attachment_filename=fullfilename))
 
     #add one or more tags to a repository or an artifact

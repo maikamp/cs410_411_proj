@@ -1,11 +1,12 @@
 {
-    "user_id": "2",
-    "username": "",
-    "password": "",
-    "repository_id": "2",
-    "artifact_access_level": "1",
-    "artifact_name": "Example",
-    "version": "2",
+    "user_id": "",
+    "username": "registertest",
+    "password": "system",
+    "repository_id": "",
+    "repo_name": "testrepo2",
+    "artifact_access_level": "3",
+    "artifact_name": "ExampleDocx",
+    "version": "",
     "tag": [
         "CS411W_3"
     ] 

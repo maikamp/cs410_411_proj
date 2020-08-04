@@ -4,10 +4,8 @@
     "password": "system",
     "repository_id": "",
     "repo_name": "testrepo2",
-    "artifact_access_level": "3",
+    "artifact_id": "",
     "artifact_name": "ExampleDocx",
     "version": "",
-    "tag": [
-        "CS411W_2"
-    ] 
+    "new_file_type": "html"
 }

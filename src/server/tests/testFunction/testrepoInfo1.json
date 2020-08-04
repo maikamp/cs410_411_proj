@@ -2,5 +2,6 @@
     "user_id": "",
     "username": "defaulttest",
     "password": "default",
-    "return_type": "all"
+    "repository_id": "",
+    "repo_name": "testrepo1"
 }

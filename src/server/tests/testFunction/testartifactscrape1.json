@@ -5,9 +5,10 @@
     "repository_id": "",
     "repo_name": "testrepo1",
     "artifact_access_level": "1",
-    "artifact_name": "local artifact",
+    "artifact_name": "scraped iso 8859",
+    "desired_url": "https://www.w3.org/TR/PNG/iso_8859-1.txt",
     "version": "",
     "tag": [
         "CS411W_1"
-    ] 
+    ]
 }

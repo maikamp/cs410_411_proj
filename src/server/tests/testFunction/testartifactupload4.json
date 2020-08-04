@@ -1,10 +1,11 @@
 {
-    "user_id": "2",
-    "username": "",
-    "password": "",
-    "repository_id": "2",
+    "user_id": "",
+    "username": "defaulttest",
+    "password": "default",
+    "repository_id": "",
+    "repo_name": "testrepo1",
     "artifact_access_level": "1",
-    "artifact_name": "Badartifact",
+    "artifact_name": "GIF artifact",
     "version": "",
     "tag": [
         "CS411W_4"

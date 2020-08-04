@@ -1,6 +1,6 @@
 {
-    "user_id": "2",
-    "username": "",
-    "password": "",
+    "user_id": "",
+    "username": "registeredtest",
+    "password": "system",
     "return_type": "owned"
 }

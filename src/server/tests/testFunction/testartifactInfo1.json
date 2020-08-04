@@ -1,10 +1,10 @@
 {
     "user_id": "",
-    "username": "aberm002",
-    "password": "guest1337",
-    "repository_id": "1",
-    "repo_name": "",
+    "username": "defaulttest",
+    "password": "default",
+    "repository_id": "",
+    "repo_name": "tesrepo1",
     "artifact_id": "",
-    "artifact_name": "dope artifact",
+    "artifact_name": "local artifact",
     "version": ""
 }

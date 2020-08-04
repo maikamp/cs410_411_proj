@@ -1,10 +1,10 @@
 {
-    "user_id": "2",
-    "username": "",
-    "password": "",
-    "repository_id": "2",
-    "repo_name": "",
+    "user_id": "",
+    "username": "registertest",
+    "password": "system",
+    "repository_id": "",
+    "repo_name": "testrepo2",
     "artifact_id": "",
-    "artifact_name": "Example",
+    "artifact_name": "ExampleDocx",
     "version": ""
 }
