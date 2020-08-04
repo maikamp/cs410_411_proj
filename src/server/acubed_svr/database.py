@@ -304,7 +304,7 @@ class Database():
         
         if file and self.allowed_file(file.filename):
             if self.convertible_file(file.filename):
-                tempname = str(content["artifact_name"])
+                tempname = file.filename.rsplit('.', 1)[0]
                 extension = file.filename.rsplit('.', 1)[1].lower()
                 filename = self.convertToMD(tempname, extension)
 
