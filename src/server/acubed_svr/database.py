@@ -814,8 +814,8 @@ class Database():
             artifact_id = int(content["artifact_id"])
         #end id retrieval
         
-        sql = "SELECT artifact_original_filetype WHERE artifact_id = %s"
-        data = (artifact_id)
+        sql = "SELECT artifact_original_filetype FROM artifact WHERE artifact_id = %s"
+        data = (artifact_id, )
         self.cursor.execute(sql, data)
         ext = self.cursor.fetchall()
         
