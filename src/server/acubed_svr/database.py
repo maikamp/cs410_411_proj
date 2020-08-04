@@ -238,11 +238,12 @@ class Database():
         print((self.get_permission_level(user_id) != 5), file = sys.stderr)
         print((user_id != int(results[0][0])) or (self.get_permission_level(user_id) != 5), file = sys.stderr)
         
-        if (user_id != int(results[0][0])) or (self.get_permission_level(user_id) != 5):
-            payload = {
-                "err_message": "Failure: Permission Denied."
-            }
-            return (json.dumps(payload), 403)
+        if (user_id != int(results[0][0])):
+            if (self.get_permission_level(user_id) != 5):
+                payload = {
+                    "err_message": "Failure: Permission Denied."
+                }
+                return (json.dumps(payload), 403)
         
         #check if the post request has the file part
         if 'file' not in request.files:
@@ -352,11 +353,12 @@ class Database():
         sql = "SELECT repo_creator FROM repository WHERE repository_id = %s"
         self.cursor.execute(sql,(repo_id, ))
         results = self.cursor.fetchall()
-        if (user_id != results[0][0]) or (self.get_permission_level(user_id) != 5):
-            payload = {
-                "err_message": "Failure: Permission Denied."
-            }
-            return (json.dumps(payload), 403)
+        if (user_id != results[0][0]):
+            if (self.get_permission_level(user_id) != 5):
+                payload = {
+                    "err_message": "Failure: Permission Denied."
+                }
+                return (json.dumps(payload), 403)
 
         #collects file from url
         retrieved_file = requests.get(content["desired_url"])
