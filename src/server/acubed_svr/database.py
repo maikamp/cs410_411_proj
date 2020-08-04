@@ -139,15 +139,14 @@ class Database():
         usr = (str(content["username"]), str(content["password"]))
         self.cursor.execute(sql, usr)
         temp = self.cursor.fetchall()
-        results = temp[0]
         if len(temp) == 0:
             return (json.dumps(AUTHENTICATE_FAIL), 401)
         else:
             if len(temp) == 1:
                 payload = {
                     "err_message" : "Successful login.",
-                    "user_id" : str(results[0]),
-                    "permission_level": str(results[1])
+                    "user_id" : str(temp[0][0]),
+                    "permission_level": str(temp[0][1])
                 }
                 return (json.dumps(payload), 200)
             else:
@@ -233,11 +232,7 @@ class Database():
         sql = "SELECT repo_creator FROM repository WHERE repository_id = %s"
         self.cursor.execute(sql, (repo_id, ))
         results = self.cursor.fetchall()
-        
-        print((user_id != int(results[0][0])), file = sys.stderr)
-        print((self.get_permission_level(user_id) != 5), file = sys.stderr)
-        print((user_id != int(results[0][0])) or (self.get_permission_level(user_id) != 5), file = sys.stderr)
-        
+
         if (user_id != int(results[0][0])):
             if (self.get_permission_level(user_id) != 5):
                 payload = {
@@ -305,7 +300,6 @@ class Database():
         if file and self.allowed_file(file.filename):
             if self.convertible_file(file.filename):
                 tempname = file.filename.rsplit('.', 1)[0]
-                print(tempname, file=sys.stderr)
                 extension = file.filename.rsplit('.', 1)[1].lower()
                 filename = self.convertToMD(tempname, extension)
 
