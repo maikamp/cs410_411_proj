@@ -784,6 +784,7 @@ class Database():
         #check file type, can be diff'd, full diff
         #can't be diff'd, simple compare
         self.ensureConnected()
+        #begin id retrieval
         if content.get("user_id", "") == "":
             user_id = self.get_user_id(str(content["username"]), str(content["password"]))        
             if user_id == "":
@@ -811,7 +812,7 @@ class Database():
             artifact_id = int(temp[0][0])
         else:
             artifact_id = int(content["artifact_id"])
-
+        #end id retrieval
         
         sql = "SELECT artifact_original_filetype WHERE artifact_id =%s"
         data = (artifact_id, )
@@ -1054,10 +1055,10 @@ class Database():
             return (json.dumps(payload), 400)
         #option 0 is intitial value (empty), 1 is repo, 2 is artifact
         option = 0
-        if content.get("repo_name", "") != "":
-            option = 1
-        elif content.get("artifact_name", "") != "" or content.get("artifact_id", "") != "":
+        if content.get("artifact_name", "") != "" or content.get("artifact_id", "") != "":
             option = 2
+        elif content.get("repo_name", "") != "":
+            option = 1
         #if the json passed in has neither artifact nor repo stuff, return error
         else:
             payload = {

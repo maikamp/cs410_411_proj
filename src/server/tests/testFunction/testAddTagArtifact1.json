@@ -1,10 +1,11 @@
 {
     "user_id": "",
-    "username": "aberm002",
-    "password": "guest1337",
+    "username": "defaulttest",
+    "password": "default",
     "repository_id": "1",
-    "artifact_access_level": "3",
-    "artifact_name": "dope artifact",
+    "repo_name": "testrepo1",
+    "artifact_access_level": "1",
+    "artifact_name": "local artifact",
     "version": "",
     "tag": [
         "CS411W_1"
