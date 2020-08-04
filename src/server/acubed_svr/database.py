@@ -1155,7 +1155,7 @@ class Database():
                 i = i + 1
             payload = {
                 "err_message": "List of artifacts you have access to.",
-                "artifact_name": result_list
+                "artifacts": result_list
             }
             return (json.dumps(payload), 200)
 
@@ -1237,7 +1237,7 @@ class Database():
                 i = i + 1
             payload = {
                 "err_message": "List of repositories you have access to.",
-                "results": result_list
+                "repositories": result_list
             }
             return (json.dumps(payload), 200)
             
