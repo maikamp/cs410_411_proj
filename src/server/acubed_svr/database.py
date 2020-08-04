@@ -744,15 +744,23 @@ class Database():
         data = (repo_id, )
         self.cursor.execute(sql, data)
         repo_data = self.cursor.fetchall()
+        #retrieve repo owner username
+        sql2 = "SELECT username FROM user WHERE user_id = %s"
+        val2 = (user_id, )
+        self.cursor.execute(sql2, val2)
+        owner_name =  self.cursor.fetchall()
+        #retrieve tags for this repo
+        sql3 = "SELECT tag_name FROM tag WHERE repo_id = %s"
+        self.cursor.execute(sql3, val3)
+        repo_tags =  self.cursor.fetchall()
         #get the permission level of the user
         if (self.get_permission_level(user_id) >= int(repo_data[0][2])) or (user_id == int(repo_data[0][1])): 
             payload = {
                 "repository_id": str(repo_data[0][0]),
                 "repo_name": str(repo_data[0][3]),
-                "repo_creator": str(repo_data[0][1]),
-                #repo_owner name needs to replace repo creator,
-                #tags for the repo
-                "permission_req": str(repo_data[0][2])
+                "repo_creator": owner_name[0][0],
+                "permission_req": str(repo_data[0][2]),
+                "tags": [repo_tags]
             }
             return (json.dumps(payload), 200)
         else:
