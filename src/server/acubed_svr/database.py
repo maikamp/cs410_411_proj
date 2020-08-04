@@ -810,7 +810,7 @@ class Database():
         ext = self.cursor.fetchall()
         
 
-        if ext in CONVERTIBLE_EXTENSIONS:
+        if ext in CONVERTIBLE_EXTENSIONS or ext == 'md':
             if content.get("version", "") == "":
                 sql = "SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s"
                 data = (artifact_id, )
