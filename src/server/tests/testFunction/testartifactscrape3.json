@@ -1,8 +1,9 @@
 {
     "user_id": "",
-    "username": "aberm002",
-    "password": "guest1337",
-    "repository_id": "1",
+    "username": "registertest",
+    "password": "system",
+    "repository_id": "",
+    "repo_name": "testrepo2",
     "artifact_access_level": "1",
     "artifact_name": "Testing Original Source",
     "desired_url": "https://www.cs.odu.edu/~411crystal/resources/Lab_3_version_1.docx",
