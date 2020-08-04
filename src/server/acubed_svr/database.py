@@ -681,6 +681,16 @@ class Database():
         data = (repo_id, artifact_id)
         self.cursor.execute(sql, data)
         artifact_data = self.cursor.fetchall()
+        #retrieve artifact owner username
+        sql2 = "SELECT username FROM user WHERE user_id = %s"
+        val2 = (user_id, )
+        self.cursor.execute(sql2, val2)
+        owner_name =  self.cursor.fetchall()
+        #retrieve tags for this artifact
+        sql3 = "SELECT tag_name FROM tag WHERE artifact_id = %s"
+        val3 = (artifact_id, )
+        self.cursor.execute(sql3, val3)
+        repo_tags =  self.cursor.fetchall()
 
         #if no version was specified get the max version
         if content.get("version", "") == "":
@@ -700,9 +710,7 @@ class Database():
         if (self.get_permission_level(user_id) >= int(artifact_data[0][3])) or (user_id == int(artifact_data[0][1])): 
             payload = {
                 "artifact_id": str(artifact_data[0][0]),
-                "owner_id": str(artifact_data[0][1]),
-                #the artifact owners name should replace the id,
-                #the tags should be added as well
+                "owner_name": owner_name[0][0],
                 "repository_id": str(artifact_data[0][2]),
                 "artifact_access_level": str(artifact_data[0][3]),
                 "artifact_name": str(artifact_data[0][4]),
@@ -713,7 +721,8 @@ class Database():
                 "artifact_access_count": str(artifact_data[0][9]),
                 "change_datetime": str(artifact_change[0][0]),
                 "artifact_size": str(artifact_change[0][3]),
-                "version": str(artifact_change[0][5])
+                "version": str(artifact_change[0][5]),
+                "tag": repo_tags
             }
             return (json.dumps(payload), 200)
         else:
@@ -761,7 +770,7 @@ class Database():
                 "repo_name": str(repo_data[0][3]),
                 "repo_creator": owner_name[0][0],
                 "permission_req": str(repo_data[0][2]),
-                "tags": [repo_tags]
+                "tag": repo_tags
             }
             return (json.dumps(payload), 200)
         else:
