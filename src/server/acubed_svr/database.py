@@ -492,7 +492,7 @@ class Database():
                 return (json.dumps(payload), 400)
         else:
             payload = {
-                "err_message: Failure you do not have permission to create a repository."
+                "err_message": "Failure you do not have permission to create a repository."
             }
         return (json.dumps(payload), 401)
 
