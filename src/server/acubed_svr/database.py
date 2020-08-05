@@ -317,10 +317,10 @@ class Database():
         else:
             #needs a location for the file we stored
             temp = UPLOAD_FOLDER + file.filename
-            sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_id, version) VALUES (%s, %s, %s, %s)"
+            sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_id, version, artifact_location) VALUES (%s, %s, %s, %s, %s)"
             #datetime from artifact_creation_date, changer_id from owner_id, artifact_size get file size, convert to blob
             #(variable for version) = (query for previous version, if updating; 1 if no previous version)
-            dataTwo = (datecreated, user_id, artifact_id, version)    
+            dataTwo = (datecreated, user_id, artifact_id, version, temp)    
             self.cursor.execute(sqlTwo, dataTwo)
             self.connector.commit()
             payload = {
@@ -423,10 +423,10 @@ class Database():
             return (json.dumps(payload), 201)
         else:
             #needs a location for the file we stored
-            sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_id, version) VALUES (%s, %s, %s, %s)"
+            sqlTwo = "INSERT INTO artifact_change_record (change_datetime, changer_id, artifact_id, version, artifact_location) VALUES (%s, %s, %s, %s, %s)"
             #datetime from artifact_creation_date, changer_id from owner_id, artifact_size get file size, convert to blob
             #(variable for version) = (query for previous version, if updating; 1 if no previous version)
-            dataTwo = (datecreated, user_id, artifact_id, version)    
+            dataTwo = (datecreated, user_id, artifact_id, version, retrieved_filename)    
             self.cursor.execute(sqlTwo, dataTwo)
             self.connector.commit()
             payload = {
