@@ -690,7 +690,10 @@ class Database():
         sql3 = "SELECT tag_name FROM tag WHERE artifact_id = %s"
         val3 = (artifact_id, )
         self.cursor.execute(sql3, val3)
-        artifact_tags =  self.cursor.fetchall()
+        temp_tags =  self.cursor.fetchall()
+        artifact_tags = []
+        for i in temp_tags:
+            artifact_tags.append(i[0])
 
         #if no version was specified get the max version
         if content.get("version", "") == "":
@@ -762,7 +765,10 @@ class Database():
         sql3 = "SELECT tag_name FROM tag WHERE repo_id = %s"
         val3 = (repo_id, )
         self.cursor.execute(sql3, val3)
-        repo_tags =  self.cursor.fetchall()
+        temp_tags =  self.cursor.fetchall()
+        repo_tags = []
+        for i in temp_tags:
+            repo_tags.append(i[0])
         #get the permission level of the user
         if (self.get_permission_level(user_id) >= int(repo_data[0][2])) or (user_id == int(repo_data[0][1])): 
             payload = {
