@@ -836,7 +836,7 @@ class Database():
             temp = self.cursor.fetchall()
             artifact_change = temp[0][0]
             extracted_data = artifact_change.decode('utf-8')
-            readable_data = list(extracted_data.split('\n'))
+            readable_data = list(extracted_data.split('  '))
             
             if content.get("previous_version", "") == "":
                 sql = "SELECT MAX(version) FROM artifact_change_record WHERE artifact_id = %s"
@@ -853,9 +853,9 @@ class Database():
             temp = self.cursor.fetchall()
             artifact_change_previous = temp[0][0]
             extracted_data_previous_version = artifact_change_previous.decode('utf-8')
-            readable_data_previous_version = list(extracted_data_previous_version.split('\n'))
+            readable_data_previous_version = list(extracted_data_previous_version.split('  '))
             with open("diffcompare.txt", "w") as file_out:
-                file_out.writelines(difflib.context_diff(readable_data, readable_data_previous_version))
+                file_out.writelines(difflib.context_diff(extracted_data, extracted_data_previous_version))
 
             #with open("diffcompare.txt", "w") as file_out:
             #file_out.writelines(difflib.context_diff(extracted_data, extracted_data_previous_version))  
