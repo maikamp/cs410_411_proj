@@ -856,6 +856,7 @@ class Database():
             readable_data_previous_version = list(extracted_data_previous_version.split('  '))
             with open("diffcompare.txt", "w") as file_out:
                 file_out.writelines(difflib.context_diff(readable_data, readable_data_previous_version, 'Selected Version', 'Previous Version'))
+                file_out.write('\n')
 
             #with open("diffcompare.txt", "w") as file_out:
             #file_out.writelines(difflib.context_diff(extracted_data, extracted_data_previous_version))  
