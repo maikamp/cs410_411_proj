@@ -855,7 +855,7 @@ class Database():
             extracted_data_previous_version = artifact_change_previous.decode('utf-8')
             readable_data_previous_version = list(extracted_data_previous_version.split('  '))
             with open("diffcompare.txt", "w") as file_out:
-                file_out.writelines(difflib.context_diff(extracted_data, extracted_data_previous_version, 'Selected Version', 'Previous Version', lineterm='  '))
+                file_out.writelines(difflib.context_diff(readable_data, readable_data_previous_version, 'Selected Version', 'Previous Version'))
 
             #with open("diffcompare.txt", "w") as file_out:
             #file_out.writelines(difflib.context_diff(extracted_data, extracted_data_previous_version))  
