@@ -945,7 +945,7 @@ class Database():
                 file_out.write('\n'.join(i))
         '''
         with open("simplecompare.txt", "w") as file_out:
-            file_out.writelines(difflib.context_diff(artifact_change, artifact_change_previous))
+            file_out.writelines(difflib.context_diff(artifact_change, artifact_change_previous, 'Selected Version', 'Previous Version'))
         return(send_file("simplecompare.txt", attachment_filename="simplecompare.txt"), 200)
         # read file into string, return said string
         #to only return a HTML table for ui to use if they need it
