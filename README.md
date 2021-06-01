@@ -1,3 +1,9 @@
+
+The folowing Readme is the original used for the project. 
+Most work done by Mike Campbell is located in /src/server/acubed_svr, primarily file is database.py. 
+##########################
+
+
 # A-Cubed
 
 CS 411 -- Professional Workforce Development -- Team Crystal
